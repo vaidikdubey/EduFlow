@@ -8,6 +8,19 @@ import {
   userRegistrationValidator,
 } from "../validators/index.js";
 import { isLoggedIn } from "../middlewares/auth.middleware.js";
+import {
+  changePassword,
+  deleteProfile,
+  forgotPassword,
+  getProfile,
+  loginUser,
+  logoutUser,
+  registerUser,
+  resendVerificationEmail,
+  resetPassword,
+  updateProfile,
+  verifyUser,
+} from "../controllers/auth.controllers.js";
 
 const router = Router();
 
