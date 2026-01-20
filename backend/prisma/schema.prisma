@@ -31,51 +31,56 @@ enum LessonContentType {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  name      String
-  email     String
-  password  String
-  image     String?
-  role      UserRole @default(STUDENT)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                  String    @id @default(uuid())
+  name                String
+  email               String
+  password            String
+  image               String?
+  role                UserRole  @default(STUDENT)
+  isVerified          Boolean   @default(false)
+  verificationToken   String?
+  passwordResetToken  String?
+  passwordResetExpiry DateTime?
+  refreshToken        String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
 
   //Relationships
-  createdCourses Course[] @relation("CreatedBy")
-  taughtCourses Course[] @relation("instructors")
-  enrollments Enrollment[]
-  progress LessonProgress[]
-  quizAttempts QuizAttempt[]
+  createdCourses Course[]         @relation("CreatedBy")
+  taughtCourses  Course[]         @relation("instructors")
+  enrollments    Enrollment[]
+  progress       LessonProgress[]
+  quizAttempts   QuizAttempt[]
 }
 
 model Course {
-  id String @id @default(uuid())
-  title String
+  id          String     @id @default(uuid())
+  title       String
   description String?
   createdById String
-  type CourseType @default(FREE)
-  price Float?
+  type        CourseType @default(FREE)
+  price       Float?
   isPublished Boolean
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 
-  instructors User[] @relation("instructors")
-  modules Module[]
+  instructors User[]       @relation("instructors")
+  modules     Module[]
   enrollments Enrollment[]
-  quizzes Quiz[]
+  quizzes     Quiz[]
 
   //Relationships
   createdBy User @relation("CreatedBy", fields: [createdById], references: [id], onDelete: Cascade)
 }
 
 model Module {
-  id String @id @default(uuid())
-  title String
-  order Int
+  id       String @id @default(uuid())
+  title    String
+  order    Int
   courseId String
 
   lessons Lesson[]
-  quiz Quiz[]
+  quiz    Quiz[]
 
   //Relationships
   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
@@ -84,51 +89,51 @@ model Module {
 }
 
 model Lesson {
-  id String @id @default(uuid())
-  title String
+  id          String            @id @default(uuid())
+  title       String
   contentType LessonContentType
-  contentUrl String?
-  order Int
-  moduleId String
+  contentUrl  String?
+  order       Int
+  moduleId    String
 
   progress LessonProgress[]
 
   //Relationships
   module Module @relation(fields: [moduleId], references: [id])
-  
+
   @@index([moduleId, order])
 }
 
 model Enrollment {
-  id String @id @default(uuid())
-  userId String
-  courseId String
+  id         String   @id @default(uuid())
+  userId     String
+  courseId   String
   enrolledAt DateTime @default(now())
-  completed Boolean @default(false)
+  completed  Boolean  @default(false)
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@unique([userId, courseId])
 }
 
 model LessonProgress {
-  id String @id @default(uuid())
-  userId String
-  lessonId String
-  completed Boolean @default(false)
+  id          String    @id @default(uuid())
+  userId      String
+  lessonId    String
+  completed   Boolean   @default(false)
   completedAt DateTime?
 
   //Relationships
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
   @@unique([userId, lessonId])
 }
 
 model Quiz {
-  id String @id @default(uuid())
-  title String
+  id       String @id @default(uuid())
+  title    String
   courseId String
   moduleId String
 
@@ -142,12 +147,12 @@ model Quiz {
 }
 
 model QuizAttempt {
-  id String @id @default(uuid())
-  userId String
-  quizId String
-  score Int
+  id          String   @id @default(uuid())
+  userId      String
+  quizId      String
+  score       Int
   attemptedAt DateTime @default(now())
-  
+
   answers Json?
 
   //Relationships
