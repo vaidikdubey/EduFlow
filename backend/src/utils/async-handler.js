@@ -1,4 +1,4 @@
-import { ApiError } from "./api-error/js";
+import { ApiError } from "./api-error.js";
 
 export function asyncHandler(fn) {
   return async function (req, res, next) {

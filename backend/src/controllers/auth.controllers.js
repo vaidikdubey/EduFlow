@@ -9,7 +9,7 @@ import { } from "../utils/mail.js";
 
 
 const registerUser = asyncHandler(async (req, res, next) => {
-    
+        
 })
 
 const loginUser = asyncHandler(async (req, res, next) => {
