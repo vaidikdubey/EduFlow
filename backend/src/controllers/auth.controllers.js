@@ -1,67 +1,537 @@
-import bcrypt from "bcryptjs"
+import bcrypt from "bcryptjs";
 import { db } from "../db/db.js";
-import { UserRole } from "../generated/prisma/index.js";
 import { asyncHandler } from "../utils/async-handler.js";
 import { ApiError } from "../utils/api-error.js";
 import { ApiResponse } from "../utils/api-response.js";
-import { generateAccessToken, generateRefreshToken, generateTemporaryToken } from "../utils/generate-tokens.js";
-import { } from "../utils/mail.js";
-
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  generateTemporaryToken,
+} from "../utils/generate-tokens.js";
+import {
+  emailVerificationMailgenContent,
+  verifiedEmailMailgenContent,
+  forgotPasswordMailgenContent,
+  resendEmailVerificationMailgenContent,
+  sendEmail,
+  emailReverificationMailgenContent,
+  profileDeletionMailgenContent,
+} from "../utils/mail.js";
+import { cookieOptions } from "../utils/constants.js";
+import crypto from "crypto";
 
 const registerUser = asyncHandler(async (req, res, next) => {
-        
-})
+  const { name, email, password, role } = req.body;
+
+  if (!name || !email || !password || !role)
+    throw new ApiError(400, "All fields are required");
+
+  const existingUser = await db.findUnique({
+    where: {
+      email,
+    },
+  });
+
+  if (existingUser) throw new ApiError(400, "User already exists");
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const temporaryToken = generateTemporaryToken();
+
+  let user = await db.user.create({
+    data: {
+      name,
+      email,
+      password: hashedPassword,
+      role,
+      verificationToken: temporaryToken.hashedToken,
+      verificationExpiry: temporaryToken.tokenExpiry,
+    },
+  });
+
+  const accessToken = generateAccessToken({ id: user.id });
+  const refreshToken = generateRefreshToken({ id: user.id, role });
+
+  user = await db.user.update({
+    where: {
+      id: user.id,
+    },
+    data: {
+      refreshToken,
+    },
+  });
+
+  res.cookie("accessToken", accessToken, cookieOptions);
+
+  const refreshTokenCookieOptions = {
+    ...cookieOptions,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  };
+
+  res.cookie("refreshToken", refreshToken, refreshTokenCookieOptions);
+
+  const emailOptions = {
+    email: user.email,
+    subject: "Verify your email",
+    mailgenContent: emailVerificationMailgenContent(
+      name,
+      `${process.env.BASE_URL}/api/v1/auth/verify/${temporaryToken.unHashedToken}`,
+    ),
+  };
+
+  await sendEmail(emailOptions);
+
+  res.status(201).json(
+    new ApiResponse(
+      200,
+      {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+      "User created successfully",
+    ),
+  );
+});
 
 const loginUser = asyncHandler(async (req, res, next) => {
-    
-})
+  const { email, password } = req.body;
+
+  if (!email || !password) throw new ApiError(404, "All fields are required");
+
+  let user = await db.user.findUnique({
+    where: {
+      email,
+    },
+  });
+
+  if (!user) throw new ApiError(401, "Invalid credentials");
+
+  const isPasswordMatched = await bcrypt.compare(password, user.password);
+
+  if (!isPasswordMatched) throw new ApiError(401, "Invalid credentials");
+
+  const accessToken = generateAccessToken({ id: user.id });
+  const refreshToken = generateRefreshToken({ id: user.id, role });
+
+  user = await db.user.update({
+    where: { id: user.id },
+    data: { refreshToken },
+  });
+
+  res.cookie("accessToken", accessToken, ...cookieOptions);
+
+  const refreshTokenCookieOptions = {
+    ...cookieOptions,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  };
+
+  res.cookie("refreshToken", refreshToken, refreshTokenCookieOptions);
+
+  res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        accessToken,
+      },
+      "User login successful",
+    ),
+  );
+});
 
 const verifyUser = asyncHandler(async (req, res, next) => {
-    
-})
+  const { token } = req.params;
+
+  if (!token) throw new ApiError(404, "Token not found");
+
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+  let user = await db.user.findUnique({
+    where: {
+      verificationToken: hashedToken,
+      verificationExpiry: {
+        gt: new Date(),
+      },
+    },
+  });
+
+  if (!user) throw new ApiError(404, "Invalid token");
+
+  user = await db.user.update({
+    where: { id: user.id },
+    data: {
+      isVerified: true,
+      verificationToken: null,
+      verificationExpiry: null,
+    },
+  });
+
+  const emailOptions = {
+    email: user.email,
+    subject: "Welcome to EduFlow!",
+    mailgenContent: verifiedEmailMailgenContent(user.name),
+  };
+
+  await sendEmail(emailOptions);
+
+  res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+      "Email verification successful",
+    ),
+  );
+});
 
 const getProfile = asyncHandler(async (req, res, next) => {
-    
-})
+  const user = await db.user.findUnique({
+    where: { id: req.user.id },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      image: true,
+      role: true,
+      isVerified: true,
+      createdAt: true,
+    },
+  });
+
+  if (!user) throw new ApiError(404, "User not found");
+
+  res.status(200).json(new ApiResponse(200, user, "User profile fetched"));
+});
 
 const logoutUser = asyncHandler(async (req, res, next) => {
-    
-})
+  const clearCookieOptions = {
+    ...cookieOptions,
+    maxAge: new Date(0),
+  };
+
+  res.clearCookie("accessToken", clearCookieOptions);
+  res.clearCookie("refreshToken", clearCookieOptions);
+
+  res
+    .status(200)
+    .json(
+      new ApiResponse(200, { message: "Tokens cleared" }, "User logged out"),
+    );
+});
 
 const forgotPassword = asyncHandler(async (req, res, next) => {
-    
-})
+  const { email } = req.body;
+
+  if (!email) throw new ApiError(404, "Email is required");
+
+  let user = await db.user.findUnique({
+    where: { email },
+  });
+
+  if (!user) throw new ApiError(404, "Invalid email address");
+
+  const temporaryToken = generateTemporaryToken();
+
+  user = await db.user.update({
+    where: { email },
+    data: {
+      passwordResetToken: temporaryToken.hashedToken,
+      passwordResetExpiry: temporaryToken.tokenExpiry,
+    },
+  });
+
+  const mailOptions = {
+    email: user.email,
+    subject: "Reset your password",
+    mailgenContent: forgotPasswordMailgenContent(
+      user.name,
+      `${process.env.BASE_URL}/api/v1/auth/reset-password/${temporaryToken.unHashedToken}`,
+    ),
+  };
+
+  await sendEmail(mailOptions);
+
+  res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { message: "Email sent successfully" },
+        "Forgot password successful",
+      ),
+    );
+});
 
 const resetPassword = asyncHandler(async (req, res, next) => {
-    
-})
+  const { token } = req.params;
+
+  const { password } = req.body;
+
+  if (!token) throw new ApiError(404, "Token not found");
+
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+  let user = await db.user.findUnique({
+    passwordResetToken: hashedToken,
+    passwordResetExpiry: {
+      gt: new Date(),
+    },
+  });
+
+  if (!user) throw new ApiError(404, "User not found");
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  user = await db.user.update({
+    where: { id: user.id },
+    data: {
+      password: hashedPassword,
+      passwordResetToken: null,
+      passwordResetExpiry: null,
+    },
+  });
+
+  res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        id: user.id,
+        name: user.name,
+        email: user.emai,
+        role: user.role,
+      },
+      "Password reset successful",
+    ),
+  );
+});
 
 const changePassword = asyncHandler(async (req, res, next) => {
-    
-})
+  let user = await db.user.findUnique({
+    where: { id: req.user.id },
+  });
+
+  if (!user) throw new ApiError(404, "User not found");
+
+  const { oldPassword, newPassword } = req.body;
+
+  const isPasswordMatched = await bcrypt.compare(oldPassword, user.password);
+
+  if (!isPasswordMatched)
+    throw new ApiError(400, "Incorrect existing password");
+
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+  const accessToken = generateAccessToken({ id: user.id });
+  const refreshToken = generateRefreshToken({ id: user.id, role: user.role });
+
+  user = await db.user.update({
+    where: { id: user.id },
+    data: {
+      password: hashedPassword,
+      refreshToken,
+    },
+  });
+
+  res.cookie("accessToken", accessToken, cookieOptions);
+
+  const refreshTokenCookieOptions = {
+    ...cookieOptions,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  };
+
+  res.cookie("refreshToken", refreshToken, refreshTokenCookieOptions);
+
+  res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        accessToken,
+      },
+      "Password change successful",
+    ),
+  );
+});
 
 const resendVerificationEmail = asyncHandler(async (req, res, next) => {
+  let user = await db.user.findUnique({ where: { id: req.user.id } });
 
-})
+  if (!user) throw new ApiError(404, "User not found");
+
+  const temporaryToken = generateTemporaryToken();
+
+  user = await db.user.update({
+    where: { id: user.id },
+    data: {
+      passwordResetToken: temporaryToken.hashedToken,
+      passwordResetExpiry: temporaryToken.tokenExpiry,
+    },
+  });
+
+  const emailOptions = {
+    email: user.email,
+    subject: "Verify your email",
+    mailgenContent: resendEmailVerificationMailgenContent(
+      user.name,
+      `${process.env.BASE_URL}/api/v1/auth/verify/${temporaryToken.unHashedToken}`,
+    ),
+  };
+
+  await sendEmail(emailOptions);
+
+  res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+      "Verification email sent successfully",
+    ),
+  );
+});
 
 const updateProfile = asyncHandler(async (req, res, next) => {
-    
-})
+  const { name, email } = req.body;
+
+  if (!name && !email)
+    throw new ApiError(400, "Please provide name or email to be updated");
+
+  const updatedData = {};
+  let temporaryToken = null;
+
+  if (name) updatedData.name = name;
+
+  if (email) {
+    const existingUser = await db.user.findUnique({ where: { email } });
+
+    if (existingUser && existingUser.id !== req.user.id)
+      throw new ApiError(
+        409,
+        "Email is already registered with another account",
+      );
+
+    updatedData.email = email;
+    updatedData.isVerified = false;
+
+    temporaryToken = generateTemporaryToken();
+    updatedData.verificationToken = temporaryToken.hashedToken;
+    updatedData.verificationExpiry = temporaryToken.tokenExpiry;
+  }
+
+  const user = await db.user.update({
+    where: { id: req.user.id },
+    data: updatedData,
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      image: true,
+      role: true,
+      isVerified: true,
+      createdAt: true,
+    },
+  });
+
+  if (email && temporaryToken) {
+    const emailOptions = {
+      email: user.email,
+      subject: "Verify your email",
+      mailgenContent: emailReverificationMailgenContent(
+        user.name,
+        `${process.env.BASE_URL}/api/v1/auth/${temporaryToken.unHashedToken}`,
+      ),
+    };
+
+    await sendEmail(emailOptions);
+  }
+
+  res.status(200).json(
+    new ApiResponse(
+      {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        isVerified: user.isVerified,
+      },
+      "User profile updated",
+    ),
+  );
+});
 
 const deleteProfile = asyncHandler(async (req, res, next) => {
-    
-})
+  const { password } = req.body;
+
+  if (!password)
+    throw new ApiError(404, "Password is required to delete account");
+
+  let user = await db.user.findUnique({ where: { id: req.user.id } });
+
+  if (!user) throw new ApiError(404, "User not found");
+
+  const isPasswordMatched = await bcrypt.compare(password, user.password);
+
+  if (!isPasswordMatched) throw new ApiError(401, "Invalid password");
+
+  user = await db.user.delete({
+    where: { id: req.user.id },
+  });
+
+  const emailOptions = {
+    email: user.email,
+    subject: "EduFlow account deletion!",
+    mailgenContent: profileDeletionMailgenContent(user.name),
+  };
+
+  await sendEmail(emailOptions);
+
+  const clearCookieOptions = {
+    ...cookieOptions,
+    maxAge: new Date(0),
+  };
+
+  res
+    .clearCookie("accessToken", clearCookieOptions)
+    .clearCookie("refreshToken", clearCookieOptions)
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        {
+          name: user.name,
+          email: user.email,
+          deletedAt: new Date(),
+        },
+        "User account and session deleted successfully",
+      ),
+    );
+});
 
 export {
-    registerUser,
-    loginUser,
-    verifyUser,
-    getProfile,
-    logoutUser,
-    forgotPassword,
-    resetPassword,
-    changePassword,
-    resendVerificationEmail,
-    updateProfile,
-    deleteProfile
-}
+  registerUser,
+  loginUser,
+  verifyUser,
+  getProfile,
+  logoutUser,
+  forgotPassword,
+  resetPassword,
+  changePassword,
+  resendVerificationEmail,
+  updateProfile,
+  deleteProfile,
+};

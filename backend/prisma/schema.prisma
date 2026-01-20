@@ -33,6 +33,7 @@ model User {
   role                UserRole  @default(STUDENT)
   isVerified          Boolean   @default(false)
   verificationToken   String?
+  verificationExpiry  DateTime?
   passwordResetToken  String?
   passwordResetExpiry DateTime?
   refreshToken        String?
