@@ -20,7 +20,7 @@ router.route("/getModule/:id").get(isLoggedIn, getModuleById);
 router.route("/getModuleProgress/:id").get(isLoggedIn, getModuleProgress);
 
 //Instructor and admin routes
-router.route("/create").post(isLoggedIn, checkAdmin, createModule);
+router.route("/create/:courseId").post(isLoggedIn, checkAdmin, createModule);
 
 router.route("/update/:id").patch(isLoggedIn, checkAdmin, updateModule);
 

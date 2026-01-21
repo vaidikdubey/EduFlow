@@ -205,11 +205,86 @@ const getModuleProgress = asyncHandler(async (req, res) => {
   );
 });
 
-const createModule = asyncHandler(async (req, res) => {});
+const createModule = asyncHandler(async (req, res) => {
+  const { courseId } = req.params;
+  const { title, order } = req.body;
+
+  if (!title) throw new ApiError(400, "Title is required");
+
+  const course = await db.course.findUnique({
+    where: { id: courseId },
+    select: {
+      id: true,
+      createdById: true,
+    },
+  });
+
+  if (!course) throw new ApiError(404, "Course not found");
+
+  if (course.createdById !== req.user.id)
+    throw new ApiError(
+      403,
+      "You are not authorized to add modules to this course",
+    );
+
+  let moduleOrder = order;
+  if (!moduleOrder) {
+    const lastModule = await db.module.findFirst({
+      where: { courseId },
+      orderBy: { order: "asc" },
+      select: { order: true },
+    });
+
+    moduleOrder = lastModule ? lastModule + 1 : 1;
+  }
+
+  const newModule = await db.module.create({
+    data: {
+      title,
+      order: moduleOrder,
+      courseId,
+    },
+    select: {
+      id: true,
+      title: true,
+      order: true,
+      courseId: true,
+      createdAt: true,
+    },
+  });
+
+  res.status(201).json(new ApiResponse(201, newModule, "Module created"));
+});
 
 const updateModule = asyncHandler(async (req, res) => {});
 
-const deleteModule = asyncHandler(async (req, res) => {});
+const deleteModule = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.id;
+
+  const deletedModule = await db.module.delete({
+    where: {
+      id,
+      course: {
+        createdById: userId,
+      },
+    },
+    select: {
+      id: true,
+      title: true,
+      order: true,
+      courseId: true,
+      _count: {
+        select: {
+          lessons: true,
+          quiz: true,
+        },
+      },
+    },
+  });
+
+  res.status(200).json(new ApiResponse(200, deletedModule, "Module deleted"));
+});
 
 const getModuleStats = asyncHandler(async (req, res) => {});
 
