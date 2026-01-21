@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { isLoggedIn, checkAdmin } from "../middlewares/auth.middleware.js";
-import { checkUserEnrolled, createCourse, deleteCourse, getAllCourseEnrollments, getAllCourses, getAllPublishedCourses, getCourseById, getCourseProgress, publishCourse, updateCourse } from "../controllers/courses.controllers.js";
+import { checkUserEnrolled, createCourse, deleteCourse, getAllCourseEnrollments, getAllCourses, getAllInstructors, getAllPublishedCourses, getCourseById, getCourseProgress, publishCourse, updateCourse } from "../controllers/courses.controllers.js";
 
 const router = Router();
 
@@ -33,5 +33,9 @@ router
 router
   .route("/instructor/enrollments/:id")
   .get(isLoggedIn, checkAdmin, getAllCourseEnrollments);
+
+router
+  .route("/instructor/getAllInstructors")
+  .get(isLoggedIn, checkAdmin, getAllInstructors);
 
 export default router;
