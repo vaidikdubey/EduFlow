@@ -21,7 +21,9 @@ export const generateTemporaryToken = function () {
     .update(unHashedToken)
     .digest("hex");
 
-  const tokenExpiry = Date.now() + 20 * 60 * 60; //20 mins
+  let tokenExpiry = Date.now() + 20 * 60 * 60; //20 mins
+
+  tokenExpiry = new Date(tokenExpiry);
 
   return { unHashedToken, hashedToken, tokenExpiry };
 };

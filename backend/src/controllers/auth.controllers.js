@@ -20,13 +20,13 @@ import {
 import { cookieOptions } from "../utils/constants.js";
 import crypto from "crypto";
 
-const registerUser = asyncHandler(async (req, res, next) => {
+const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password, role } = req.body;
 
   if (!name || !email || !password || !role)
     throw new ApiError(400, "All fields are required");
 
-  const existingUser = await db.findUnique({
+  const existingUser = await db.user.findUnique({
     where: {
       email,
     },
@@ -95,7 +95,7 @@ const registerUser = asyncHandler(async (req, res, next) => {
   );
 });
 
-const loginUser = asyncHandler(async (req, res, next) => {
+const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) throw new ApiError(404, "All fields are required");
@@ -113,14 +113,14 @@ const loginUser = asyncHandler(async (req, res, next) => {
   if (!isPasswordMatched) throw new ApiError(401, "Invalid credentials");
 
   const accessToken = generateAccessToken({ id: user.id });
-  const refreshToken = generateRefreshToken({ id: user.id, role });
+  const refreshToken = generateRefreshToken({ id: user.id, role: user.role });
 
   user = await db.user.update({
     where: { id: user.id },
     data: { refreshToken },
   });
 
-  res.cookie("accessToken", accessToken, ...cookieOptions);
+  res.cookie("accessToken", accessToken, cookieOptions);
 
   const refreshTokenCookieOptions = {
     ...cookieOptions,
@@ -144,7 +144,7 @@ const loginUser = asyncHandler(async (req, res, next) => {
   );
 });
 
-const verifyUser = asyncHandler(async (req, res, next) => {
+const verifyUser = asyncHandler(async (req, res) => {
   const { token } = req.params;
 
   if (!token) throw new ApiError(404, "Token not found");
@@ -193,7 +193,7 @@ const verifyUser = asyncHandler(async (req, res, next) => {
   );
 });
 
-const getProfile = asyncHandler(async (req, res, next) => {
+const getProfile = asyncHandler(async (req, res) => {
   const user = await db.user.findUnique({
     where: { id: req.user.id },
     select: {
@@ -212,7 +212,7 @@ const getProfile = asyncHandler(async (req, res, next) => {
   res.status(200).json(new ApiResponse(200, user, "User profile fetched"));
 });
 
-const logoutUser = asyncHandler(async (req, res, next) => {
+const logoutUser = asyncHandler(async (req, res) => {
   const clearCookieOptions = {
     ...cookieOptions,
     maxAge: new Date(0),
@@ -228,7 +228,7 @@ const logoutUser = asyncHandler(async (req, res, next) => {
     );
 });
 
-const forgotPassword = asyncHandler(async (req, res, next) => {
+const forgotPassword = asyncHandler(async (req, res) => {
   const { email } = req.body;
 
   if (!email) throw new ApiError(404, "Email is required");
@@ -271,7 +271,7 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
     );
 });
 
-const resetPassword = asyncHandler(async (req, res, next) => {
+const resetPassword = asyncHandler(async (req, res) => {
   const { token } = req.params;
 
   const { password } = req.body;
@@ -281,9 +281,11 @@ const resetPassword = asyncHandler(async (req, res, next) => {
   const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
   let user = await db.user.findUnique({
-    passwordResetToken: hashedToken,
-    passwordResetExpiry: {
-      gt: new Date(),
+    where: {
+      passwordResetToken: hashedToken,
+      passwordResetExpiry: {
+        gt: new Date(),
+      },
     },
   });
 
@@ -314,7 +316,7 @@ const resetPassword = asyncHandler(async (req, res, next) => {
   );
 });
 
-const changePassword = asyncHandler(async (req, res, next) => {
+const changePassword = asyncHandler(async (req, res) => {
   let user = await db.user.findUnique({
     where: { id: req.user.id },
   });
@@ -365,10 +367,12 @@ const changePassword = asyncHandler(async (req, res, next) => {
   );
 });
 
-const resendVerificationEmail = asyncHandler(async (req, res, next) => {
+const resendVerificationEmail = asyncHandler(async (req, res) => {
   let user = await db.user.findUnique({ where: { id: req.user.id } });
 
   if (!user) throw new ApiError(404, "User not found");
+
+  if (user.isVerified) return res.status(200).json(new ApiResponse(200, { message: "Email already verified" }, "Email already verified"));
 
   const temporaryToken = generateTemporaryToken();
 
@@ -405,7 +409,7 @@ const resendVerificationEmail = asyncHandler(async (req, res, next) => {
   );
 });
 
-const updateProfile = asyncHandler(async (req, res, next) => {
+const updateProfile = asyncHandler(async (req, res) => {
   const { name, email } = req.body;
 
   if (!name && !email)
@@ -453,7 +457,7 @@ const updateProfile = asyncHandler(async (req, res, next) => {
       subject: "Verify your email",
       mailgenContent: emailReverificationMailgenContent(
         user.name,
-        `${process.env.BASE_URL}/api/v1/auth/${temporaryToken.unHashedToken}`,
+        `${process.env.BASE_URL}/api/v1/auth/verify/${temporaryToken.unHashedToken}`,
       ),
     };
 
@@ -474,7 +478,7 @@ const updateProfile = asyncHandler(async (req, res, next) => {
   );
 });
 
-const deleteProfile = asyncHandler(async (req, res, next) => {
+const deleteProfile = asyncHandler(async (req, res) => {
   const { password } = req.body;
 
   if (!password)
