@@ -318,7 +318,7 @@ const createCourse = asyncHandler(async (req, res) => {
     isPublished: false,
     createdById: userId,
     instructors:
-      instructorIds.length > 0
+      Array.isArray(instructorIds) && instructorIds.length > 0
         ? {
             connect: validInstructors.map((inst) => ({ id: inst.id })),
           }
