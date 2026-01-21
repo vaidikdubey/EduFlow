@@ -1,5 +1,14 @@
 import { Router } from "express";
 import { isLoggedIn, checkAdmin } from "../middlewares/auth.middleware.js";
+import {
+  createModule,
+  deleteModule,
+  getAllModules,
+  getModuleById,
+  getModuleProgress,
+  getModuleStats,
+  updateModule,
+} from "../controllers/modules.controllers.js";
 
 const router = Router();
 
