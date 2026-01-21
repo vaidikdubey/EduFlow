@@ -52,7 +52,7 @@ model Course {
   id          String     @id @default(uuid())
   title       String
   description String?
-  createdById String
+  createdById String    
   type        CourseType @default(FREE)
   price       Float?
   isPublished Boolean
