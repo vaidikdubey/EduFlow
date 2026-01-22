@@ -473,7 +473,104 @@ const createLesson = asyncHandler(async (req, res) => {
   res.status(201).json(new ApiResponse(201, newLesson, "Lesson created"));
 });
 
-const bulkCreateLessons = asyncHandler(async (req, res) => {});
+const bulkCreateLessons = asyncHandler(async (req, res) => {
+  const { moduleId } = req.params;
+  const userId = req.user.id;
+  const { lessons } = req.body; // expected as array: [{ title, contentType, contentUrl, order? }, ...]
+
+  if (!Array.isArray(lessons) || lessons.length === 0) {
+    throw new ApiError(400, "Lessons must be a non-empty array");
+  }
+
+  lessons.forEach((lesson, index) => {
+    if (!lesson.title) {
+      throw new ApiError(400, `Lesson at index ${index} is missing title`);
+    }
+    if (!lesson.contentType) {
+      throw new ApiError(
+        400,
+        `Lesson at index ${index} is missing contentType`,
+      );
+    }
+    if (lesson.contentType !== "text" && !lesson.contentUrl) {
+      throw new ApiError(400, `Lesson at index ${index} is missing contentUrl`);
+    }
+  });
+
+  const moduleInfo = await db.module.findUnique({
+    where: { id: moduleId },
+    select: {
+      id: true,
+      title: true,
+      courseId: true,
+      course: {
+        select: {
+          id: true,
+          title: true,
+          createdById: true,
+        },
+      },
+    },
+  });
+
+  if (!moduleInfo) {
+    throw new ApiError(404, "Module not found");
+  }
+
+  if (moduleInfo.course.createdById !== userId) {
+    throw new ApiError(
+      403,
+      "You are not authorized to add lessons to this module",
+    );
+  }
+
+  const lastLesson = await db.lesson.findFirst({
+    where: { moduleId },
+    orderBy: { order: "desc" },
+    select: { order: true },
+  });
+
+  let nextOrder = lastLesson ? lastLesson.order + 1 : 1;
+
+  // Preparing data for bulk upload
+  const lessonDataArray = lessons.map((lesson) => ({
+    title: lesson.title.trim(),
+    contentType: lesson.contentType,
+    contentUrl: lesson.contentUrl || null,
+    order: lesson.order !== undefined ? Number(lesson.order) : nextOrder++,
+    moduleId,
+  }));
+
+  const createdLessons = await db.$transaction(
+    lessonDataArray.map((data) =>
+      db.lesson.create({
+        data,
+        select: {
+          id: true,
+          title: true,
+          contentType: true,
+          contentUrl: true,
+          order: true,
+          moduleId: true,
+          createdAt: true,
+        },
+      }),
+    ),
+  );
+
+  res.status(201).json(
+    new ApiResponse(
+      201,
+      {
+        moduleId,
+        moduleTitle: moduleInfo.title,
+        createdLessons,
+        totalCreated: createdLessons.length,
+      },
+      `Successfully created ${createdLessons.length} lesson(s)`,
+    ),
+  );
+});
 
 const updateLesson = asyncHandler(async (req, res) => {});
 
