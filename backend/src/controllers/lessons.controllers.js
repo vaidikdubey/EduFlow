@@ -402,7 +402,7 @@ const createLesson = asyncHandler(async (req, res) => {
 
   if (!contentType) throw new ApiError(400, "Content type is required");
 
-  if (![TEXT, VIDEO, PDF].includes(contentType))
+  if (!["TEXT", "VIDEO", "PDF"].includes(contentType))
     throw new ApiError(400, "Invalid content type");
 
   if (contentType !== "text" && !contentUrl)
@@ -453,7 +453,7 @@ const createLesson = asyncHandler(async (req, res) => {
 
   const newLesson = await db.lesson.create({
     data: {
-      title,
+      title: title.trim(),
       contentType,
       contentUrl: contentUrl || null,
       order: lessonOrder,
@@ -572,9 +572,121 @@ const bulkCreateLessons = asyncHandler(async (req, res) => {
   );
 });
 
-const updateLesson = asyncHandler(async (req, res) => {});
+const updateLesson = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.id;
+  const { title, contentType, contentUrl, order } = req.body;
 
-const deleteLesson = asyncHandler(async (req, res) => {});
+  if (title && (typeof title !== "string" || title.trim() === "")) {
+    throw new ApiError(400, "Title must be a non-empty string");
+  }
+
+  if (contentType) {
+    if (!["TEXT", "VIDEO", "PDF"].includes(contentType)) {
+      throw new ApiError(400, "Invalid content type");
+    }
+  }
+
+  if (order) {
+    if (!Number.isInteger(order) || order <= 0) {
+      throw new ApiError(400, "Order must be a positive integer");
+    }
+  }
+
+  const existingLesson = await db.lesson.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      title: true,
+      contentType: true,
+      contentUrl: true,
+      order: true,
+      moduleId: true,
+      module: {
+        select: {
+          courseId: true,
+          course: {
+            select: {
+              createdById: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!existingLesson) {
+    throw new ApiError(404, "Lesson not found");
+  }
+
+  if (existingLesson.module.course.createdById !== userId) {
+    throw new ApiError(403, "You are not authorized to update this lesson");
+  }
+
+  const lessonData = {};
+
+  if (title) lessonData.title = title.trim();
+  if (contentType) lessonData.contentType = contentType;
+  if (contentUrl) lessonData.contentUrl = contentUrl || null;
+  if (order) lessonData.order = order;
+
+  if (Object.keys(lessonData).length === 0) {
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          existingLesson,
+          "No changes provided - lesson unchanged",
+        ),
+      );
+  }
+
+  const updatedLesson = await db.lesson.update({
+    where: { id },
+    data: lessonData,
+    select: {
+      id: true,
+      title: true,
+      contentType: true,
+      contentUrl: true,
+      order: true,
+      moduleId: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, updatedLesson, "Lesson updated successfully"));
+});
+
+const deleteLesson = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.id;
+
+  const deletedLesson = await db.lesson.delete({
+    where: {
+      id,
+      module: {
+        course: {
+          createdById: userId,
+        },
+      },
+    },
+    select: {
+      id: true,
+      title: true,
+      contentType: true,
+      contentUrl: true,
+      order: true,
+      moduleId: true,
+    },
+  });
+
+  res.status(200).json(new ApiResponse(200, deletedLesson, "Lesson deleted"));
+});
 
 const reorderLessons = asyncHandler(async (req, res) => {});
 
