@@ -688,7 +688,104 @@ const deleteLesson = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, deletedLesson, "Lesson deleted"));
 });
 
-const reorderLessons = asyncHandler(async (req, res) => {});
+const reorderLessons = asyncHandler(async (req, res) => {
+  const { moduleId } = req.params;
+  const userId = req.user.id;
+  const { lessons } = req.body; // expected: [{ id: "uuid", order: number }, ...]
+
+  if (!Array.isArray(lessons) || lessons.length === 0) {
+    throw new ApiError(400, "Lessons must be a non-empty array");
+  }
+
+  lessons.forEach((item, index) => {
+    if (!item.id || typeof item.id !== "string") {
+      throw new ApiError(400, `Lesson at index ${index} is missing valid id`);
+    }
+    if (!Number.isInteger(item.order) || item.order <= 0) {
+      throw new ApiError(
+        400,
+        `Lesson at index ${index} has invalid order (must be positive integer)`,
+      );
+    }
+  });
+
+  const moduleInfo = await db.module.findUnique({
+    where: { id: moduleId },
+    select: {
+      id: true,
+      title: true,
+      courseId: true,
+      course: {
+        select: {
+          id: true,
+          title: true,
+          createdById: true,
+        },
+      },
+    },
+  });
+
+  if (!moduleInfo) {
+    throw new ApiError(404, "Module not found");
+  }
+
+  if (moduleInfo.course.createdById !== userId) {
+    throw new ApiError(
+      403,
+      "You are not authorized to reorder lessons in this module",
+    );
+  }
+
+  const providedLessonIds = lessons.map((l) => l.id);
+
+  const existingLessons = await db.lesson.findMany({
+    where: {
+      id: { in: providedLessonIds },
+      moduleId,
+    },
+    select: { id: true },
+  });
+
+  if (existingLessons.length !== providedLessonIds.length) {
+    throw new ApiError(
+      400,
+      "One or more lesson IDs do not belong to this module",
+    );
+  }
+
+  await db.$transaction(
+    lessons.map((lesson) =>
+      db.lesson.update({
+        where: { id: lesson.id },
+        data: { order: lesson.order },
+      }),
+    ),
+  );
+
+  const updatedLessons = await db.lesson.findMany({
+    where: { moduleId },
+    select: {
+      id: true,
+      title: true,
+      order: true,
+      contentType: true,
+      contentUrl: true,
+    },
+    orderBy: { order: "asc" },
+  });
+
+  res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        moduleId,
+        moduleTitle: moduleInfo.title,
+        updatedLessons,
+      },
+      `Successfully reordered ${updatedLessons.length} lessons`,
+    ),
+  );
+});
 
 export {
   getAllLessons,
