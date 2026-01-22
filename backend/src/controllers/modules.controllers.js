@@ -256,7 +256,66 @@ const createModule = asyncHandler(async (req, res) => {
   res.status(201).json(new ApiResponse(201, newModule, "Module created"));
 });
 
-const updateModule = asyncHandler(async (req, res) => {});
+const updateModule = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { title, order } = req.body;
+  const userId = req.user.id;
+
+  const existingModule = await db.module.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      course: {
+        select: {
+          createdById: true,
+        },
+      },
+    },
+  });
+
+  if (!existingModule) throw new ApiError(404, "Module not found");
+
+  if (existingModule.course.createdById !== userId)
+    throw new ApiError(403, "You are not authorized to update this module");
+
+  const moduleData = {};
+
+  if (order) {
+    if (order <= 0) throw new ApiError("Order should be a positive integer");
+    else moduleData.order = order;
+  }
+
+  if (title) moduleData.title = title;
+
+  if (Object.keys(moduleData).length === 0)
+    throw new ApiError(400, "No fields provided to update");
+
+  const updatedModule = await db.module.update({
+    where: { id },
+    data: moduleData,
+    select: {
+      id: true,
+      title: true,
+      courseId: true,
+      updatedAt: true,
+      course: {
+        select: {
+          id: true,
+          title: true,
+          createdById: true,
+        },
+      },
+      _count: {
+        select: {
+          lessons: true,
+          quiz: true,
+        },
+      },
+    },
+  });
+
+  res.status(200).json(new ApiResponse(200, updatedModule, "Module updated"));
+});
 
 const deleteModule = asyncHandler(async (req, res) => {
   const { id } = req.params;
