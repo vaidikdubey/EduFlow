@@ -1,5 +1,16 @@
 import { Router } from "express";
 import { checkAdmin, isLoggedIn } from "../middlewares/auth.middleware.js";
+import {
+  cancelEnrollment,
+  checkEnrollmentStatus,
+  enrollInCourse,
+  getCourseCertificate,
+  getCourseEnrollments,
+  getEnrollmentById,
+  getMyEnrollments,
+  handleRazorpayWebhook,
+  markCourseCompleted,
+} from "../controllers/enrollments.controllers.js";
 
 const router = Router();
 
