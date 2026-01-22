@@ -54,7 +54,7 @@ const getAllLessons = asyncHandler(async (req, res) => {
       id: true,
       title: true,
       contentType: true,
-      contentUrl: isEnrolled ? true : false,
+      contentUrl: true,
       order: true,
       moduleId: true,
       createdAt: true,
@@ -86,6 +86,8 @@ const getAllLessons = asyncHandler(async (req, res) => {
         },
         lessons: enhancedLessons,
         totalLessons: allLessons.length,
+        enrolled: isEnrolled,
+        instructorView: isInstructor,
       },
       allLessons?.length
         ? "All lessons fetched"
@@ -182,13 +184,115 @@ const getLessonById = asyncHandler(async (req, res) => {
           title: lessonInfo.module.course.title,
           isPublished: lessonInfo.module.course.isPublished,
         },
+        enrolled: isEnrolled,
+        instructorView: isInstructor,
       },
       "Lesson details fetched successfully",
     ),
   );
 });
 
-const getLessonProgress = asyncHandler(async (req, res) => {});
+const getLessonProgress = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.id;
+
+  if (!id) throw new ApiError(400, "Lesson ID is required");
+
+  const lessonInfo = await db.lesson.findUnique({
+    where: {
+      id,
+    },
+    select: {
+      id: true,
+      title: true,
+      contentType: true,
+      contentUrl: true,
+      order: true,
+      createdAt: true,
+      updatedAt: true,
+      progress: userId
+        ? {
+            select: {
+              completed: true,
+              completedAt: true,
+            },
+          }
+        : undefined,
+      module: {
+        select: {
+          id: true,
+          title: true,
+          order: true,
+          course: {
+            select: {
+              id: true,
+              title: true,
+              isPublished: true,
+              createdById: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!lessonInfo) throw new ApiError(404, "Lesson not found");
+
+  const isInstructor = lessonInfo.module.course.createdById === userId;
+
+  const enrollment = userId
+    ? await db.enrollment.findFirst({
+        where: { userId, courseId: lessonInfo.module.course.id },
+        select: { id: true },
+      })
+    : null;
+
+  const isEnrolled = !!enrollment;
+
+  if (!isEnrolled && !isInstructor)
+    throw new ApiError(
+      400,
+      "You need to enroll in the course to view this lesson",
+    );
+
+  const safeContentUrl =
+    isEnrolled || isInstructor ? lessonInfo.contentUrl : null;
+
+  const isCompleted =
+    lessonInfo.progress?.length > 0 && lessonInfo.progress[0].completed;
+
+  res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        lesson: {
+          id: lessonInfo.id,
+          title: lessonInfo.title,
+          contentType: lessonInfo.contentType,
+          contentUrl: safeContentUrl,
+          order: lessonInfo.order,
+          createdAt: lessonInfo.createdAt,
+          updatedAt: lessonInfo.updatedAt,
+          isCompleted,
+          completedAt: lessonInfo.progress?.[0]?.completedAt || null,
+        },
+        module: {
+          id: lessonInfo.module.id,
+          title: lessonInfo.module.title,
+          order: lessonInfo.module.order,
+        },
+        course: {
+          id: lessonInfo.module.course.id,
+          title: lessonInfo.module.course.title,
+          isPublished: lessonInfo.module.course.isPublished,
+        },
+        enrolled: isEnrolled,
+        instructorView: isInstructor,
+      },
+      "Lesson progress and details fetched successfully",
+    ),
+  );
+});
 
 const markLessonCompleted = asyncHandler(async (req, res) => {});
 
