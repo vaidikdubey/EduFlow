@@ -116,12 +116,11 @@ const getModuleProgress = asyncHandler(async (req, res) => {
         orderBy: { order: "asc" },
       },
     },
-    orderBy: { order: "asc" },
   });
 
   if (!moduleData) throw new ApiError(404, "Module not found");
 
-  const isInstructor = module.course.createdById === userId;
+  const isInstructor = moduleData.course.createdById === userId;
 
   if (isInstructor)
     return res
@@ -137,7 +136,7 @@ const getModuleProgress = asyncHandler(async (req, res) => {
   const enrollment = await db.enrollment.findFirst({
     where: {
       userId,
-      courseId: module.courseId,
+      courseId: moduleData.courseId,
     },
     select: {
       id: true,
@@ -231,11 +230,11 @@ const createModule = asyncHandler(async (req, res) => {
   if (!moduleOrder) {
     const lastModule = await db.module.findFirst({
       where: { courseId },
-      orderBy: { order: "asc" },
+      orderBy: { order: "desc" },
       select: { order: true },
     });
 
-    moduleOrder = lastModule ? lastModule + 1 : 1;
+    moduleOrder = lastModule ? lastModule.order + 1 : 1;
   }
 
   const newModule = await db.module.create({
@@ -386,11 +385,9 @@ const getModuleStats = asyncHandler(async (req, res) => {
         select: {
           id: true,
           title: true,
-          _count: {
-            select: {
-              questions: true,
-              attempts: true,
-            },
+          questions: true,
+          attempts: {
+            select: { id: true },
           },
         },
       },
@@ -404,6 +401,11 @@ const getModuleStats = asyncHandler(async (req, res) => {
 
   const totalLessons = moduleData._count.lessons;
   const totalQuizzes = moduleData._count.quiz;
+
+  let totalQuestions = 0;
+  moduleData.quiz.forEach((q) => {
+    totalQuestions += q.questions.length;
+  });
 
   let totalCompletedLessons = 0;
 
@@ -429,6 +431,13 @@ const getModuleStats = asyncHandler(async (req, res) => {
       courseId: moduleData.courseId,
       courseTitle: moduleData.course.title,
     },
+    overallStats: {
+      totalLessons,
+      totalQuizzes,
+      totalQuestions,
+      totalCompletedLessons,
+      avgStudentProgress: `${avgProgress}%`,
+    },
     lessons: {
       total: totalLessons,
       details: moduleData.lessons.map((lesson) => ({
@@ -446,10 +455,6 @@ const getModuleStats = asyncHandler(async (req, res) => {
         totalQuestions: q._count.questions,
         totalAttempts: q._count.attempts,
       })),
-    },
-    overallStats: {
-      totalCompletedLessons,
-      avgStudentProgress: avgProgress + "%",
     },
   };
 
