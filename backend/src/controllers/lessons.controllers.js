@@ -492,7 +492,7 @@ const bulkCreateLessons = asyncHandler(async (req, res) => {
         `Lesson at index ${index} is missing contentType`,
       );
     }
-    if (!['TEXT', 'VIDEO', 'PDF'].includes(contentType.toUpperCase())) {
+    if (!['TEXT', 'VIDEO', 'PDF'].includes(lesson.contentType.toUpperCase())) {
       throw new ApiError(400, `Invalid content type for lesson at index ${index}`);
     }
     if (lesson.contentType.toLowerCase() !== "text" && !lesson.contentUrl) {
