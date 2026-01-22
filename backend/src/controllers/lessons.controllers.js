@@ -294,9 +294,184 @@ const getLessonProgress = asyncHandler(async (req, res) => {
   );
 });
 
-const markLessonCompleted = asyncHandler(async (req, res) => {});
+const markLessonCompleted = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { completed = true } = req.body;
+  const userId = req.user.id;
 
-const createLesson = asyncHandler(async (req, res) => {});
+  if (!id) throw new ApiError(400, "Lesson ID is required");
+
+  const lesson = await db.lesson.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      title: true,
+      contentType: true,
+      contentUrl: true,
+      moduleId: true,
+      module: {
+        select: {
+          courseId: true,
+          course: {
+            select: { createdById: true },
+          },
+        },
+      },
+    },
+  });
+
+  if (!lesson) {
+    throw new ApiError(404, "Lesson not found");
+  }
+
+  const isInstructor = lesson.module.course.createdById === userId;
+  let isEnrolled = false;
+
+  if (!isInstructor) {
+    const enrollment = await db.enrollment.findFirst({
+      where: {
+        userId,
+        courseId: lesson.module.courseId,
+      },
+      select: { id: true },
+    });
+    isEnrolled = !!enrollment;
+
+    if (!isEnrolled) {
+      throw new ApiError(
+        403,
+        "You must be enrolled in the course to mark lessons complete",
+      );
+    }
+  }
+
+  const updatedProgress = await db.lessonProgress.upsert({
+    where: {
+      userId_lessonId: {
+        userId,
+        lessonId: id,
+      },
+    },
+    create: {
+      userId,
+      lessonId: id,
+      completed,
+      completedAt: completed ? new Date() : null,
+    },
+    update: {
+      completed,
+      completedAt: completed ? new Date() : null,
+    },
+    select: {
+      id: true,
+      completed: true,
+      completedAt: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+
+  res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        lesson: {
+          id: lesson.id,
+          title: lesson.title,
+          contentType: lesson.contentType,
+          contentUrl: lesson.contentUrl,
+          moduleId: lesson.moduleId,
+        },
+        progress: {
+          completed: updatedProgress.completed,
+          completedAt: updatedProgress.completedAt,
+          updatedAt: updatedProgress.updatedAt,
+        },
+      },
+      completed ? "Lesson marked as complete" : "Lesson marked as incomplete",
+    ),
+  );
+});
+
+const createLesson = asyncHandler(async (req, res) => {
+  const { moduleId } = req.params;
+  const userId = req.user.id;
+  const { title, contentType, contentUrl, order } = req.body;
+
+  if (!title) throw new ApiError(400, "Title is required");
+
+  if (!contentType) throw new ApiError(400, "Content type is required");
+
+  if (![TEXT, VIDEO, PDF].includes(contentType))
+    throw new ApiError(400, "Invalid content type");
+
+  if (contentType !== "text" && !contentUrl)
+    throw new ApiError(
+      400,
+      "contentUrl is required for non-text content types",
+    );
+
+  const moduleData = await db.module.findUnique({
+    where: { id: moduleId },
+    select: {
+      id: true,
+      title: true,
+      order: true,
+      courseId: true,
+      course: {
+        select: {
+          id: true,
+          title: true,
+          createdById: true,
+        },
+      },
+    },
+  });
+
+  if (!moduleData) throw new ApiError(404, "Module not found");
+
+  if (moduleData.course.createdById !== userId)
+    throw new ApiError(
+      403,
+      "You are not authorized to add lesson to this module",
+    );
+
+  let lessonOrder = order;
+  if (!lessonOrder) {
+    const lastLesson = await db.lesson.findFirst({
+      where: { moduleId },
+      orderBy: { order: "desc" },
+      select: { order: true },
+    });
+
+    lessonOrder = lastLesson ? lastLesson.order + 1 : 1;
+  } else if (
+    lessonOrder &&
+    (!Number.isInteger(lessonOrder) || lessonOrder <= 0)
+  )
+    throw new ApiError(400, "Order must be a positive integer");
+
+  const newLesson = await db.lesson.create({
+    data: {
+      title,
+      contentType,
+      contentUrl: contentUrl || null,
+      order: lessonOrder,
+      moduleId,
+    },
+    select: {
+      id: true,
+      title: true,
+      contentType: true,
+      contentUrl: true,
+      order: true,
+      moduleId: true,
+      createdAt: true,
+    },
+  });
+
+  res.status(201).json(new ApiResponse(201, newLesson, "Lesson created"));
+});
 
 const bulkCreateLessons = asyncHandler(async (req, res) => {});
 
