@@ -345,7 +345,118 @@ const deleteModule = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, deletedModule, "Module deleted"));
 });
 
-const getModuleStats = asyncHandler(async (req, res) => {});
+const getModuleStats = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const moduleData = await db.module.findUnique({
+    where: { id },
+    select: {
+      title: true,
+      order: true,
+      courseId: true,
+      createdAt: true,
+      updatedAt: true,
+      course: {
+        select: {
+          createdById: true,
+          title: true,
+        },
+      },
+      _count: {
+        select: {
+          lessons: true,
+          quiz: true,
+        },
+      },
+      lessons: {
+        select: {
+          id: true,
+          title: true,
+          order: true,
+          progress: {
+            select: {
+              completed: true,
+              completedAt: true,
+            },
+          },
+        },
+        orderBy: { order: "asc" },
+      },
+      quiz: {
+        select: {
+          id: true,
+          title: true,
+          _count: {
+            select: {
+              questions: true,
+              attempts: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!moduleData) throw new ApiError(404, "Module not found");
+
+  if (moduleData.course.createdById !== req.user.id)
+    throw new ApiError(403, "Only course instructor can view module stats");
+
+  const totalLessons = moduleData._count.lessons;
+  const totalQuizzes = moduleData._count.quiz;
+
+  let totalCompletedLessons = 0;
+
+  moduleData.lessons.forEach((lesson) => {
+    totalCompletedLessons += lesson.progress.filter((p) => p.completed).length;
+  });
+
+  const totalStudentProgressRecords = moduleData.lessons.reduce(
+    (sum, lesson) => sum + lesson.progress.length,
+    0,
+  );
+
+  const avgProgress =
+    totalCompletedLessons > 0
+      ? Math.round(totalCompletedLessons / totalStudentProgressRecords) * 100
+      : 0;
+
+  const progressData = {
+    module: {
+      id: moduleData.id,
+      title: moduleData.title,
+      order: moduleData.order,
+      courseId: moduleData.courseId,
+      courseTitle: moduleData.course.title,
+    },
+    lessons: {
+      total: totalLessons,
+      details: moduleData.lessons.map((lesson) => ({
+        id: lesson.id,
+        title: lesson.title,
+        order: lesson.order,
+        completedByStudents: lesson.progress.filter((p) => p.completed).length,
+      })),
+    },
+    quizzes: {
+      total: totalQuizzes,
+      details: moduleData.quiz.map((q) => ({
+        id: q.id,
+        title: q.title,
+        totalQuestions: q._count.questions,
+        totalAttempts: q._count.attempts,
+      })),
+    },
+    overallStats: {
+      totalCompletedLessons,
+      avgStudentProgress: avgProgress + "%",
+    },
+  };
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, progressData, "Module stats fetched"));
+});
 
 export {
   getAllModules,
