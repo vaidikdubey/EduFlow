@@ -402,10 +402,10 @@ const createLesson = asyncHandler(async (req, res) => {
 
   if (!contentType) throw new ApiError(400, "Content type is required");
 
-  if (!["TEXT", "VIDEO", "PDF"].includes(contentType))
+  if (!["TEXT", "VIDEO", "PDF"].includes(contentType.toUpperCase()))
     throw new ApiError(400, "Invalid content type");
 
-  if (contentType !== "text" && !contentUrl)
+  if (contentType.toLowerCase() !== "text" && !contentUrl)
     throw new ApiError(
       400,
       "contentUrl is required for non-text content types",
@@ -454,7 +454,7 @@ const createLesson = asyncHandler(async (req, res) => {
   const newLesson = await db.lesson.create({
     data: {
       title: title.trim(),
-      contentType,
+      contentType: contentType.toUpperCase(),
       contentUrl: contentUrl || null,
       order: lessonOrder,
       moduleId,
@@ -492,7 +492,10 @@ const bulkCreateLessons = asyncHandler(async (req, res) => {
         `Lesson at index ${index} is missing contentType`,
       );
     }
-    if (lesson.contentType !== "text" && !lesson.contentUrl) {
+    if (!['TEXT', 'VIDEO', 'PDF'].includes(contentType.toUpperCase())) {
+      throw new ApiError(400, `Invalid content type for lesson at index ${index}`);
+    }
+    if (lesson.contentType.toLowerCase() !== "text" && !lesson.contentUrl) {
       throw new ApiError(400, `Lesson at index ${index} is missing contentUrl`);
     }
   });
@@ -535,7 +538,7 @@ const bulkCreateLessons = asyncHandler(async (req, res) => {
   // Preparing data for bulk upload
   const lessonDataArray = lessons.map((lesson) => ({
     title: lesson.title.trim(),
-    contentType: lesson.contentType,
+    contentType: lesson.contentType.toUpperCase(),
     contentUrl: lesson.contentUrl || null,
     order: lesson.order !== undefined ? Number(lesson.order) : nextOrder++,
     moduleId,
@@ -582,7 +585,7 @@ const updateLesson = asyncHandler(async (req, res) => {
   }
 
   if (contentType) {
-    if (!["TEXT", "VIDEO", "PDF"].includes(contentType)) {
+    if (!["TEXT", "VIDEO", "PDF"].includes(contentType.toUpperCase())) {
       throw new ApiError(400, "Invalid content type");
     }
   }
@@ -626,7 +629,7 @@ const updateLesson = asyncHandler(async (req, res) => {
   const lessonData = {};
 
   if (title) lessonData.title = title.trim();
-  if (contentType) lessonData.contentType = contentType;
+  if (contentType) lessonData.contentType = contentType.toUpperCase();
   if (contentUrl) lessonData.contentUrl = contentUrl || null;
   if (order) lessonData.order = order;
 
