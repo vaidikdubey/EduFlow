@@ -109,6 +109,7 @@ model Enrollment {
   courseId      String
   enrolledAt    DateTime  @default(now())
   completed     Boolean   @default(false)
+  completedAt   DateTime
   paidAt        DateTime?
   paymentId     String?
   amount        Float?

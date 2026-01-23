@@ -177,6 +177,7 @@ const checkEnrollmentStatus = asyncHandler(async (req, res) => {
       id: true,
       enrolledAt: true,
       completed: true,
+      completedAt: true,
       paidAt: true,
       paymentId: true,
       amount: true,
@@ -228,6 +229,7 @@ const getMyEnrollments = asyncHandler(async (req, res) => {
       courseId: true,
       enrolledAt: true,
       completed: true,
+      completedAt: true,
       paidAt: true,
       paymentId: true,
       amount: true,
@@ -264,7 +266,65 @@ const getMyEnrollments = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, enrolledCourses, "Enrolled courses fetched"));
 });
 
-const markCourseCompleted = asyncHandler(async (req, res) => {});
+const markCourseCompleted = asyncHandler(async (req, res) => {
+  const { courseId } = req.params;
+  const { completed = true } = req.body;
+  const userId = req.user.id;
+
+  if (!courseId) throw new ApiError(404, "Course ID is required");
+
+  const enrollmentCheck = await db.enrollment.findUnique({
+    where: {
+      userId_courseId: {
+        userId,
+        courseId,
+      },
+    },
+    select: {
+      id: true,
+      enrolledAt: true,
+    },
+  });
+
+  if (!enrollmentCheck)
+    throw new ApiError(404, "Course not found or you are not enrolled yet");
+
+  const markCourseCompleted = await db.enrollment.update({
+    where: {
+      userId_courseId: {
+        userId,
+        courseId,
+      },
+    },
+    data: {
+      completed,
+      completedAt: completed ? new Date() : null,
+    },
+    select: {
+      id: true,
+      enrolledAt: true,
+      completed: true,
+      paidAt: true,
+      paymentId: true,
+      amount: true,
+      paymentStatus: true,
+      createdAt: true,
+      updatedAt: true,
+      course: {
+        select: {
+          id: true,
+          title: true,
+        },
+      },
+    },
+  });
+
+  const message = completed
+    ? "Course marked as completed"
+    : "Course marked as incomplete";
+
+  res.status(200).json(new ApiResponse(200, markCourseCompleted, message));
+});
 
 const cancelEnrollment = asyncHandler(async (req, res) => {});
 
