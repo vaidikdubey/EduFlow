@@ -248,7 +248,7 @@ const getQuizById = asyncHandler(async (req, res) => {
 const submitQuizAttempt = asyncHandler(async (req, res) => {
   const { quizId } = req.params;
   const userId = req.user.id;
-  const { score, answers } = req.body;
+  const { answers } = req.body;
 
   const existingQuiz = await db.quiz.findUnique({
     where: {
@@ -261,10 +261,12 @@ const submitQuizAttempt = asyncHandler(async (req, res) => {
       moduleId: true,
       questions: true,
       course: {
-        id: true,
-        title: true,
-        isPublished: true,
-        createdById: true,
+        select: {
+          id: true,
+          title: true,
+          isPublished: true,
+          createdById: true,
+        },
       },
     },
   });
@@ -357,7 +359,82 @@ const submitQuizAttempt = asyncHandler(async (req, res) => {
   );
 });
 
-const getMyQuizAttempts = asyncHandler(async (req, res) => {});
+const getMyQuizAttempts = asyncHandler(async (req, res) => {
+  const { quizId } = req.params;
+  const userId = req.user.id;
+
+  const quiz = await db.quiz.findUnique({
+    where: {
+      id: quizId,
+    },
+    select: {
+      id: true,
+      title: true,
+      course: {
+        select: {
+          id: true,
+          title: true,
+          isPublished: true,
+          createdById: true,
+        },
+      },
+    },
+  });
+
+  if (!quiz) throw new ApiError(404, "Quiz not found");
+
+  const isInstructor = quiz.course.createdById === userId;
+  let isEnrolled = false;
+
+  if (!isInstructor) {
+    const enrollment = await db.enrollment.findFirst({
+      where: {
+        userId_courseId: {
+          userId,
+          courseId: quiz.courseId,
+        },
+      },
+      select: { id: true },
+    });
+
+    isEnrolled = !!enrollment;
+  }
+
+  if (!isInstructor && !isEnrolled) {
+    throw new ApiError(
+      403,
+      "You need to enroll in this course to view your quiz attempts",
+    );
+  }
+
+  const myAttempts = await db.quizAttempt.findMany({
+    where: {
+      quizId,
+      userId,
+    },
+    select: {
+      id: true,
+      score: true,
+      attemptedAt: true,
+      createdAt: true,
+      updatedAt: true,
+      answers: true,
+    },
+    orderBy: { attemptedAt: "desc" },
+  });
+
+  res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        myAttempts,
+        myAttempts.length
+          ? "Your quiz attempts fetched successfully"
+          : "You haven't attempted this quiz yet",
+      ),
+    );
+});
 
 const createQuiz = asyncHandler(async (req, res) => {});
 
@@ -365,7 +442,108 @@ const updateQuiz = asyncHandler(async (req, res) => {});
 
 const deleteQuiz = asyncHandler(async (req, res) => {});
 
-const getAllQuizAttempts = asyncHandler(async (req, res) => {});
+const getAllQuizAttempts = asyncHandler(async (req, res) => {
+  const { quizId } = req.params;
+  const userId = req.user.id;
+
+  const quiz = await db.quiz.findUnique({
+    where: { id: quizId },
+    select: {
+      id: true,
+      title: true,
+      courseId: true,
+      moduleId: true,
+      createdAt: true,
+      updatedAt: true,
+      course: {
+        select: {
+          id: true,
+          title: true,
+          createdById: true,
+        },
+      },
+    },
+  });
+
+  if (!quiz) {
+    throw new ApiError(404, "Quiz not found");
+  }
+
+  const isInstructor = quiz.course.createdById === userId;
+  if (!isInstructor && req.user.role !== "ADMIN") {
+    throw new ApiError(
+      403,
+      "Only the course instructor or admin can view all quiz attempts",
+    );
+  }
+
+  const attempts = await db.quizAttempt.findMany({
+    where: { quizId },
+    select: {
+      id: true,
+      userId: true,
+      score: true,
+      attemptedAt: true,
+      createdAt: true,
+      updatedAt: true,
+      answers: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+        },
+      },
+    },
+    orderBy: { attemptedAt: "desc" },
+  });
+
+  const totalAttempts = attempts.length;
+  const totalScoreSum = attempts.reduce((sum, a) => sum + a.score, 0);
+  const avgScore =
+    totalAttempts > 0 ? (totalScoreSum / totalAttempts).toFixed(2) : 0;
+
+  const responseData = {
+    quiz: {
+      id: quiz.id,
+      title: quiz.title,
+      courseId: quiz.courseId,
+      moduleId: quiz.moduleId,
+      courseTitle: quiz.course.title,
+    },
+    summary: {
+      totalAttempts,
+      averageScore: avgScore,
+      highestScore:
+        attempts.length > 0 ? Math.max(...attempts.map((a) => a.score)) : 0,
+    },
+    attempts: attempts.map((attempt) => ({
+      id: attempt.id,
+      user: {
+        id: attempt.user.id,
+        name: attempt.user.name,
+        email: attempt.user.email,
+        image: attempt.user.image,
+      },
+      score: attempt.score,
+      attemptedAt: attempt.attemptedAt,
+      answers: attempt.answers,
+    })),
+  };
+
+  res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        responseData,
+        totalAttempts
+          ? "All quiz attempts fetched successfully"
+          : "No attempts recorded for this quiz yet",
+      ),
+    );
+});
 
 export {
   getQuizzesByModule,

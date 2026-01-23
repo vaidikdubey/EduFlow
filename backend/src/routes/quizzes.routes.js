@@ -23,7 +23,7 @@ router.route("/getQuiz/:id").get(isLoggedIn, getQuizById);
 
 router.route("/submit/:quizId").post(isLoggedIn, submitQuizAttempt);
 
-router.route("/getQuizAttempt/:id").get(isLoggedIn, getMyQuizAttempts);
+router.route("/getQuizAttempt/:quizId").get(isLoggedIn, getMyQuizAttempts);
 
 //Instructor and admin routes
 router.route("/create/:moduleId").post(isLoggedIn, checkAdmin, createQuiz);
@@ -33,7 +33,7 @@ router.route("/update/:id").patch(isLoggedIn, checkAdmin, updateQuiz);
 router.route("/delete/:id").delete(isLoggedIn, checkAdmin, deleteQuiz);
 
 router
-  .route("/getAllAttempts/:id")
+  .route("/getAllAttempts/:quizId")
   .get(isLoggedIn, checkAdmin, getAllQuizAttempts);
 
 export default router;
