@@ -1,4 +1,4 @@
-import express, { application, Router } from "express";
+import express, { Router } from "express";
 import { checkAdmin, isLoggedIn } from "../middlewares/auth.middleware.js";
 import {
   cancelEnrollment,
@@ -6,7 +6,6 @@ import {
   enrollInCourse,
   getCourseCertificate,
   getCourseEnrollments,
-  getEnrollmentById,
   getMyEnrollments,
   handleRazorpayWebhook,
   markCourseCompleted,
@@ -29,12 +28,12 @@ router.route("/completed/:courseId").patch(isLoggedIn, markCourseCompleted);
 
 router.route("/cancel/:courseId").delete(isLoggedIn, cancelEnrollment);
 
-router.route("/getEnrollment/:courseId").get(isLoggedIn, getEnrollmentById);
-
-router.route("/certificate/:courseId").post(isLoggedIn, getCourseCertificate);
+router
+  .route("/certificate/:enrollmentId")
+  .post(isLoggedIn, getCourseCertificate);
 
 router
-  .route("/getAll/:courseId")
+  .route("/getAllEnrollments/:courseId")
   .get(isLoggedIn, checkAdmin, getCourseEnrollments);
 
 export default router;

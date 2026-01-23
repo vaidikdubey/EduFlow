@@ -65,7 +65,8 @@ model Course {
   quizzes     Quiz[]
 
   //Relationships
-  createdBy User @relation("CreatedBy", fields: [createdById], references: [id], onDelete: Cascade)
+  createdBy    User          @relation("CreatedBy", fields: [createdById], references: [id], onDelete: Cascade)
+  certificates Certificate[]
 }
 
 model Module {
@@ -117,8 +118,9 @@ model Enrollment {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course      Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  certificate Certificate?
 
   @@unique([userId, courseId])
 }
@@ -170,4 +172,19 @@ model QuizAttempt {
   //Relationships
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   quiz Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+}
+
+model Certificate {
+  id            String   @id @default(uuid())
+  enrollmentId  String   @unique
+  courseId      String
+  certificateId String   @unique
+  issuedAt      DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  enrollment Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  course     Course     @relation(fields: [courseId], references: [id])
+
+  @@index([certificateId])
 }

@@ -4,6 +4,11 @@ import { ApiError } from "../utils/api-error.js";
 import { ApiResponse } from "../utils/api-response.js";
 import crypto from "crypto";
 import razorpay from "razorpay";
+import PDFDocument from "pdfkit";
+import QRCode from "qrcode";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const enrollInCourse = asyncHandler(async (req, res) => {
   const { courseId } = req.params;
@@ -397,9 +402,132 @@ const cancelEnrollment = asyncHandler(async (req, res) => {
   );
 });
 
-const getEnrollmentById = asyncHandler(async (req, res) => {});
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const getCourseCertificate = asyncHandler(async (req, res) => {});
+const getCourseCertificate = asyncHandler(async (req, res) => {
+  const { enrollmentId } = req.params;
+  const userId = req.user.id;
+
+  const enrollment = await db.enrollment.findUnique({
+    where: { id: enrollmentId },
+    include: {
+      user: { select: { name: true } },
+      course: { select: { title: true } },
+    },
+  });
+
+  if (!enrollment || enrollment.userId !== userId) {
+    throw new ApiError(403, "Unauthorized access to this enrollment");
+  }
+
+  if (!enrollment.completed) {
+    throw new ApiError(400, "Course must be completed to generate certificate");
+  }
+
+  let certificate = await db.certificate.findUnique({
+    where: { enrollmentId },
+  });
+
+  if (!certificate) {
+    const certificateId = `CERT-${enrollmentId.slice(0, 8).toUpperCase()}-${new Date().toISOString().slice(0, 10).replace(/-/g, "")}`;
+
+    certificate = await db.certificate.create({
+      data: {
+        enrollmentId,
+        courseId: enrollment.courseId,
+        certificateId,
+      },
+    });
+
+    // Generate PDF with QR code
+    const doc = new PDFDocument({ size: "A4", margin: 50 });
+    const pdfPath = path.join(
+      __dirname,
+      `../public/certificates/${certificate.certificateId}.pdf`,
+    );
+
+    fs.mkdirSync(path.dirname(pdfPath), { recursive: true });
+
+    doc.pipe(fs.createWriteStream(pdfPath));
+
+    // Certificate layout
+    doc
+      .fontSize(28)
+      .text("Certificate of Completion", { align: "center" })
+      .moveDown(1.5);
+
+    doc
+      .fontSize(18)
+      .text("This certifies that", { align: "center" })
+      .moveDown(0.5);
+
+    doc
+      .fontSize(24)
+      .text(enrollment.user.name.toUpperCase(), { align: "center", bold: true })
+      .moveDown(1);
+
+    doc
+      .fontSize(16)
+      .text("has successfully completed", { align: "center" })
+      .moveDown(0.5);
+
+    doc
+      .fontSize(22)
+      .text(enrollment.course.title, { align: "center", bold: true })
+      .moveDown(1.5);
+
+    doc
+      .fontSize(14)
+      .text(`Issued on ${new Date().toLocaleDateString("en-IN")}`, {
+        align: "center",
+      })
+      .moveDown(1);
+
+    doc
+      .fontSize(12)
+      .text(`Certificate ID: ${certificate.certificateId}`, { align: "center" })
+      .moveDown(1);
+
+    doc.fontSize(12).text("EduFlow Learning Platform", { align: "center" });
+
+    // Generate QR code
+    const verificationUrl = `${process.env.BASE_URL}/api/v1/enrollment/verify/${certificate.certificateId}`;
+    const qrBuffer = await QRCode.toBuffer(verificationUrl, {
+      width: 120, // size in pixels
+      margin: 2,
+      color: { dark: "#000000", light: "#ffffff" },
+    });
+
+    // Place QR code in bottom-right
+    doc.image(qrBuffer, 420, 650, { width: 120 });
+
+    // Small text under QR
+    doc.fontSize(10).text("Scan to verify", 440, 780, { align: "center" });
+
+    doc.end();
+
+    // Wait for PDF to finish writing
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  }
+
+  const pdfPath = path.join(
+    __dirname,
+    `../public/certificates/${certificate.certificateId}.pdf`,
+  );
+
+  if (!fs.existsSync(pdfPath)) {
+    throw new ApiError(500, "Failed to generate certificate file");
+  }
+
+  res.setHeader("Content-Type", "application/pdf");
+  res.setHeader(
+    "Content-Disposition",
+    `attachment; filename="Certificate_${certificate.certificateId}.pdf"`,
+  );
+
+  const fileStream = fs.createReadStream(pdfPath);
+  fileStream.pipe(res);
+});
 
 const getCourseEnrollments = asyncHandler(async (req, res) => {});
 
@@ -410,7 +538,6 @@ export {
   getMyEnrollments,
   markCourseCompleted,
   cancelEnrollment,
-  getEnrollmentById,
   getCourseCertificate,
   getCourseEnrollments,
 };
