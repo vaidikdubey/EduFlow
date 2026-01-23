@@ -245,7 +245,117 @@ const getQuizById = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, responseData, "Quiz fetched"));
 });
 
-const submitQuizAttempt = asyncHandler(async (req, res) => {});
+const submitQuizAttempt = asyncHandler(async (req, res) => {
+  const { quizId } = req.params;
+  const userId = req.user.id;
+  const { score, answers } = req.body;
+
+  const existingQuiz = await db.quiz.findUnique({
+    where: {
+      id: quizId,
+    },
+    select: {
+      id: true,
+      title: true,
+      courseId: true,
+      moduleId: true,
+      questions: true,
+      course: {
+        id: true,
+        title: true,
+        isPublished: true,
+        createdById: true,
+      },
+    },
+  });
+
+  if (!existingQuiz) throw new ApiError(404, "Quiz not found");
+
+  if (!existingQuiz.course.isPublished)
+    throw new ApiError(400, "This course is not yet published");
+
+  const isInstructor = existingQuiz.course.createdById === userId;
+  let isEnrolled;
+
+  if (!isInstructor) {
+    const enrollment = await db.enrollment.findFirst({
+      where: {
+        userId_courseId: {
+          userId,
+          courseId: quiz.course.id,
+        },
+      },
+      select: { id: true },
+    });
+
+    isEnrolled = !!enrollment;
+  }
+
+  if (!isInstructor && !isEnrolled)
+    throw new ApiError(
+      403,
+      "You need to enroll in this course to access this quiz",
+    );
+
+  if (
+    !Array.isArray(answers) ||
+    answers.length !== existingQuiz.questions.length
+  )
+    throw new ApiError(
+      400,
+      "Answer must be an array of same size as questions",
+    );
+
+  let score = 0;
+
+  for (let i = 0; i < existingQuiz.questions.length; i++) {
+    const question = existingQuiz.question[i];
+    const submittedAnswer = answers[i];
+
+    const correctAnswer = question.correct;
+
+    let submittedValue;
+    if (typeof submittedAnswer === "number") {
+      submittedValue = submittedAnswer;
+    } else if (typeof submittedAnswer === "string") {
+      submittedValue = submittedAnswer.toUpperCase().charCodeAt(0) - 65;
+    } else {
+      continue; //Invalid answer
+    }
+
+    if (submittedValue === correctAnswer) score++;
+  }
+
+  const newQuizAttempt = await db.QuizAttempt.create({
+    data: {
+      userId,
+      quizId,
+      score,
+      answers,
+      attemptedAt: new Date(),
+    },
+    select: {
+      id: true,
+      userId: true,
+      quizId: true,
+      score: true,
+      attemptedAt: true,
+    },
+  });
+
+  res.status(201).json(
+    new ApiResponse(
+      201,
+      {
+        attempt: newQuizAttempt,
+        score,
+        totalQuestions: existingQuiz.question.length,
+        percentage: Math.round((score / existingQuiz.question.length) * 100),
+      },
+      "Quiz submitted and graded successfully",
+    ),
+  );
+});
 
 const getMyQuizAttempts = asyncHandler(async (req, res) => {});
 

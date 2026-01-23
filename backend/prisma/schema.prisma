@@ -167,7 +167,7 @@ model QuizAttempt {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  answers Json?
+  answers Json[] //array {question: selected option}
 
   //Relationships
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)

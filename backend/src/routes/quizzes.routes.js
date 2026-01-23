@@ -21,7 +21,7 @@ router.route("/quizByCourse/:courseId").get(isLoggedIn, getQuizzesByCourse);
 
 router.route("/getQuiz/:id").get(isLoggedIn, getQuizById);
 
-router.route("/submit/:id").post(isLoggedIn, submitQuizAttempt);
+router.route("/submit/:quizId").post(isLoggedIn, submitQuizAttempt);
 
 router.route("/getQuizAttempt/:id").get(isLoggedIn, getMyQuizAttempts);
 
