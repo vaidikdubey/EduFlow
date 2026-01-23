@@ -552,7 +552,133 @@ const createQuiz = asyncHandler(async (req, res) => {
   );
 });
 
-const updateQuiz = asyncHandler(async (req, res) => {});
+const updateQuiz = asyncHandler(async (req, res) => {
+  const { quizId } = req.params;
+  const userId = req.user.id;
+  const { title, questions } = req.body;
+
+  const existingQuiz = await db.quiz.findUnique({
+    where: { id: quizId },
+    select: {
+      id: true,
+      title: true,
+      courseId: true,
+      moduleId: true,
+      createdAt: true,
+      updatedAt: true,
+      course: {
+        select: {
+          id: true,
+          title: true,
+          createdById: true,
+        },
+      },
+    },
+  });
+
+  if (!existingQuiz) throw new ApiError(404, "Quiz not found");
+
+  if (existingQuiz.course.createdById !== userId)
+    throw new ApiError(403, "You are not authorized to update this quiz");
+
+  const quizData = {};
+
+  if (title) {
+    if (typeof title !== "string" || title.trim() === "")
+      throw new ApiError(400, "Title must be a non-empty string");
+
+    quizData.title = title.trim();
+  }
+
+  if (questions) {
+    if (!Array.isArray(questions) || questions.length === 0)
+      throw new ApiError(400, "Questions must be a non-empty array");
+
+    questions.forEach((q, index) => {
+      if (
+        !q.question ||
+        typeof q.question !== "string" ||
+        q.question.trim() === ""
+      )
+        throw new ApiError(
+          400,
+          `Question at index ${index} is missing or invalid 'question'`,
+        );
+
+      if (!Array.isArray(q.options) || q.options.length < 2)
+        throw new ApiError(
+          400,
+          `Question at index ${index} must have at least 2 options`,
+        );
+
+      const correct = q.correct;
+
+      if (correct === undefined || correct === null)
+        throw new ApiError(
+          400,
+          `Question at index ${index} is missing 'correct' answer`,
+        );
+
+      if (typeof correct !== "number" || !Number.isInteger(correct))
+        throw new ApiError(
+          400,
+          `Question at index ${index} 'correct' must be an integer index (0-${q.options.length - 1})`,
+        );
+
+      if (correct < 0 || correct >= q.options.length)
+        throw new ApiError(
+          400,
+          `Question at index ${index} 'correct' index ${correct} is out of bounds (0-${q.options.length - 1})`,
+        );
+    });
+
+    quizData.questions = questions;
+  }
+
+  if (Object.keys(quizData).length === 0) {
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          existingQuiz,
+          "No changes provided - quiz unchanged",
+        ),
+      );
+  }
+
+  const updatedQuiz = await db.quiz.update({
+    where: { id: quizId },
+    data: quizData,
+    select: {
+      id: true,
+      title: true,
+      courseId: true,
+      moduleId: true,
+      createdAt: true,
+      updatedAt: true,
+      questions: true,
+    },
+  });
+
+  res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        quiz: {
+          id: updatedQuiz.id,
+          title: updatedQuiz.title,
+          courseId: updatedQuiz.courseId,
+          moduleId: updatedQuiz.moduleId,
+          createdAt: updatedQuiz.createdAt,
+          updatedAt: updatedQuiz.updatedAt,
+          totalQuestions: updatedQuiz.questions.length,
+        },
+      },
+      "Quiz updated successfully",
+    ),
+  );
+});
 
 const deleteQuiz = asyncHandler(async (req, res) => {
   const { quizId } = req.params;
