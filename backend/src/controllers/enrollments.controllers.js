@@ -148,7 +148,75 @@ const handleRazorpayWebhook = asyncHandler(async (req, res) => {
   res.status(200).json({ status: "ok" });
 });
 
-const checkEnrollmentStatus = asyncHandler(async (req, res) => {});
+const checkEnrollmentStatus = asyncHandler(async (req, res) => {
+  const { courseId } = req.params;
+  const userId = req.user.id;
+
+  if (!courseId) throw new ApiError(400, "Course ID is required");
+
+  const courseExists = await db.course.findUnique({
+    where: { id: courseId },
+    select: {
+      id: true,
+      title: true,
+      isPublished: true,
+    },
+  });
+
+  if (!courseExists || !courseExists.isPublished)
+    throw new ApiError(404, "Course not found");
+
+  const enrollmentData = await db.enrollment.findUnique({
+    where: {
+      userId_courseId: {
+        userId,
+        courseId,
+      },
+    },
+    select: {
+      id: true,
+      enrolledAt: true,
+      completed: true,
+      paidAt: true,
+      paymentId: true,
+      amount: true,
+      paymentStatus: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+
+  const isPaid =
+    !!enrollmentData.paidAt || enrollmentData.paymentStatus === "captured";
+
+  if (!enrollmentData)
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          enrollmentStatus: false,
+          isPaid,
+          course: {
+            id: courseExists.id,
+            title: courseExists.title,
+          },
+        },
+        `You are not enrolled in ${courseExists.title} course`,
+      ),
+    );
+
+  res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        enrollmentStatus: true,
+        isPaid,
+        enrollmentData,
+      },
+      `You are enrolled in ${courseExists.title} course`,
+    ),
+  );
+});
 
 const getMyEnrollments = asyncHandler(async (req, res) => {});
 
