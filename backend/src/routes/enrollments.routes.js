@@ -33,9 +33,7 @@ router
   .route("/certificate/:enrollmentId")
   .post(isLoggedIn, getCourseCertificate);
 
-router
-  .route("/verify/:certificateId")
-  .get(verifyCertificate);
+router.route("/verify/:certificateId").get(verifyCertificate);
 
 router
   .route("/getAllEnrollments/:courseId")
