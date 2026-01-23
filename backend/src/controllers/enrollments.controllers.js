@@ -218,7 +218,51 @@ const checkEnrollmentStatus = asyncHandler(async (req, res) => {
   );
 });
 
-const getMyEnrollments = asyncHandler(async (req, res) => {});
+const getMyEnrollments = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+
+  const enrolledCourses = await db.enrollment.findMany({
+    where: { userId },
+    select: {
+      id: true,
+      courseId: true,
+      enrolledAt: true,
+      completed: true,
+      paidAt: true,
+      paymentId: true,
+      amount: true,
+      paymentStatus: true,
+      createdAt: true,
+      updatedAt: true,
+      course: {
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          type: true,
+          price: true,
+          createdAt: true,
+        },
+      },
+    },
+    order: { enrolledAt: "desc" },
+  });
+
+  if (!enrolledCourses || enrolledCourses.length === 0)
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          { message: "You are not enrolled in any course" },
+          "You are not enrolled in any course",
+        ),
+      );
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, enrolledCourses, "Enrolled courses fetched"));
+});
 
 const markCourseCompleted = asyncHandler(async (req, res) => {});
 
