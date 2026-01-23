@@ -271,10 +271,8 @@ const submitQuizAttempt = asyncHandler(async (req, res) => {
     },
   });
 
-  if (!existingQuiz) throw new ApiError(404, "Quiz not found");
-
-  if (!existingQuiz.course.isPublished)
-    throw new ApiError(400, "This course is not yet published");
+  if (!existingQuiz || !existingQuiz.course.isPublished)
+    throw new ApiError(404, "Quiz not found");
 
   const isInstructor = existingQuiz.course.createdById === userId;
   let isEnrolled;
@@ -440,7 +438,56 @@ const createQuiz = asyncHandler(async (req, res) => {});
 
 const updateQuiz = asyncHandler(async (req, res) => {});
 
-const deleteQuiz = asyncHandler(async (req, res) => {});
+const deleteQuiz = asyncHandler(async (req, res) => {
+  const { quizId } = req.params;
+  const userId = req.user.id;
+
+  const existingQuiz = await db.quiz.findUnique({
+    where: {
+      id: quizId,
+    },
+    select: {
+      id: true,
+      title: true,
+      courseId: true,
+      moduleId: true,
+      questions: true,
+      course: {
+        select: {
+          id: true,
+          title: true,
+          isPublished: true,
+          createdById: true,
+        },
+      },
+    },
+  });
+
+  if (!existingQuiz) throw new ApiError(404, "Quiz not found");
+
+  const isInstructor = existingQuiz.course.createdById === userId;
+  if (!isInstructor && req.user.role !== "ADMIN") {
+    throw new ApiError(
+      403,
+      "Only the course instructor or admin can delete this quiz",
+    );
+  }
+
+  const deletedQuiz = await db.quiz.delete({
+    where: {
+      id: quizId,
+    },
+    select: {
+      id: true,
+      title: true,
+      courseId: true,
+      moduleId: true,
+      createdAt: true,
+    },
+  });
+
+  res.status(200).json(new ApiResponse(200, deletedQuiz, "Quiz deleted"));
+});
 
 const getAllQuizAttempts = asyncHandler(async (req, res) => {
   const { quizId } = req.params;

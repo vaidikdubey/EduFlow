@@ -28,9 +28,9 @@ router.route("/getQuizAttempt/:quizId").get(isLoggedIn, getMyQuizAttempts);
 //Instructor and admin routes
 router.route("/create/:moduleId").post(isLoggedIn, checkAdmin, createQuiz);
 
-router.route("/update/:id").patch(isLoggedIn, checkAdmin, updateQuiz);
+router.route("/update/:quizId").patch(isLoggedIn, checkAdmin, updateQuiz);
 
-router.route("/delete/:id").delete(isLoggedIn, checkAdmin, deleteQuiz);
+router.route("/delete/:quizId").delete(isLoggedIn, checkAdmin, deleteQuiz);
 
 router
   .route("/getAllAttempts/:quizId")
