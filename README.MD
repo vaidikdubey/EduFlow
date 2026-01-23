@@ -95,6 +95,8 @@ EduFlow is a full‑stack Learning Management System (LMS) designed to simulate 
 * Express.js
 * JWT‑based authentication
 * RESTful API architecture
+* PDFkit
+* qrcode
 
 ### Database
 
