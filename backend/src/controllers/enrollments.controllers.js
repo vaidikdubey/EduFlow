@@ -326,7 +326,76 @@ const markCourseCompleted = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, markCourseCompleted, message));
 });
 
-const cancelEnrollment = asyncHandler(async (req, res) => {});
+const cancelEnrollment = asyncHandler(async (req, res) => {
+  const { courseId } = req.params;
+  const userId = req.user.id;
+
+  const enrollment = await db.enrollment.findUnique({
+    where: {
+      userId_courseId: {
+        userId,
+        courseId,
+      },
+    },
+    select: {
+      id: true,
+      enrolledAt: true,
+      paidAt: true,
+      paymentStatus: true,
+      course: {
+        select: {
+          id: true,
+          title: true,
+        },
+      },
+    },
+  });
+
+  if (!enrollment) {
+    throw new ApiError(404, "You are not enrolled in this course");
+  }
+
+  if (enrollment.completed) {
+    throw new ApiError(400, "Cannot cancel a completed course");
+  }
+
+  if (enrollment.paidAt && enrollment.paymentStatus === "captured") {
+    // For practice/test mode → allow cancel
+    // In real production → include refund logic via Razorpay API
+    console.warn(
+      `Canceling paid enrollment: ${enrollment.id} (no refund in test mode)`,
+    );
+  }
+
+  const deletedEnrollment = await db.enrollment.delete({
+    where: {
+      userId_courseId: {
+        userId,
+        courseId,
+      },
+    },
+    select: {
+      id: true,
+      courseId: true,
+      enrolledAt: true,
+      paidAt: true,
+    },
+  });
+
+  res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        deletedEnrollment: {
+          id: deletedEnrollment.id,
+          courseId: deletedEnrollment.courseId,
+          courseTitle: enrollment.course.title,
+        },
+      },
+      "Successfully canceled enrollment",
+    ),
+  );
+});
 
 const getEnrollmentById = asyncHandler(async (req, res) => {});
 
