@@ -9,6 +9,7 @@ import {
   getMyEnrollments,
   handleRazorpayWebhook,
   markCourseCompleted,
+  verifyCertificate,
 } from "../controllers/enrollments.controllers.js";
 
 const router = Router();
@@ -31,6 +32,10 @@ router.route("/cancel/:courseId").delete(isLoggedIn, cancelEnrollment);
 router
   .route("/certificate/:enrollmentId")
   .post(isLoggedIn, getCourseCertificate);
+
+router
+  .route("/verify/:certificateId")
+  .get(verifyCertificate);
 
 router
   .route("/getAllEnrollments/:courseId")

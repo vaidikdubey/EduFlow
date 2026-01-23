@@ -529,6 +529,34 @@ const getCourseCertificate = asyncHandler(async (req, res) => {
   fileStream.pipe(res);
 });
 
+const verifyCertificate = asyncHandler(async (req, res) => {
+  const { certificateId } = req.params;
+  
+  const certificate = await db.certificate.findUnique({
+    where: {
+      certificateId
+    },
+    include: {
+      enrollment: {
+        include: {
+          user: { select: { name: true } },
+          course: { select: { title: true } },
+        }
+      }
+    }
+  });
+
+  if (!certificate) throw new ApiError(404, "Certificate not found or invalid");
+
+  res.status(200).json(new ApiResponse(200, {
+    valid: true,
+    certificateId,
+    issuedAt: certificate.issuedAt,
+    studentName: certificate.enrollment.user.name,
+    courseTitle: certificate.enrollment.course.title,
+  }, "Certificate verified successfully"));
+});
+
 const getCourseEnrollments = asyncHandler(async (req, res) => {});
 
 export {
@@ -539,5 +567,6 @@ export {
   markCourseCompleted,
   cancelEnrollment,
   getCourseCertificate,
+  verifyCertificate,
   getCourseEnrollments,
 };
