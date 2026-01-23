@@ -434,7 +434,123 @@ const getMyQuizAttempts = asyncHandler(async (req, res) => {
     );
 });
 
-const createQuiz = asyncHandler(async (req, res) => {});
+const createQuiz = asyncHandler(async (req, res) => {
+  const { moduleId } = req.params;
+  const userId = req.user.id;
+  const { title, questions } = req.body;
+
+  if (!title || typeof title !== "string" || title.trim() === "")
+    throw new ApiError(
+      400,
+      "Quiz title is required and must be a non-empty string",
+    );
+
+  if (!Array.isArray(questions) || questions.length === 0)
+    throw new ApiError(400, "Questions must be a non-empty array");
+
+  questions.forEach((q, index) => {
+    if (!q.question || typeof q.question !== "string") {
+      throw new ApiError(
+        400,
+        `Question at index ${index} is missing or invalid 'question' field`,
+      );
+    }
+    if (!Array.isArray(q.options) || q.options.length < 2)
+      throw new ApiError(
+        400,
+        `Question at index ${index} must have at least 2 options`,
+      );
+    if (q.correct === undefined || q.correct === null)
+      throw new ApiError(
+        400,
+        `Question at index ${index} is missing 'correct' answer`,
+      );
+
+    const correct = q.correct;
+    const options = q.options;
+
+    if (
+      correct === undefined ||
+      correct === null ||
+      typeof correct !== "number"
+    ) {
+      throw new ApiError(
+        400,
+        `Question at index ${index} has invalid 'correct' - must be a number (index)`,
+      );
+    }
+    if (correct < 0 || correct >= options.length) {
+      throw new ApiError(
+        400,
+        `Question at index ${index} has 'correct' index ${correct} which is out of bounds (0-${options.length - 1})`,
+      );
+    }
+  });
+
+  const moduleInfo = await db.module.findUnique({
+    where: { id: moduleId },
+    select: {
+      id: true,
+      title: true,
+      courseId: true,
+      course: {
+        select: {
+          id: true,
+          title: true,
+          createdById: true,
+        },
+      },
+    },
+  });
+
+  if (!moduleInfo) {
+    throw new ApiError(404, "Module not found");
+  }
+
+  if (moduleInfo.course.createdById !== userId) {
+    throw new ApiError(
+      403,
+      "You are not authorized to create quizzes in this module",
+    );
+  }
+
+  const newQuiz = await db.quiz.create({
+    data: {
+      title: title.trim(),
+      courseId: moduleInfo.courseId,
+      moduleId,
+      questions,
+    },
+    select: {
+      id: true,
+      title: true,
+      courseId: true,
+      moduleId: true,
+      createdAt: true,
+      updatedAt: true,
+      questions: true,
+    },
+  });
+
+  res.status(201).json(
+    new ApiResponse(
+      201,
+      {
+        quiz: {
+          id: newQuiz.id,
+          title: newQuiz.title,
+          courseId: newQuiz.courseId,
+          moduleId: newQuiz.moduleId,
+          createdAt: newQuiz.createdAt,
+          totalQuestions: newQuiz.questions.length,
+        },
+        courseTitle: moduleInfo.course.title,
+        moduleTitle: moduleInfo.title,
+      },
+      "Quiz created successfully",
+    ),
+  );
+});
 
 const updateQuiz = asyncHandler(async (req, res) => {});
 
