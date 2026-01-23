@@ -531,33 +531,127 @@ const getCourseCertificate = asyncHandler(async (req, res) => {
 
 const verifyCertificate = asyncHandler(async (req, res) => {
   const { certificateId } = req.params;
-  
+
   const certificate = await db.certificate.findUnique({
     where: {
-      certificateId
+      certificateId,
     },
     include: {
       enrollment: {
         include: {
           user: { select: { name: true } },
           course: { select: { title: true } },
-        }
-      }
-    }
+        },
+      },
+    },
   });
 
   if (!certificate) throw new ApiError(404, "Certificate not found or invalid");
 
-  res.status(200).json(new ApiResponse(200, {
-    valid: true,
-    certificateId,
-    issuedAt: certificate.issuedAt,
-    studentName: certificate.enrollment.user.name,
-    courseTitle: certificate.enrollment.course.title,
-  }, "Certificate verified successfully"));
+  res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        valid: true,
+        certificateId,
+        issuedAt: certificate.issuedAt,
+        studentName: certificate.enrollment.user.name,
+        courseTitle: certificate.enrollment.course.title,
+      },
+      "Certificate verified successfully",
+    ),
+  );
 });
 
-const getCourseEnrollments = asyncHandler(async (req, res) => {});
+const getCourseEnrollments = asyncHandler(async (req, res) => {
+  const { courseId } = req.params;
+  const userId = req.user.id;
+
+  const courseDetails = await db.course.findUnique({
+    where: { id: courseId },
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      createdById: true,
+      type: true,
+      price: true,
+      isPublished: true,
+      createdAt: true,
+      updatedAt: true,
+      enrollments: {
+        select: {
+          id: true,
+          userId: true,
+          courseId: true,
+          enrolledAt: true,
+          completed: true,
+          completedAt: true,
+          paidAt: true,
+          paymentId: true,
+          amount: true,
+          paymentStatus: true,
+          createdAt: true,
+          updatedAt: true,
+          user: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            },
+          },
+        },
+        orderBy: { enrolledAt: "desc" },
+      },
+      _count: {
+        select: { enrollments: true },
+      },
+    },
+  });
+
+  if (!courseDetails) throw new ApiError(404, "Course not found");
+
+  if (req.user.role !== "ADMIN" && courseDetails.createdById !== userId)
+    throw new ApiError(403, "You are not authorized to view all enrollments");
+
+  const responseData = {
+    course: {
+      id: courseDetails.id,
+      title: courseDetails.title,
+      description: courseDetails.description,
+      type: courseDetails.type,
+      price: courseDetails.price,
+      isPublished: courseDetails.isPublished,
+      totalEnrollments: courseDetails._count.enrollments,
+    },
+    enrollments: courseDetails.enrollments.map((en) => ({
+      id: en.id,
+      enrolledAt: en.enrolledAt,
+      completed: en.completed,
+      completedAt: en.completedAt,
+      paidAt: en.paidAt,
+      paymentStatus: en.paymentStatus,
+      amount: en.amount,
+      user: {
+        id: en.user.id,
+        name: en.user.name,
+        image: en.user.image,
+      },
+    })),
+  };
+
+  res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        responseData,
+        courseDetails.enrollments.length
+          ? "Course enrollments fetched"
+          : "No enrollments in this course yet",
+      ),
+    );
+});
 
 export {
   enrollInCourse,
