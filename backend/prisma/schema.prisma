@@ -104,13 +104,17 @@ model Lesson {
 }
 
 model Enrollment {
-  id         String   @id @default(uuid())
-  userId     String
-  courseId   String
-  enrolledAt DateTime @default(now())
-  completed  Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id            String    @id @default(uuid())
+  userId        String
+  courseId      String
+  enrolledAt    DateTime  @default(now())
+  completed     Boolean   @default(false)
+  paidAt        DateTime?
+  paymentId     String?
+  amount        Float?
+  paymentStatus String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
