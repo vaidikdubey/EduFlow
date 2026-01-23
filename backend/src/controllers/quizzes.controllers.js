@@ -29,7 +29,7 @@ const getQuizzesByModule = asyncHandler(async (req, res) => {
   const isInstructor = moduleInfo.course.createdById === userId;
   let isEnrolled = false;
 
-  if (userId) {
+  if (!isInstructor) {
     const enrollment = await db.enrollment.findFirst({
       where: {
         userId,
@@ -104,12 +104,13 @@ const getQuizzesByCourse = asyncHandler(async (req, res) => {
     },
   });
 
-  if (!courseInfo || !courseInfo.isPublished) throw new ApiError(404, "Course not found");
+  if (!courseInfo || !courseInfo.isPublished)
+    throw new ApiError(404, "Course not found");
 
   const isInstructor = courseInfo.createdById === userId;
   let isEnrolled;
 
-  if (userId) {
+  if (!isInstructor) {
     const enrollData = await db.enrollment.findFirst({
       where: {
         userId_courseId: {
@@ -171,7 +172,78 @@ const getQuizzesByCourse = asyncHandler(async (req, res) => {
   );
 });
 
-const getQuizById = asyncHandler(async (req, res) => {});
+const getQuizById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.id;
+
+  const quiz = await db.quiz.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      title: true,
+      courseId: true,
+      moduleId: true,
+      createdAt: true,
+      updatedAt: true,
+      questions: true,
+      _count: {
+        select: { attempts: true },
+      },
+      course: {
+        select: {
+          id: true,
+          title: true,
+          isPublished: true,
+          createdById: true,
+        },
+      },
+      module: {
+        select: {
+          id: true,
+          title: true,
+        },
+      },
+    },
+  });
+
+  if (!quiz || !quiz.course.isPublished)
+    throw new ApiError(404, "Quiz not found");
+
+  const isInstructor = quiz.course.createdById === userId;
+  let isEnrolled;
+
+  if (!isInstructor) {
+    const enrollment = await db.enrollment.findFirst({
+      where: {
+        userId_courseId: {
+          userId,
+          courseId: quiz.course.id,
+        },
+      },
+      select: { id: true },
+    });
+
+    isEnrolled = !!enrollment;
+  }
+
+  if (!isInstructor && !isEnrolled)
+    throw new ApiError(
+      403,
+      "You need to enroll in this course to access this quiz",
+    );
+
+  const responseData = {
+    ...quiz,
+    isInstructor,
+    isEnrolled,
+    totalAttempts: quiz._count.attempts,
+    module: quiz.module,
+  };
+
+  delete responseData.course.createdById;
+
+  res.status(200).json(new ApiResponse(200, responseData, "Quiz fetched"));
+});
 
 const submitQuizAttempt = asyncHandler(async (req, res) => {});
 
