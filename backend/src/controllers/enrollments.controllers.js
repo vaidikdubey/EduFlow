@@ -16,10 +16,8 @@ const enrollInCourse = asyncHandler(async (req, res) => {
 
   const existingEnrollment = await db.enrollment.findUnique({
     where: {
-      userId_courseId: {
-        userId,
-        courseId,
-      },
+      userId,
+      courseId,
     },
   });
 
@@ -126,7 +124,8 @@ const handleRazorpayWebhook = asyncHandler(async (req, res) => {
     //Update enrollment
     const updatedEnrollment = await db.enrollment.update({
       where: {
-        userId_courseId: { userId, courseId },
+        userId,
+        courseId,
       },
       data: {
         paidAt: new Date(),
@@ -173,10 +172,8 @@ const checkEnrollmentStatus = asyncHandler(async (req, res) => {
 
   const enrollmentData = await db.enrollment.findUnique({
     where: {
-      userId_courseId: {
-        userId,
-        courseId,
-      },
+      userId,
+      courseId,
     },
     select: {
       id: true,
@@ -280,10 +277,8 @@ const markCourseCompleted = asyncHandler(async (req, res) => {
 
   const enrollmentCheck = await db.enrollment.findUnique({
     where: {
-      userId_courseId: {
-        userId,
-        courseId,
-      },
+      userId,
+      courseId,
     },
     select: {
       id: true,
@@ -296,10 +291,8 @@ const markCourseCompleted = asyncHandler(async (req, res) => {
 
   const markCourseCompleted = await db.enrollment.update({
     where: {
-      userId_courseId: {
-        userId,
-        courseId,
-      },
+      userId,
+      courseId,
     },
     data: {
       completed,
@@ -337,10 +330,8 @@ const cancelEnrollment = asyncHandler(async (req, res) => {
 
   const enrollment = await db.enrollment.findUnique({
     where: {
-      userId_courseId: {
-        userId,
-        courseId,
-      },
+      userId,
+      courseId,
     },
     select: {
       id: true,
@@ -374,10 +365,8 @@ const cancelEnrollment = asyncHandler(async (req, res) => {
 
   const deletedEnrollment = await db.enrollment.delete({
     where: {
-      userId_courseId: {
-        userId,
-        courseId,
-      },
+      userId,
+      courseId,
     },
     select: {
       id: true,

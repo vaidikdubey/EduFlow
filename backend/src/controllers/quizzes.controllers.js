@@ -113,10 +113,8 @@ const getQuizzesByCourse = asyncHandler(async (req, res) => {
   if (!isInstructor) {
     const enrollData = await db.enrollment.findFirst({
       where: {
-        userId_courseId: {
-          userId,
-          courseId,
-        },
+        userId,
+        courseId,
       },
       select: {
         id: true,
@@ -215,10 +213,8 @@ const getQuizById = asyncHandler(async (req, res) => {
   if (!isInstructor) {
     const enrollment = await db.enrollment.findFirst({
       where: {
-        userId_courseId: {
-          userId,
-          courseId: quiz.course.id,
-        },
+        userId,
+        courseId: quiz.course.id,
       },
       select: { id: true },
     });
@@ -280,10 +276,8 @@ const submitQuizAttempt = asyncHandler(async (req, res) => {
   if (!isInstructor) {
     const enrollment = await db.enrollment.findFirst({
       where: {
-        userId_courseId: {
-          userId,
-          courseId: quiz.course.id,
-        },
+        userId,
+        courseId: existingQuiz.course.id,
       },
       select: { id: true },
     });
@@ -309,7 +303,7 @@ const submitQuizAttempt = asyncHandler(async (req, res) => {
   let score = 0;
 
   for (let i = 0; i < existingQuiz.questions.length; i++) {
-    const question = existingQuiz.question[i];
+    const question = existingQuiz.questions[i];
     const submittedAnswer = answers[i];
 
     const correctAnswer = question.correct;
@@ -349,8 +343,8 @@ const submitQuizAttempt = asyncHandler(async (req, res) => {
       {
         attempt: newQuizAttempt,
         score,
-        totalQuestions: existingQuiz.question.length,
-        percentage: Math.round((score / existingQuiz.question.length) * 100),
+        totalQuestions: existingQuiz.questions.length,
+        percentage: Math.round((score / existingQuiz.questions.length) * 100),
       },
       "Quiz submitted and graded successfully",
     ),
@@ -387,10 +381,8 @@ const getMyQuizAttempts = asyncHandler(async (req, res) => {
   if (!isInstructor) {
     const enrollment = await db.enrollment.findFirst({
       where: {
-        userId_courseId: {
-          userId,
-          courseId: quiz.courseId,
-        },
+        userId,
+        courseId: quiz.courseId,
       },
       select: { id: true },
     });
