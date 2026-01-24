@@ -252,7 +252,7 @@ const getMyEnrollments = asyncHandler(async (req, res) => {
         },
       },
     },
-    order: { enrolledAt: "desc" },
+    orderBy: { enrolledAt: "desc" },
   });
 
   if (!enrolledCourses || enrolledCourses.length === 0)
@@ -499,7 +499,7 @@ const getCourseCertificate = asyncHandler(async (req, res) => {
     });
 
     // Place QR code in bottom-right
-    doc.image(qrBuffer, 420, 650, { width: 120 });
+    doc.image(qrBuffer, 420, 650, { align: "center", width: 120 });
 
     // Small text under QR
     doc.fontSize(10).text("Scan to verify", 440, 780, { align: "center" });

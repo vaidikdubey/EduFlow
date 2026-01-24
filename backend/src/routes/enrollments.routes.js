@@ -31,7 +31,7 @@ router.route("/cancel/:courseId").delete(isLoggedIn, cancelEnrollment);
 
 router
   .route("/certificate/:enrollmentId")
-  .post(isLoggedIn, getCourseCertificate);
+  .get(isLoggedIn, getCourseCertificate);
 
 router.route("/verify/:certificateId").get(verifyCertificate);
 
