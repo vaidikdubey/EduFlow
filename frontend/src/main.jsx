@@ -6,11 +6,13 @@ import { HeroUIProvider } from "@heroui/react";
 import { BrowserRouter } from "react-router-dom";
 
 createRoot(document.getElementById("root")).render(
-    <StrictMode>
-        <BrowserRouter>
-            <HeroUIProvider>
-                <App />
-            </HeroUIProvider>
-        </BrowserRouter>
-    </StrictMode>,
+  <StrictMode>
+    <BrowserRouter>
+      <HeroUIProvider>
+        <div className="dark text-foreground bg-background">
+          <App />
+        </div>
+      </HeroUIProvider>
+    </BrowserRouter>
+  </StrictMode>,
 );

@@ -1,5 +1,49 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap");
 @import "tailwindcss";
-@plugin '../hero.ts';
+@plugin "../hero.ts";
 /* Note: You may need to change the path to fit your project structure */
-@source '../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
+@source "../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}";
 @custom-variant dark (&:is(.dark *));
+
+html,
+body,
+:root,
+#root {
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+@theme inline {
+  --font-manrope: "Manrope", sans-serif;
+  --font-sans: var(--font-manrope);
+}
+
+:root {
+  --background: oklch(70.9% 0.01 56.259);
+  --foreground: oklch(14.7% 0.004 49.25);
+}
+
+.dark {
+  --background: oklch(21.6% 0.006 56.043);
+  --foreground: oklch(86.9% 0.005 56.366);
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground;
+    @apply font-manrope antialiased;
+    font-optical-sizing: auto;
+  }
+}
+
+@layer utilities {
+  .no-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scroll {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+    -webkit-overflow-scrolling: touch; /*Helpful with mobile scrolling */
+  }
+}
