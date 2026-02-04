@@ -8,10 +8,8 @@ import { BrowserRouter } from "react-router-dom";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
-      <HeroUIProvider>
-        <div className="dark text-foreground bg-background">
+      <HeroUIProvider className="h-full w-full">
           <App />
-        </div>
       </HeroUIProvider>
     </BrowserRouter>
   </StrictMode>,
