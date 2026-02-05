@@ -58,7 +58,7 @@ export const RegisterPage = () => {
     };
 
     return (
-        <div className={cn("flex flex-col justify-center items-center h-full font-sans")}>
+        <div className={cn("flex flex-col justify-center items-center h-full")}>
             <Card className={cn("w-full max-w-sm")}>
                 <CardHeader>
                     <CardTitle className={cn("text-2xl")}>
@@ -76,7 +76,7 @@ export const RegisterPage = () => {
                             )}
                             asChild
                         >
-                            <Link to={"/signin"}>SignIn?</Link>
+                            <Link to={"/signin"}>Sign In?</Link>
                         </Button>
                     </CardAction>
                 </CardHeader>
