@@ -17,7 +17,7 @@ export const Layout = () => {
 
         if (favicon) {
             favicon.href =
-                theme === "dark" ? "/faviconDark.png" : "/favicon.png";
+                theme === "dark" ? "/favicon.png" : "/favicon-light.png";
         }
 
         localStorage.setItem("theme", theme);

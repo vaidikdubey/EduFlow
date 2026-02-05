@@ -19,6 +19,10 @@ export const SignupSchema = z
         email: z.email("Enter a valid email").toLowerCase(),
         password: passwordRule,
         confirmPassword: z.string(),
+        role: z.enum(["INSTRUCTOR", "STUDENT"], {
+            required_error: "Please select a role",
+            invalid_type_error: "Please select a valid role",
+        }),
     })
     .refine((data) => data.password === data.confirmPassword, {
         error: "Passwords don't match",
