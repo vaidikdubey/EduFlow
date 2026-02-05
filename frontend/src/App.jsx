@@ -1,36 +1,92 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
+import { LoginPage } from "./pages/auth/LoginPage";
+import { Layout } from "./layout/Layout";
+import { HomePage } from "./pages/home/HomePage";
+import { useAuthStore } from "./store/useAuthStore";
+import { useEffect } from "react";
+import { Loader } from "lucide-react";
+import { RegisterPage } from "./pages/auth/RegisterPage";
+import { VerifyEmailPage } from "./pages/auth/VerifyEmailPage";
+import { ForgotPasswordPage } from "./pages/auth/ForgotPasswordPage";
+import { ResetPasswordPage } from "./pages/auth/ResetPasswordPage";
+import { ProtectedRoute } from "./layouts/ProtectedRoute";
 
 function App() {
-    const [count, setCount] = useState(0);
+    const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+
+    useEffect(() => {
+        checkAuth();
+    }, [checkAuth]);
+
+    if (isCheckingAuth) {
+        return (
+            <div className="h-full flex items-center justify-center">
+                <Loader className="animate-spin text-pink-500" />
+            </div>
+        );
+    }
 
     return (
         <>
-            <div>
-                <a href="https://vite.dev" target="_blank">
-                    <img src={viteLogo} className="logo" alt="Vite logo" />
-                </a>
-                <a href="https://react.dev" target="_blank">
-                    <img
-                        src={reactLogo}
-                        className="logo react"
-                        alt="React logo"
+            <Toaster
+                position="top-center"
+                reverseOrder={false}
+                toastOptions={{
+                    className:
+                        "dark:bg-card dark:text-foreground dark:border-border",
+                    style: {
+                        background: "var(--foreground)",
+                        color: "var(--background)",
+                    },
+                }}
+            />
+            <Routes>
+                {/* Public Routes */}
+                <Route element={<Layout />}>
+                    <Route
+                        path="/login"
+                        element={
+                            authUser ? (
+                                <Navigate to={"/"} replace />
+                            ) : (
+                                <LoginPage />
+                            )
+                        }
                     />
-                </a>
-            </div>
-            <h1>Vite + React</h1>
-            <div className="card">
-                <button onClick={() => setCount((count) => count + 1)}>
-                    count is {count}
-                </button>
-                <p>
-                    Edit <code>src/App.jsx</code> and save to test HMR
-                </p>
-            </div>
-            <p className="read-the-docs">
-                Click on the Vite and React logos to learn more
-            </p>
+
+                    <Route
+                        path="/signup"
+                        element={
+                            !authUser ? (
+                                <RegisterPage />
+                            ) : (
+                                <Navigate to={"/"} replace />
+                            )
+                        }
+                    />
+
+                    <Route
+                        path="/verify/:token"
+                        element={<VerifyEmailPage />}
+                    />
+
+                    <Route
+                        path="/forgot-password"
+                        element={<ForgotPasswordPage />}
+                    />
+
+                    <Route
+                        path="/reset-password/:token"
+                        element={<ResetPasswordPage />}
+                    />
+
+                    {/* Protected Routes */}
+                    <Route element={<ProtectedRoute />}>
+                        <Route path="/" element={<HomePage />} />
+                    </Route>
+                </Route>
+            </Routes>
         </>
     );
 }
