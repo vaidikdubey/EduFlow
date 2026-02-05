@@ -1,4 +1,4 @@
-import { useAuthStore } from "@/store/useAuthStore";
+import { useAuthStore } from "@/stores/useAuthStore";
 import { Loader } from "lucide-react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 
@@ -15,7 +15,7 @@ export const ProtectedRoute = () => {
     }
 
     if (!isCheckingAuth && !authUser) {
-        return <Navigate to="/login" replace state={{ from: location }} />;
+        return <Navigate to="/signin" replace state={{ from: location }} />;
     }
 
     return <Outlet />;

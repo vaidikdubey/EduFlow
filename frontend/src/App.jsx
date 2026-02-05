@@ -1,9 +1,9 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { LoginPage } from "./pages/auth/LoginPage";
-import { Layout } from "./layout/Layout";
+import { Layout } from "./layouts/Layout";
 import { HomePage } from "./pages/home/HomePage";
-import { useAuthStore } from "./store/useAuthStore";
+import { useAuthStore } from "./stores/useAuthStore";
 import { useEffect } from "react";
 import { Loader } from "lucide-react";
 import { RegisterPage } from "./pages/auth/RegisterPage";
@@ -45,7 +45,7 @@ function App() {
                 {/* Public Routes */}
                 <Route element={<Layout />}>
                     <Route
-                        path="/login"
+                        path="/signin"
                         element={
                             authUser ? (
                                 <Navigate to={"/"} replace />
