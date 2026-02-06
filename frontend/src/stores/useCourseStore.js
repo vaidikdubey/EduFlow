@@ -5,6 +5,8 @@ import toast from "react-hot-toast";
 export const useCourseStore = create((set) => ({
     isCreatingCourse: false,
     createdCourse: null,
+    isGettingInstructors: false,
+    allInstructors: null,
 
     createCourse: async (data) => {
         set({ isCreatingCourse: true });
@@ -23,6 +25,23 @@ export const useCourseStore = create((set) => ({
             toast.error("Error creating course");
         } finally {
             set({ isCreatingCourse: false });
+        }
+    },
+
+    getAllInstructors: async () => {
+        set({ isGettingInstructors: true });
+
+        try {
+            const res = await axiosInstance.get(
+                "/course/instructor/getAllInstructors",
+            );
+
+            set({ allInstructors: res.data });
+        } catch (error) {
+            console.error("Error getting all instructors", error);
+            toast.error("Error getting all instructors");
+        } finally {
+            set({ isGettingInstructors: false });
         }
     },
 }));

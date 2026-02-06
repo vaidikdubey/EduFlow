@@ -29,7 +29,26 @@ export const SignupSchema = z
         path: ["confirmPassword"],
     });
 
-export const createFormSchema = z.object({
-    title: z.string("Title is required"),
-    description: z.string().optional(),
-});
+export const createCourseSchema = z
+    .object({
+        title: z
+            .string("Title is required")
+            .min(3, "Title must be atleast 3 characters"),
+        description: z.string().optional(),
+        type: z.enum(["PAID", "FREE"], {
+            required_error: "Please select course type",
+            invalid_type_error: "Please select valid course type",
+        }),
+        price: z.number().optional(),
+        instructors: z.array(),
+    })
+    .refine(
+        (data) => {
+            if (data.type === "PAID") return !!data.price && data.price > 0;
+            return true;
+        },
+        {
+            error: "Price is required and must be greater than 0 for PAID courses",
+            path: ["price"],
+        },
+    );
