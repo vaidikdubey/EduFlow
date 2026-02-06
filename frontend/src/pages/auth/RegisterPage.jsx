@@ -72,7 +72,7 @@ export const RegisterPage = () => {
                         <Button
                             variant="link"
                             className={cn(
-                                "hover:underline cursor-pointer hover:text-hover-text hover:font-bold",
+                                "hover:underline cursor-pointer dark:text-pink-400 text-pink-500 hover:font-bold",
                             )}
                             asChild
                         >
