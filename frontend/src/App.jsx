@@ -11,6 +11,7 @@ import { VerifyEmailPage } from "./pages/auth/VerifyEmailPage";
 import { ForgotPasswordPage } from "./pages/auth/ForgotPasswordPage";
 import { ResetPasswordPage } from "./pages/auth/ResetPasswordPage";
 import { ProtectedRoute } from "./layouts/ProtectedRoute";
+import { CreateCoursePage } from "./pages/courses/CreateCoursePage";
 
 function App() {
     const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -84,6 +85,11 @@ function App() {
                     {/* Protected Routes */}
                     <Route element={<ProtectedRoute />}>
                         <Route path="/" element={<HomePage />} />
+
+                        <Route
+                            path="/course/create"
+                            element={<CreateCoursePage />}
+                        />
                     </Route>
                 </Route>
             </Routes>
