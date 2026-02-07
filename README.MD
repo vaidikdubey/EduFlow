@@ -2,7 +2,7 @@
 
 EduFlow is a full‑stack Learning Management System (LMS) designed to simulate a real‑world EdTech platform. The project focuses on clean role‑based architecture, secure authentication, structured course delivery, payment handling, progress tracking, and instructor–student workflows. It is built to demonstrate strong backend design, scalable data modeling, and production‑oriented features expected in modern SaaS applications.
 
-----
+---
 
 ## 🚀 Core Features
 
