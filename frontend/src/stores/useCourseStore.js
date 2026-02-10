@@ -9,6 +9,8 @@ export const useCourseStore = create((set) => ({
     allInstructors: null,
     isUpdatingCourse: false,
     updatedCourse: null,
+    isGettingCourse: false,
+    fetchedCourse: null,
 
     createCourse: async (data) => {
         set({ isCreatingCourse: true });
@@ -68,6 +70,23 @@ export const useCourseStore = create((set) => ({
             toast.error("Error updating course");
         } finally {
             set({ isUpdatingCourse: false });
+        }
+    },
+
+    getCourseById: async (id) => {
+        set({ isGettingCourse: true });
+
+        try {
+            const res = await axiosInstance.get(`/course/getCourse/${id}`);
+
+            set({ fetchedCourse: res.data });
+
+            toast.success(res.message || "Course fetched");
+        } catch (error) {
+            console.error("Error fetching course by id", error);
+            toast.error("Error fetching course");
+        } finally {
+            set({ isGettingCourse: false });
         }
     },
 }));
