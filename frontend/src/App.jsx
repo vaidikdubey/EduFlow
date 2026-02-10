@@ -13,6 +13,7 @@ import { ResetPasswordPage } from "./pages/auth/ResetPasswordPage";
 import { ProtectedRoute } from "./layouts/ProtectedRoute";
 import { CreateCoursePage } from "./pages/courses/CreateCoursePage";
 import { UpdateCoursePage } from "./pages/courses/UpdateCoursePage";
+import { CourseHomePage } from "./pages/courses/CourseHomePage";
 
 function App() {
     const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -95,6 +96,11 @@ function App() {
                         <Route
                             path="/course/update/:id"
                             element={<UpdateCoursePage />}
+                        />
+
+                        <Route
+                            path="/course/get/:id"
+                            element={<CourseHomePage />}
                         />
                     </Route>
                 </Route>

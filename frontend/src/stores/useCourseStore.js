@@ -7,6 +7,8 @@ export const useCourseStore = create((set) => ({
     createdCourse: null,
     isGettingInstructors: false,
     allInstructors: null,
+    isUpdatingCourse: false,
+    updatedCourse: null,
 
     createCourse: async (data) => {
         set({ isCreatingCourse: true });
@@ -20,9 +22,13 @@ export const useCourseStore = create((set) => ({
             set({ createdCourse: res.data });
 
             toast.success(res.message || "Course created");
+
+            return true;
         } catch (error) {
             console.error("Error creating course", error);
             toast.error("Error creating course");
+
+            return false;
         } finally {
             set({ isCreatingCourse: false });
         }
@@ -42,6 +48,26 @@ export const useCourseStore = create((set) => ({
             toast.error("Error getting all instructors");
         } finally {
             set({ isGettingInstructors: false });
+        }
+    },
+
+    updateCourse: async (data, id) => {
+        set({ isUpdatingCourse: true });
+
+        try {
+            const res = await axiosInstance.patch(
+                `/course/instructor/update/${id}`,
+                data,
+            );
+
+            set({ updatedCourse: res.data });
+
+            toast.success(res.message || "Course updated");
+        } catch (error) {
+            console.error("Error updating course", error);
+            toast.error("Error updating course");
+        } finally {
+            set({ isUpdatingCourse: false });
         }
     },
 }));

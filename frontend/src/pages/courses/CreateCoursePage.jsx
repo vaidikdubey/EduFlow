@@ -5,7 +5,6 @@ import {
     Card,
     CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
@@ -31,8 +30,11 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useNavigate } from "react-router-dom";
 
 export const CreateCoursePage = () => {
+    const navigate = useNavigate();
+
     const {
         isCreatingCourse,
         createdCourse,
@@ -57,10 +59,15 @@ export const CreateCoursePage = () => {
             title: "",
             description: "",
             type: "",
-            price: "",
+            price: undefined,
             instructors: [],
         },
     });
+
+    useEffect(() => {
+        register("type");
+        register("instructors");
+    }, [register]);
 
     const instructors = watch("instructors") ?? [];
 
@@ -77,18 +84,21 @@ export const CreateCoursePage = () => {
             instructors.includes(id)
                 ? instructors.filter((i) => i !== id)
                 : [...instructors, id],
-            { shouldValidate: false },
+            {
+                shouldValidate: true,
+                shouldDirty: true,
+            },
         );
     };
 
-    const onSubmit = (data) => {
-        createCourse(data);
-        console.log("Submitting data: ", data);
-    };
+    const onSubmit = async (data) => {
+        const success = await createCourse(data);
 
-    useEffect(() => {
-        if (createdCourse) console.log("Created course: ", createdCourse);
-    }, [createdCourse]);
+        if (success)
+            setTimeout(() => {
+                navigate(`/course/get/${createdCourse?.data?.id}`);
+            }, 1000);
+    };
 
     return (
         <div className="w-full h-full flex flex-col justify-center items-center">

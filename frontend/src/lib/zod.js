@@ -39,16 +39,36 @@ export const createCourseSchema = z
             required_error: "Please select course type",
             invalid_type_error: "Please select valid course type",
         }),
-        price: z.number().optional(),
-        instructors: z.array(),
+        price: z.coerce.number().optional(),
+        instructors: z
+            .array(z.uuid())
+            .min(1, "At least one instructor is required"),
     })
-    .refine(
-        (data) => {
-            if (data.type === "PAID") return !!data.price && data.price > 0;
-            return true;
-        },
-        {
-            error: "Price is required and must be greater than 0 for PAID courses",
-            path: ["price"],
-        },
-    );
+    .refine((data) => data.type !== "PAID" || (data.price && data.price > 0), {
+        error: "Price is required and must be greater than 0 for PAID courses",
+        path: ["price"],
+    });
+
+export const updateCourseSchema = z
+    .object({
+        title: z
+            .string("Title is required")
+            .min(3, "Title must be atleast 3 characters")
+            .optional(),
+        description: z.string().optional(),
+        type: z
+            .enum(["PAID", "FREE"], {
+                required_error: "Please select course type",
+                invalid_type_error: "Please select valid course type",
+            })
+            .optional(),
+        price: z.coerce.number().optional(),
+        instructors: z
+            .array(z.uuid())
+            .min(1, "At least one instructor is required")
+            .optional(),
+    })
+    .refine((data) => data.type !== "PAID" || (data.price && data.price > 0), {
+        error: "Price is required and must be greater than 0 for PAID courses",
+        path: ["price"],
+    });
