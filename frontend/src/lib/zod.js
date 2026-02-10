@@ -40,7 +40,7 @@ export const createCourseSchema = z
             invalid_type_error: "Please select valid course type",
         }),
         price: z.coerce.number().optional(),
-        instructors: z
+        instructorIds: z
             .array(z.uuid())
             .min(1, "At least one instructor is required"),
     })
@@ -63,7 +63,7 @@ export const updateCourseSchema = z
             })
             .optional(),
         price: z.coerce.number().optional(),
-        instructors: z
+        instructorIds: z
             .array(z.uuid())
             .min(1, "At least one instructor is required")
             .optional(),

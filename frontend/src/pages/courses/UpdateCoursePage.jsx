@@ -66,7 +66,7 @@ export const UpdateCoursePage = () => {
             description: "",
             type: "",
             price: undefined,
-            instructors: [],
+            instructorIds: [],
         },
     });
 
@@ -78,18 +78,18 @@ export const UpdateCoursePage = () => {
             description: fetchedCourse?.data?.description ?? "",
             type: fetchedCourse?.data?.type ?? "",
             price: fetchedCourse?.data?.price ?? undefined,
-            instructors:
+            instructorIds:
                 fetchedCourse?.data?.instructors?.map((ins) => ins.id) ?? [],
         });
     }, [fetchedCourse, reset]);
 
     useEffect(() => {
         register("type");
-        register("instructors");
+        register("instructorIds");
     }, [register]);
 
     //eslint-disable-next-line
-    const instructors = watch("instructors") ?? [];
+    const instructors = watch("instructorIds") ?? [];
 
     const courseType = watch("type");
 
@@ -100,7 +100,7 @@ export const UpdateCoursePage = () => {
 
     const toggleInstructor = (id) => {
         setValue(
-            "instructors",
+            "instructorIds",
             instructors.includes(id)
                 ? instructors.filter((i) => i !== id)
                 : [...instructors, id],

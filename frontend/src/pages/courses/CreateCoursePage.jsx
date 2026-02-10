@@ -45,6 +45,7 @@ export const CreateCoursePage = () => {
 
     useEffect(() => {
         getAllInstructors();
+        //eslint-disable-next-line
     }, []);
 
     const {
@@ -60,16 +61,17 @@ export const CreateCoursePage = () => {
             description: "",
             type: "",
             price: undefined,
-            instructors: [],
+            instructorIds: [],
         },
     });
 
     useEffect(() => {
         register("type");
-        register("instructors");
+        register("instructorIds");
     }, [register]);
 
-    const instructors = watch("instructors") ?? [];
+    //eslint-disable-next-line
+    const instructors = watch("instructorIds") ?? [];
 
     const courseType = watch("type");
 
@@ -80,7 +82,7 @@ export const CreateCoursePage = () => {
 
     const toggleInstructor = (id) => {
         setValue(
-            "instructors",
+            "instructorIds",
             instructors.includes(id)
                 ? instructors.filter((i) => i !== id)
                 : [...instructors, id],
@@ -92,12 +94,17 @@ export const CreateCoursePage = () => {
     };
 
     const onSubmit = async (data) => {
+        console.log(data);
+
         const success = await createCourse(data);
 
-        if (success)
+        if (success) {
+            const id = createdCourse?.data?.id;
+
             setTimeout(() => {
-                navigate(`/course/get/${createdCourse?.data?.id}`);
+                navigate(`/course/get/${id}`);
             }, 1000);
+        }
     };
 
     return (

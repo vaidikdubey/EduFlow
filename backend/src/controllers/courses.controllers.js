@@ -287,6 +287,8 @@ const createCourse = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Price should not be set for free courses");
   }
 
+  console.log("Ins Ids: ", instructorIds);
+
   let validInstructors = [];
   if (
     instructorIds &&
@@ -308,6 +310,8 @@ const createCourse = asyncHandler(async (req, res) => {
         400,
         "One or more instructor IDs are invalid or not instructors",
       );
+  } else {
+    throw new ApiError(400, "Error with instructor ids");
   }
 
   const courseData = {

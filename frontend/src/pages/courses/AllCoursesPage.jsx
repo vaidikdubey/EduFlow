@@ -1,7 +1,16 @@
-import React from 'react'
+import { useCourseStore } from "@/stores/useCourseStore";
+import React, { useEffect } from "react";
 
 export const AllCoursesPage = () => {
-  return (
-    <div>AllCoursesPage</div>
-  )
-}
+    const { isGettingAllCourses, allCourses, getAllCourses } = useCourseStore();
+
+    useEffect(() => {
+        getAllCourses();
+    }, []);
+
+    useEffect(() => {
+        if (allCourses) console.log("All courses: ", allCourses);
+    }, [allCourses]);
+
+    return <div>AllCoursesPage</div>;
+};

@@ -100,7 +100,7 @@ export const useCourseStore = create((set) => ({
 
             set({ allCourses: res.data });
 
-            toast.success(res.message || "Courses fetched");
+            toast.success(res.data.message || "Courses fetched");
         } catch (error) {
             console.error("Error fetching courses", error);
             toast.error("Error fetching courses");
