@@ -83,8 +83,6 @@ export const UpdateCoursePage = () => {
         });
     }, [fetchedCourse, reset]);
 
-    console.log(fetchedCourse?.data);
-
     useEffect(() => {
         register("type");
         register("instructors");
@@ -120,8 +118,6 @@ export const UpdateCoursePage = () => {
             navigate(`/course/get/${id}`);
         }, 1000);
     };
-
-    console.log("Errors: ", errors);
 
     return (
         <div className="w-full h-full flex flex-col justify-center items-center">
