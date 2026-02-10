@@ -14,6 +14,7 @@ import { ProtectedRoute } from "./layouts/ProtectedRoute";
 import { CreateCoursePage } from "./pages/courses/CreateCoursePage";
 import { UpdateCoursePage } from "./pages/courses/UpdateCoursePage";
 import { CourseHomePage } from "./pages/courses/CourseHomePage";
+import { AllCoursesPage } from "./pages/courses/AllCoursesPage";
 
 function App() {
     const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -102,6 +103,8 @@ function App() {
                             path="/course/get/:id"
                             element={<CourseHomePage />}
                         />
+
+                        <Route path="/course" element={<AllCoursesPage />} />
                     </Route>
                 </Route>
             </Routes>
