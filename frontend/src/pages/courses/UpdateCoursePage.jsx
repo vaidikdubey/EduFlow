@@ -39,9 +39,7 @@ export const UpdateCoursePage = () => {
 
     const {
         isUpdatingCourse,
-        updatedCourse,
         updateCourse,
-        isGettingCourse,
         fetchedCourse,
         getCourseById,
         getAllInstructors,
@@ -51,7 +49,8 @@ export const UpdateCoursePage = () => {
     useEffect(() => {
         getAllInstructors();
         getCourseById(id);
-    }, []);
+        //eslint-disable-next-line
+    }, [id]);
 
     const {
         register,
@@ -59,6 +58,7 @@ export const UpdateCoursePage = () => {
         formState: { errors },
         setValue,
         watch,
+        reset,
     } = useForm({
         resolver: zodResolver(createCourseSchema),
         defaultValues: {
@@ -71,10 +71,26 @@ export const UpdateCoursePage = () => {
     });
 
     useEffect(() => {
+        if (!fetchedCourse?.data) return;
+
+        reset({
+            title: fetchedCourse?.data?.title ?? "",
+            description: fetchedCourse?.data?.description ?? "",
+            type: fetchedCourse?.data?.type ?? "",
+            price: fetchedCourse?.data?.price ?? undefined,
+            instructors:
+                fetchedCourse?.data?.instructors?.map((ins) => ins.id) ?? [],
+        });
+    }, [fetchedCourse, reset]);
+
+    console.log(fetchedCourse?.data);
+
+    useEffect(() => {
         register("type");
         register("instructors");
     }, [register]);
 
+    //eslint-disable-next-line
     const instructors = watch("instructors") ?? [];
 
     const courseType = watch("type");
@@ -98,13 +114,14 @@ export const UpdateCoursePage = () => {
     };
 
     const onSubmit = async (data) => {
-        const success = await createCourse(data);
+        updateCourse(data, id);
 
-        if (success)
-            setTimeout(() => {
-                navigate(`/course/get/${createdCourse?.data?.id}`);
-            }, 1000);
+        setTimeout(() => {
+            navigate(`/course/get/${id}`);
+        }, 1000);
     };
+
+    console.log("Errors: ", errors);
 
     return (
         <div className="w-full h-full flex flex-col justify-center items-center">
@@ -112,11 +129,10 @@ export const UpdateCoursePage = () => {
                 {" "}
                 <CardHeader>
                     <CardTitle className="text-center text-3xl">
-                        Create new course
+                        Update course
                     </CardTitle>
                     <CardDescription className="text-center">
-                        Set up your course details and start building structured
-                        learning content.
+                        Edit course details and keep your content up to date.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -263,9 +279,9 @@ export const UpdateCoursePage = () => {
                         <Button
                             type="submit"
                             className="w-full cursor-pointer"
-                            disabled={isCreatingCourse}
+                            disabled={isUpdatingCourse}
                         >
-                            {isCreatingCourse ? "Creating..." : "Create Course"}
+                            {isUpdatingCourse ? "Updating..." : "Update Course"}
                         </Button>
                     </form>
                 </CardContent>

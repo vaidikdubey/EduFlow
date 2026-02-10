@@ -375,8 +375,6 @@ const updateCourse = asyncHandler(async (req, res) => {
   if (type === "PAID") {
     if (!price || typeof price !== "number" || price <= 0)
       throw new ApiError(400, "Invalid course price");
-  } else if (price) {
-    throw new ApiError(400, "Price should not be set for free courses");
   }
 
   const courseData = {};
