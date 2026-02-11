@@ -8,9 +8,5 @@ export const AllCoursesPage = () => {
         getAllCourses();
     }, []);
 
-    useEffect(() => {
-        if (allCourses) console.log("All courses: ", allCourses);
-    }, [allCourses]);
-
     return <div>AllCoursesPage</div>;
 };
