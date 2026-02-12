@@ -13,6 +13,8 @@ export const useCourseStore = create((set) => ({
     fetchedCourse: null,
     isGettingAllCourses: false,
     allCourses: [],
+    isCheckingEnrollment: false,
+    enrollment: false,
 
     createCourse: async (data) => {
         set({ isCreatingCourse: true });
@@ -106,6 +108,21 @@ export const useCourseStore = create((set) => ({
             toast.error("Error fetching courses");
         } finally {
             set({ isGettingAllCourses: false });
+        }
+    },
+
+    checkEnrollment: async (id) => {
+        set({ isCheckingEnrollment: true });
+
+        try {
+            const res = await axiosInstance.get(`/course/enrolled/${id}`);
+
+            set({ enrollment: res.data });
+        } catch (error) {
+            console.error("Error checking enrollment", error);
+            toast.error("Error checking enrollment");
+        } finally {
+            set({ isCheckingEnrollment: false });
         }
     },
 }));

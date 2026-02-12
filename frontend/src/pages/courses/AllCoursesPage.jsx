@@ -14,9 +14,17 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { timeAgo } from "@/utils/timeAgo";
 
 export const AllCoursesPage = () => {
-    const { isGettingAllCourses, allCourses, getAllCourses } = useCourseStore();
+    const {
+        isGettingAllCourses,
+        allCourses,
+        getAllCourses,
+        checkEnrollment,
+        isCheckingEnrollment,
+        enrollment,
+    } = useCourseStore();
 
     const { authUser } = useAuthStore();
 
@@ -28,9 +36,15 @@ export const AllCoursesPage = () => {
         //eslint-disable-next-line
     }, []);
 
+    const enrollmentData = [];
+
     const filteredCourse = allCourses?.data?.filter((course) =>
         course.title.toLowerCase().includes(finalState.toLowerCase()),
     );
+
+    allCourses?.data?.forEach((course) => enrollmentData.push(course.id));
+
+    console.log("Enrollment data: ", enrollmentData);
 
     const handleKeyDown = (e) => {
         if (e.key === "Enter") {
@@ -145,51 +159,62 @@ export const AllCoursesPage = () => {
 
             {allCourses?.data?.length > 0 ? (
                 <div className="border-2 flex-1 w-full grid grid-cols-3 gap-5 overflow-y-auto no-scroll p-5">
-                    {allCourses?.data?.map((course) => (
-                        <Card key={course.id} className="w-full max-w-sm">
-                            <CardHeader>
-                                <CardTitle
-                                    className={cn(
-                                        "text-2xl cursor-pointer hover:underline hover:text-foreground/80 line-clamp-2 min-h-15",
-                                    )}
-                                >
-                                    {course.title}
-                                </CardTitle>
-                                <CardDescription
-                                    className={cn("min-h-10 line-clamp-2")}
-                                >
-                                    {course.description}
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="flex items-center justify-between">
-                                    <p className="text-sm text-foreground/80 font-semibold">
-                                        {course.type}
-                                    </p>
-
-                                    {course.type === "PAID" && (
+                    {allCourses?.data?.map((course) => {
+                        return (
+                            <Card key={course.id} className="w-full max-w-sm">
+                                <CardHeader>
+                                    <CardTitle
+                                        className={cn(
+                                            "text-2xl cursor-pointer hover:underline hover:text-foreground/80 line-clamp-2 min-h-15",
+                                        )}
+                                    >
+                                        {course.title}
+                                    </CardTitle>
+                                    <CardDescription
+                                        className={cn("min-h-10 line-clamp-2")}
+                                    >
+                                        {course.description}
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="flex items-center justify-between my-1">
                                         <p className="text-sm text-foreground/80 font-semibold">
-                                            ₹{course.price}
+                                            {course.type}
                                         </p>
-                                    )}
-                                </div>
 
-                                <div>
-                                    <p>
-                                        Author: {course?.createdBy?.name}
-                                    </p>
-                                    <p>
-                                        Added: {course?.createdAt}
-                                    </p>
-                                </div>
-                            </CardContent>
-                            <CardFooter className="flex-col gap-2">
-                                <Button type="submit" className="w-full">
-                                    Enroll
-                                </Button>
-                            </CardFooter>
-                        </Card>
-                    ))}
+                                        {course.type === "PAID" && (
+                                            <p className="text-sm text-foreground/80 font-semibold">
+                                                ₹{course.price}
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    <div className="flex items-center justify-between my-1">
+                                        <p className="text-sm text-muted-foreground">
+                                            Author: {course?.createdBy?.name}
+                                        </p>
+                                        <p className="text-sm text-muted-foreground">
+                                            Added: {timeAgo(course?.createdAt)}
+                                        </p>
+                                    </div>
+
+                                    <div className="my-1">
+                                        <p className="text-sm text-muted-foreground truncate">
+                                            Instructors:{" "}
+                                            {course?.instructors
+                                                ?.map((ins) => ins.name)
+                                                .join(", ")}
+                                        </p>
+                                    </div>
+                                </CardContent>
+                                <CardFooter className="flex-col gap-2">
+                                    <Button type="submit" className="w-full">
+                                        Enroll
+                                    </Button>
+                                </CardFooter>
+                            </Card>
+                        );
+                    })}
                 </div>
             ) : (
                 <div className="text-center h-full w-full flex justify-center items-center text-2xl text-muted-foreground border-2 border-dotted rounded-xl">

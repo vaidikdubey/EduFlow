@@ -224,9 +224,22 @@ const checkUserEnrolled = asyncHandler(async (req, res) => {
   });
 
   if (!enrollment)
-    throw new ApiError(403, "You are not enrolled in this course");
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, { status: "Not enrolled" }, "Enrollment fetched"),
+      );
 
-  res.status(200).json(new ApiResponse(200, enrollment, "Enrollment fetched"));
+  res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        status: "Enrolled",
+        enrollment,
+      },
+      "Enrollment fetched",
+    ),
+  );
 });
 
 // Admin controllers
