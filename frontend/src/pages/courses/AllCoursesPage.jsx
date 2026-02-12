@@ -45,86 +45,104 @@ export const AllCoursesPage = () => {
     }
 
     return (
-        <main className="h-full w-full flex flex-col items-center justify-center px-20">
+        <main className="h-full w-full flex flex-col items-center justify-center px-20 overflow-y-auto">
             {/* <aside></aside> */}
 
-            <div className="flex justify-between items-center w-full self-start -mt-[80vh] mb-5">
-                <h1 className="flex items-center justify-center gap-2 font-semibold text-2xl">
-                    All courses{" "}
-                    <ChevronDown className="cursor-pointer" size={18} />{" "}
-                </h1>
+            <div className="w-full flex flex-col justify-between items-center self-start mb-5">
+                {/* NavBar */}
+                <div className="flex justify-between items-center w-full mb-2">
+                    <h1 className="flex items-center justify-center gap-2 font-semibold text-2xl">
+                        All courses{" "}
+                        <ChevronDown
+                            className="cursor-pointer"
+                            size={18}
+                        />{" "}
+                    </h1>
 
-                {authUser?.data?.image ? (
-                    <div></div>
-                ) : (
-                    <div className="ring-2 ring-amber-500 dark:ring-amber-200 rounded-full cursor-pointer">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="30"
-                            height="30"
-                            viewBox="0 0 40 40"
-                        >
-                            <circle
-                                cx="20"
-                                cy="20"
-                                r="20"
-                                fill="currentColor"
-                            />
-                            <circle cx="20" cy="14" r="6" fill="#9ca3af" />
-                            <path
-                                d="M10 30c0-5 4-9 10-9s10 4 10 9"
-                                fill="#9ca3af"
-                            />
-                        </svg>
-                    </div>
-                )}
-            </div>
-            <div className="w-full border-2 p-1 px-2 rounded-xl bg-foreground/15 flex items-center justify-center gap-3 relative">
-                <Search />
-                <Input
-                    className={cn(
-                        "border-0 border-none shadow-none ring-0 focus:ring-0 focus-visible:ring-0 focus-within:ring-0 hover:border-0 hover:ring-0 focus:border-0 focus-visible:border-0 focus:outline-none focus-visible:outline-none h-full w-full flex items-center justify-center",
-                    )}
-                    placeholder="Search course..."
-                    value={searchCourse}
-                    onChange={(e) => setSearchCourse(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                />
-
-                {searchCourse && (
-                    <Button variant="ghost" onClick={clearSearch}>
-                        <XCircle className="h-4 w-4" />
-                    </Button>
-                )}
-
-                {finalState && (
-                    <div
-                        className={cn(
-                            "absolute top-full left-0 mt-2 w-full bg-popover/70 text-popover-foreground border rounded-md shadow-md z-100 overflow-hidden",
-                        )}
-                    >
-                        <div className={cn("p-2")}>
-                            {filteredCourse?.length > 0 ? (
-                                filteredCourse.map((course) => (
-                                    <Link
-                                        key={course.id}
-                                        to={`/course/get/${course.id}`}
-                                        className={cn(
-                                            "block px-4 py-2 text-sm hover:bg-accent hover:text-accent-foreground rounded-sm",
-                                        )}
-                                    >
-                                        {course.title}
-                                    </Link>
-                                ))
-                            ) : (
-                                <div className="px-4 py-2 text-sm text-muted-foreground">
-                                    No matching courses found...
-                                </div>
-                            )}
+                    {authUser?.data?.image ? (
+                        <div></div>
+                    ) : (
+                        <div className="ring-2 ring-amber-500 dark:ring-amber-200 rounded-full cursor-pointer">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="30"
+                                height="30"
+                                viewBox="0 0 40 40"
+                            >
+                                <circle
+                                    cx="20"
+                                    cy="20"
+                                    r="20"
+                                    fill="currentColor"
+                                />
+                                <circle cx="20" cy="14" r="6" fill="#9ca3af" />
+                                <path
+                                    d="M10 30c0-5 4-9 10-9s10 4 10 9"
+                                    fill="#9ca3af"
+                                />
+                            </svg>
                         </div>
-                    </div>
-                )}
+                    )}
+                </div>
+
+                {/* Search Bar */}
+                <div className="w-full border-2 p-1 px-2 rounded-xl bg-foreground/15 flex items-center justify-center gap-3 relative">
+                    <Search />
+                    <Input
+                        className={cn(
+                            "border-0 border-none shadow-none ring-0 focus:ring-0 focus-visible:ring-0 focus-within:ring-0 hover:border-0 hover:ring-0 focus:border-0 focus-visible:border-0 focus:outline-none focus-visible:outline-none h-full w-full flex items-center justify-center",
+                        )}
+                        placeholder="Search course..."
+                        value={searchCourse}
+                        onChange={(e) => setSearchCourse(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                    />
+
+                    {searchCourse && (
+                        <Button variant="ghost" onClick={clearSearch}>
+                            <XCircle className="h-4 w-4" />
+                        </Button>
+                    )}
+
+                    {finalState && (
+                        <div
+                            className={cn(
+                                "absolute top-full left-0 mt-2 w-full bg-popover/70 text-popover-foreground border rounded-md shadow-md z-100 overflow-hidden",
+                            )}
+                        >
+                            <div className={cn("p-2")}>
+                                {filteredCourse?.length > 0 ? (
+                                    filteredCourse.map((course) => (
+                                        <Link
+                                            key={course.id}
+                                            to={`/course/get/${course.id}`}
+                                            className={cn(
+                                                "block px-4 py-2 text-sm hover:bg-accent hover:text-accent-foreground rounded-sm",
+                                            )}
+                                        >
+                                            {course.title}
+                                        </Link>
+                                    ))
+                                ) : (
+                                    <div className="px-4 py-2 text-sm text-muted-foreground">
+                                        No matching courses found...
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </div>
             </div>
+
+            {allCourses?.data?.length > 100 ? (
+                <div className="border-2 flex-1 w-full grid grid-cols-3 bg-red-500">
+                    {/* {allCourses?.data?.map((course) => {})} */}
+                </div>
+            ) : (
+                <div className="text-center h-full w-full flex justify-center items-center text-2xl text-muted-foreground">
+                    No courses found...
+                </div>
+            )}
         </main>
     );
 };
