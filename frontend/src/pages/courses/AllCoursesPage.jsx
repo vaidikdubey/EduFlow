@@ -1,16 +1,38 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useCourseStore } from "@/stores/useCourseStore";
-import { Loader, ChevronDown, Search } from "lucide-react";
+import { Loader, ChevronDown, Search, XCircle } from "lucide-react";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 export const AllCoursesPage = () => {
     const { isGettingAllCourses, allCourses, getAllCourses } = useCourseStore();
 
     const { authUser } = useAuthStore();
 
+    const [searchCourse, setSearchCourse] = useState("");
+    const [finalState, setFinalState] = useState("");
+
     useEffect(() => {
         getAllCourses();
     }, []);
+
+    const filteredCourse = allCourses?.data?.filter((course) =>
+        course.title.toLowerCase().includes(finalState.toLowerCase()),
+    );
+
+    const handleKeyDown = (e) => {
+        if (e.key === "Enter") {
+            setFinalState(searchCourse);
+        }
+    };
+
+    const clearSearch = () => {
+        setSearchCourse("");
+        setFinalState("");
+    };
 
     console.log("All courses: ", allCourses);
 
@@ -26,7 +48,7 @@ export const AllCoursesPage = () => {
         <main className="h-full w-full flex flex-col items-center justify-center px-20">
             {/* <aside></aside> */}
 
-            <div className="flex justify-between items-center w-full self-start -mt-[90vh]">
+            <div className="flex justify-between items-center w-full self-start -mt-[80vh] mb-5">
                 <h1 className="flex items-center justify-center gap-2 font-semibold text-2xl">
                     All courses{" "}
                     <ChevronDown className="cursor-pointer" size={18} />{" "}
@@ -57,8 +79,51 @@ export const AllCoursesPage = () => {
                     </div>
                 )}
             </div>
-            <div className="w-full">
+            <div className="w-full border-2 p-1 px-2 rounded-xl bg-foreground/15 flex items-center justify-center gap-3 relative">
                 <Search />
+                <Input
+                    className={cn(
+                        "border-0 border-none shadow-none ring-0 focus:ring-0 focus-visible:ring-0 focus-within:ring-0 hover:border-0 hover:ring-0 focus:border-0 focus-visible:border-0 focus:outline-none focus-visible:outline-none h-full w-full flex items-center justify-center",
+                    )}
+                    placeholder="Search course..."
+                    value={searchCourse}
+                    onChange={(e) => setSearchCourse(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                />
+
+                {searchCourse && (
+                    <Button variant="ghost" onClick={clearSearch}>
+                        <XCircle className="h-4 w-4" />
+                    </Button>
+                )}
+
+                {finalState && (
+                    <div
+                        className={cn(
+                            "absolute top-full left-0 mt-2 w-full bg-popover/70 text-popover-foreground border rounded-md shadow-md z-100 overflow-hidden",
+                        )}
+                    >
+                        <div className={cn("p-2")}>
+                            {filteredCourse?.length > 0 ? (
+                                filteredCourse.map((course) => (
+                                    <Link
+                                        key={course.id}
+                                        to={`/course/get/${course.id}`}
+                                        className={cn(
+                                            "block px-4 py-2 text-sm hover:bg-accent hover:text-accent-foreground rounded-sm",
+                                        )}
+                                    >
+                                        {course.title}
+                                    </Link>
+                                ))
+                            ) : (
+                                <div className="px-4 py-2 text-sm text-muted-foreground">
+                                    No matching courses found...
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
             </div>
         </main>
     );
