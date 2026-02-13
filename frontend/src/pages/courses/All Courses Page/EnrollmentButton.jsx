@@ -27,10 +27,6 @@ export const EnrollmentButton = ({ courseId }) => {
         }
     }, [courseId, checkEnrollment]);
 
-    const handleEnrollment = () => {
-        
-    }
-
     if (loading) {
         return (
             <Button disabled className={cn("w-full")}>
@@ -49,12 +45,8 @@ export const EnrollmentButton = ({ courseId }) => {
             <Link to={`/course/get/${courseId}`}>View Course</Link>
         </Button>
     ) : (
-            <Button
-                asChild
-                className={cn("w-full cursor-pointer")}
-                onClick={handleEnrollment}
-            >
-            Enroll
+        <Button asChild className={cn("w-full cursor-pointer")}>
+            <Link to={`/course/enroll/${courseId}`}>Enroll</Link>
         </Button>
     );
 };
