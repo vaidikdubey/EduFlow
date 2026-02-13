@@ -15,6 +15,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { timeAgo } from "@/utils/timeAgo";
+import { EnrollmentButton } from "./EnrollmentButton";
 
 export const AllCoursesPage = () => {
     const { isGettingAllCourses, allCourses, getAllCourses } = useCourseStore();
@@ -45,22 +46,6 @@ export const AllCoursesPage = () => {
     };
 
     console.log("All courses: ", allCourses?.data);
-
-    // const enrollmentData = [];
-
-    // allCourses?.data?.forEach((course) => enrollmentData.push(course.id));
-
-    // async function getStatus() {
-    //     const result = await Promise.all(
-    //         enrollmentData.map(async (id) => {
-    //             const response = await checkEnrollment(id);
-
-    //             return { id: response };
-    //         }),
-    //     );
-
-    //     console.log(result);
-    // }
 
     if (isGettingAllCourses) {
         return (
@@ -219,17 +204,7 @@ export const AllCoursesPage = () => {
                                     </div>
                                 </CardContent>
                                 <CardFooter className="flex-col gap-2">
-                                    <Button
-                                        type="submit"
-                                        className="w-full cursor-pointer"
-                                        asChild
-                                    >
-                                        <Link
-                                            to={`/course/enroll/${course.id}`}
-                                        >
-                                            Enroll
-                                        </Link>
-                                    </Button>
+                                    <EnrollmentButton courseId={course.id} />
                                 </CardFooter>
                             </Card>
                         );
