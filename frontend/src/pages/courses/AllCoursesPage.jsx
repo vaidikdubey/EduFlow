@@ -23,7 +23,7 @@ export const AllCoursesPage = () => {
         getAllCourses,
         checkEnrollment,
         isCheckingEnrollment,
-        enrollment,
+        enrollmentStatus,
     } = useCourseStore();
 
     const { authUser } = useAuthStore();
@@ -36,15 +36,9 @@ export const AllCoursesPage = () => {
         //eslint-disable-next-line
     }, []);
 
-    const enrollmentData = [];
-
     const filteredCourse = allCourses?.data?.filter((course) =>
         course.title.toLowerCase().includes(finalState.toLowerCase()),
     );
-
-    allCourses?.data?.forEach((course) => enrollmentData.push(course.id));
-
-    console.log("Enrollment data: ", enrollmentData);
 
     const handleKeyDown = (e) => {
         if (e.key === "Enter") {
@@ -59,6 +53,22 @@ export const AllCoursesPage = () => {
 
     console.log("All courses: ", allCourses?.data);
 
+    // const enrollmentData = [];
+
+    // allCourses?.data?.forEach((course) => enrollmentData.push(course.id));
+
+    // async function getStatus() {
+    //     const result = await Promise.all(
+    //         enrollmentData.map(async (id) => {
+    //             const response = await checkEnrollment(id);
+
+    //             return { id: response };
+    //         }),
+    //     );
+
+    //     console.log(result);
+    // }
+
     if (isGettingAllCourses) {
         return (
             <div className="h-full flex items-center justify-center">
@@ -68,7 +78,7 @@ export const AllCoursesPage = () => {
     }
 
     return (
-        <main className="h-full w-full flex flex-col items-center justify-center md:px-10 lg:px-15 overflow-y-auto">
+        <main className="h-full w-full flex flex-col items-center justify-center p-1 md:px-10 lg:px-15 overflow-y-auto">
             {/* <aside></aside> */}
 
             <div className="w-full flex flex-col justify-between items-center self-start mb-5">
@@ -158,14 +168,14 @@ export const AllCoursesPage = () => {
             </div>
 
             {allCourses?.data?.length > 0 ? (
-                <div className="border-2 flex-1 w-full grid grid-cols-3 gap-5 overflow-y-auto no-scroll p-5">
+                <div className="border-2 rounded-lg flex-1 w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 overflow-y-auto no-scroll p-5">
                     {allCourses?.data?.map((course) => {
                         return (
-                            <Card key={course.id} className="w-full max-w-sm">
+                            <Card key={course.id} className="w-full max-h-fit">
                                 <CardHeader>
                                     <CardTitle
                                         className={cn(
-                                            "text-2xl cursor-pointer hover:underline hover:text-foreground/80 line-clamp-2 min-h-15",
+                                            "text-2xl cursor-pointer hover:underline hover:text-foreground/80 line-clamp-3 md:line-clamp-2 min-h-10 lg:min-h-15",
                                         )}
                                     >
                                         {course.title}
@@ -189,18 +199,26 @@ export const AllCoursesPage = () => {
                                         )}
                                     </div>
 
-                                    <div className="flex items-center justify-between my-1">
-                                        <p className="text-sm text-muted-foreground">
-                                            Author: {course?.createdBy?.name}
+                                    <div className="flex flex-row items-center justify-between my-1">
+                                        <p className="text-xs text-muted-foreground">
+                                            <span className="font-semibold">
+                                                Author:
+                                            </span>{" "}
+                                            {course?.createdBy?.name}
                                         </p>
-                                        <p className="text-sm text-muted-foreground">
-                                            Added: {timeAgo(course?.createdAt)}
+                                        <p className="text-xs text-muted-foreground">
+                                            <span className="font-semibold">
+                                                Added:
+                                            </span>{" "}
+                                            {timeAgo(course?.createdAt)}
                                         </p>
                                     </div>
 
                                     <div className="my-1">
-                                        <p className="text-sm text-muted-foreground truncate">
-                                            Instructors:{" "}
+                                        <p className="text-xs text-muted-foreground truncate">
+                                            <span className="font-semibold">
+                                                Instructors:
+                                            </span>{" "}
                                             {course?.instructors
                                                 ?.map((ins) => ins.name)
                                                 .join(", ")}
@@ -208,8 +226,16 @@ export const AllCoursesPage = () => {
                                     </div>
                                 </CardContent>
                                 <CardFooter className="flex-col gap-2">
-                                    <Button type="submit" className="w-full">
-                                        Enroll
+                                    <Button
+                                        type="submit"
+                                        className="w-full cursor-pointer"
+                                        asChild
+                                    >
+                                        <Link
+                                            to={`/course/enroll/${course.id}`}
+                                        >
+                                            Enroll
+                                        </Link>
                                     </Button>
                                 </CardFooter>
                             </Card>

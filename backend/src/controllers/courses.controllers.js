@@ -226,15 +226,13 @@ const checkUserEnrolled = asyncHandler(async (req, res) => {
   if (!enrollment)
     return res
       .status(200)
-      .json(
-        new ApiResponse(200, { status: "Not enrolled" }, "Enrollment fetched"),
-      );
+      .json(new ApiResponse(200, { status: false }, "Enrollment fetched"));
 
   res.status(200).json(
     new ApiResponse(
       200,
       {
-        status: "Enrolled",
+        status: true,
         enrollment,
       },
       "Enrollment fetched",
