@@ -17,14 +17,7 @@ import {
 import { timeAgo } from "@/utils/timeAgo";
 
 export const AllCoursesPage = () => {
-    const {
-        isGettingAllCourses,
-        allCourses,
-        getAllCourses,
-        checkEnrollment,
-        isCheckingEnrollment,
-        enrollmentStatus,
-    } = useCourseStore();
+    const { isGettingAllCourses, allCourses, getAllCourses } = useCourseStore();
 
     const { authUser } = useAuthStore();
 

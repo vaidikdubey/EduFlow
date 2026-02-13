@@ -14,7 +14,7 @@ import { ProtectedRoute } from "./layouts/ProtectedRoute";
 import { CreateCoursePage } from "./pages/courses/CreateCoursePage";
 import { UpdateCoursePage } from "./pages/courses/UpdateCoursePage";
 import { CourseHomePage } from "./pages/courses/CourseHomePage";
-import { AllCoursesPage } from "./pages/courses/AllCoursesPage";
+import { AllCoursesPage } from "./pages/courses/All Courses Page/AllCoursesPage";
 
 function App() {
     const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
