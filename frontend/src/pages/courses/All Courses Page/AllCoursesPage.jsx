@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useCourseStore } from "@/stores/useCourseStore";
-import { Loader, ChevronDown, Search, XCircle } from "lucide-react";
+import {
+    Loader,
+    ChevronDown,
+    Search,
+    XCircle,
+    ArrowLeft,
+    Plus,
+    Edit,
+} from "lucide-react";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -22,8 +30,12 @@ export const AllCoursesPage = () => {
 
     const { authUser } = useAuthStore();
 
+    const userRole = authUser?.data?.role;
+
     const [searchCourse, setSearchCourse] = useState("");
     const [finalState, setFinalState] = useState("");
+
+    const [courseDropdown, setCourseDropdown] = useState(false);
 
     useEffect(() => {
         getAllCourses();
@@ -59,15 +71,36 @@ export const AllCoursesPage = () => {
         <main className="h-full w-full flex flex-col items-center justify-center p-1 md:px-10 lg:px-15 overflow-y-auto">
             {/* <aside></aside> */}
 
+            <Link to={"/"}>
+                <ArrowLeft className="hidden md:block absolute top-6 left-5 hover:border-2 hover:rounded-xl cursor-pointer" />
+            </Link>
+
             <div className="w-full flex flex-col justify-between items-center self-start mb-5">
                 {/* NavBar */}
                 <div className="flex justify-between items-center w-full mb-2">
-                    <h1 className="flex items-center justify-center gap-2 font-semibold text-2xl">
-                        All courses{" "}
-                        <ChevronDown
-                            className="cursor-pointer"
-                            size={18}
-                        />{" "}
+                    <h1 className="flex items-center justify-center gap-2 font-semibold text-2xl relative">
+                        All courses
+                        {userRole != "STUDENT" && (
+                            <ChevronDown
+                                onClick={() =>
+                                    setCourseDropdown((prev) => !prev)
+                                }
+                                className="cursor-pointer"
+                                size={18}
+                            />
+                        )}
+                        {courseDropdown && (
+                            <div className="absolute top-full w-full border-2 rounded-md z-50 bg-foreground hover:bg-foreground/90 text-background">
+                                <div className="py-1">
+                                    <Link
+                                        to={"/course/create"}
+                                        className="text-sm flex items-center justify-center gap-1 font-normal"
+                                    >
+                                        <Plus size={15} /> Create Course
+                                    </Link>
+                                </div>
+                            </div>
+                        )}
                     </h1>
 
                     {authUser?.data?.image ? (
