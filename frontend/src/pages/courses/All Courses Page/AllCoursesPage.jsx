@@ -26,7 +26,8 @@ import { timeAgo } from "@/utils/timeAgo";
 import { EnrollmentButton } from "./EnrollmentButton";
 
 export const AllCoursesPage = () => {
-    const { isGettingAllCourses, allCourses, getAllCourses } = useCourseStore();
+    const { isGettingAllCourses, allCourses, getAllCourses } =
+        useCourseStore();
 
     const { authUser } = useAuthStore();
 
@@ -159,7 +160,7 @@ export const AllCoursesPage = () => {
                                     filteredCourse.map((course) => (
                                         <Link
                                             key={course.id}
-                                            to={`/course/get/${course.id}`}
+                                            to={`/course/enroll/${course.id}`}
                                             className={cn(
                                                 "block px-4 py-2 text-sm hover:bg-accent hover:text-accent-foreground rounded-sm",
                                             )}
