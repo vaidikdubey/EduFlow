@@ -58,8 +58,6 @@ export const AllCoursesPage = () => {
         setFinalState("");
     };
 
-    console.log("All courses: ", allCourses?.data);
-
     if (isGettingAllCourses) {
         return (
             <div className="h-full flex items-center justify-center">
