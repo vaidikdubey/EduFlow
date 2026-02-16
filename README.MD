@@ -9,7 +9,7 @@ EduFlow is a full‑stack Learning Management System (LMS) designed to simulate 
 ### Authentication & Authorization
 
 * User registration and login using **JWT authentication**
-* Role‑based access control: **Student** and **Instructor**
+* Role‑based access control: **Student**, **Instructor** and **Admin**
 * Protected routes for dashboards and course management
 
 ### Course & Content Management (Instructor)
