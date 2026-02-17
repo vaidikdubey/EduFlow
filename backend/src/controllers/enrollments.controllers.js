@@ -72,6 +72,16 @@ const enrollInCourse = asyncHandler(async (req, res) => {
     },
   });
 
+  await db.enrollment.create({
+    data: {
+      userId,
+      courseId,
+      paymentStatus: "pending",
+      amount: course.price,
+      paymentId: razorpayOrder.id,
+    },
+  });
+
   res.status(201).json(
     new ApiResponse(
       201,
