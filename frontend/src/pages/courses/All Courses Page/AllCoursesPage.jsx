@@ -26,8 +26,7 @@ import { timeAgo } from "@/utils/timeAgo";
 import { EnrollmentButton } from "./EnrollmentButton";
 
 export const AllCoursesPage = () => {
-    const { isGettingAllCourses, allCourses, getAllCourses } =
-        useCourseStore();
+    const { isGettingAllCourses, allCourses, getAllCourses } = useCourseStore();
 
     const { authUser } = useAuthStore();
 
