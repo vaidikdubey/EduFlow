@@ -25,13 +25,13 @@ export const CourseHomePage = () => {
     }
 
     return (
-        <div className="h-full w-full">
+        <div className="h-full w-full flex flex-col">
             {/* NavBar */}
             <div className="flex items-center gap-2">
                 <Link to={"/"} className="hidden md:block">
                     <ArrowLeft size={18} />
                 </Link>
-                <div className="h-full w-full flex flex-col justify-center items-start pl-2">
+                <div className="h-full w-full flex flex-col justify-center items-start md:pl-2">
                     <h1 className="text-3xl font-bold hover:underline underline-offset-4 cursor-pointer hover:text-foreground/95">
                         {fetchedCourse?.data?.title}
                     </h1>
@@ -40,8 +40,8 @@ export const CourseHomePage = () => {
                     )}
                 </div>
             </div>
-            <div className="w-full flex flex-col gap-1 px-8 py-2">
-                <div className="flex justify-between items-center">
+            <div className="w-full flex flex-col gap-1 md:px-8 py-2">
+                <div className="flex flex-col md:flex-row justify-between md:items-center">
                     <h5>
                         <span className="font-semibold">Author: </span>
                         {fetchedCourse?.data?.createdBy?.name}
@@ -53,15 +53,22 @@ export const CourseHomePage = () => {
                 </div>
                 <p>
                     <span className="font-semibold">Instructors: </span>{" "}
-                    {fetchedCourse?.data?.instructors
-                        .map((ins) => ins.name)
-                        .join(", ")}
+                    {fetchedCourse?.data?.instructors && (
+                        <ReadMore
+                            text={fetchedCourse?.data?.instructors
+                                .map((ins) => ins.name)
+                                .join(", ")}
+                            maxLen={50}
+                        />
+                    )}
                 </p>
             </div>
 
             {/* Course Statistics */}
-            <div className="flex flex-col px-8 py-2 border border-dotted rounded-xl">
-                <h6 className="font-semibold mx-auto pb-2 underline underline-offset-2">Course Stats</h6>
+            <div className="flex flex-col md:px-8 py-2 border border-dotted rounded-xl">
+                <h6 className="font-semibold mx-auto pb-2 underline underline-offset-2">
+                    Course Stats
+                </h6>
                 <div className="flex justify-between items-center">
                     <p>
                         <span>Modules: </span>
