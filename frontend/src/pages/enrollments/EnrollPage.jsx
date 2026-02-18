@@ -6,13 +6,14 @@ import { loadRazorpayScript } from "@/utils/loadRazorpay";
 import toast from "react-hot-toast";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { axiosInstance } from "@/lib/axios";
+import { useEnrollmentStore } from "@/stores/useEnrollmentStore";
 
 export const EnrollPage = () => {
     const navigate = useNavigate();
     const { id } = useParams();
     const { checkEnrollment } = useCourseStore();
-    const { authUser } = useAuthStore();
     const [status, setStatus] = useState("checking"); // checking | processing | failed
+    const { enrollInCourse } = useEnrollmentStore();
 
     // We use a ref to prevent double-firing
     const paymentInitiated = useRef(false);
@@ -31,80 +32,11 @@ export const EnrollPage = () => {
             }
 
             // If not enrolled, immediately start payment
-            await triggerPayment();
+            await enrollInCourse(id, navigate);
         };
 
         handleEnrollmentFlow();
     }, [id]);
-
-    const triggerPayment = async () => {
-        setStatus("processing");
-        try {
-            // 1. Load Script
-            const isScriptLoaded = await loadRazorpayScript();
-            if (!isScriptLoaded) {
-                toast.error("Error loading script");
-                console.error("Razorpay SDK failed to load");
-            }
-
-            // 2. Create Order
-            // Note: Replace with your actual API instance/URL
-            const { data: response } = await axiosInstance.post(
-                `http://localhost:5000/api/v1/enroll/${id}`,
-                {},
-                { withCredentials: true },
-            );
-
-            // Handle Free Course (Backend returns success immediately)
-            if (!response.data.razorpay_details) {
-                toast.success("Enrolled Successfully!");
-                navigate(`/course/get/${id}`);
-                return;
-            }
-
-            // Handle Paid Course
-            const { razorpay_details } = response.data;
-
-            const options = {
-                key: razorpay_details.key,
-                amount: razorpay_details.amount,
-                currency: razorpay_details.currency,
-                name: "Course Enrollment",
-                description: razorpay_details.courseTitle,
-                order_id: razorpay_details.orderId,
-                handler: function (response) {
-                    toast.success("Payment Successful!");
-                    // Ideally verify payment on backend here, then redirect
-                    navigate(`/course/get/${id}`);
-                },
-                prefill: {
-                    name: authUser?.name || "",
-                    email: authUser?.email || "",
-                },
-                theme: { color: "#ec4899" }, // Matches your pink loader
-                modal: {
-                    // Handle if user closes the modal
-                    ondismiss: function () {
-                        setStatus("failed");
-                        toast.error("Payment cancelled");
-                        // Optional: Navigate back or show a "Retry" button
-                    },
-                },
-            };
-
-            const rzp = new window.Razorpay(options);
-            rzp.on("payment.failed", function (response) {
-                toast.error(response.error.description);
-                setStatus("failed");
-            });
-
-            rzp.open();
-        } catch (error) {
-            console.error("Payment Error:", error);
-            setStatus("failed");
-            toast.error("Failed to initiate payment");
-        }
-    };
 
     if (status === "checking" || status === "processing") {
         return (
@@ -129,11 +61,11 @@ export const EnrollPage = () => {
             <button
                 onClick={() => {
                     paymentInitiated.current = false;
-                    triggerPayment();
+                    enrollInCourse(id, navigate);
                 }}
                 className="bg-pink-500 text-white px-6 py-2 rounded-lg hover:bg-pink-600 transition"
             >
-                Pay Now
+                Enroll Now
             </button>
         </div>
     );

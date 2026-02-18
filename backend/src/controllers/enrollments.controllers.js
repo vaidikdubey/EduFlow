@@ -16,8 +16,10 @@ const enrollInCourse = asyncHandler(async (req, res) => {
 
   const existingEnrollment = await db.enrollment.findUnique({
     where: {
-      userId,
-      courseId,
+      userId_courseId: {
+        userId,
+        courseId,
+      },
     },
   });
 
@@ -134,8 +136,10 @@ const handleRazorpayWebhook = asyncHandler(async (req, res) => {
     //Update enrollment
     const updatedEnrollment = await db.enrollment.update({
       where: {
-        userId,
-        courseId,
+        userId_courseId: {
+          userId,
+          courseId,
+        },
       },
       data: {
         paidAt: new Date(),
@@ -150,7 +154,7 @@ const handleRazorpayWebhook = asyncHandler(async (req, res) => {
         enrolledAt: true,
         paidAt: true,
         paymentId: true,
-        amountPaid: true,
+        amount: true,
         paymentStatus: true,
       },
     });

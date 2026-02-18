@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { axiosInstance } from "@/lib/axios";
 import toast from "react-hot-toast";
 import { loadRazorpayScript } from "@/utils/loadRazorpay";
+import { useAuthStore } from "./useAuthStore";
 
 export const useEnrollmentStore = create((set, get) => ({
     isEnrolling: false,
@@ -31,18 +32,17 @@ export const useEnrollmentStore = create((set, get) => ({
 
             // SCENARIO B: Paid Course
             const { razorpay_details } = response.data;
-            const { user } = get(); // Get user info from your own store state
+            const user = useAuthStore.getState().authUser.data;
 
             const options = {
                 key: razorpay_details.key,
                 amount: razorpay_details.amount,
                 currency: razorpay_details.currency,
-                name: "LMS Platform",
+                name: "EduFlow Course",
                 description: razorpay_details.courseTitle,
                 order_id: razorpay_details.orderId,
                 handler: async (paymentResponse) => {
                     toast.success("Payment successful!");
-                    // Small delay to let webhook process
                     setTimeout(() => navigate(`/course/get/${courseId}`), 1000);
                 },
                 prefill: {
@@ -55,27 +55,8 @@ export const useEnrollmentStore = create((set, get) => ({
             const rzp = new window.Razorpay(options);
             rzp.open();
         } catch (error) {
-            const message =
-                error.response?.data?.message || "Enrollment failed";
-            toast.error(message);
-            throw error; // Re-throw so component can handle UI state
+            console.error("Error processing payment", error);
+            toast.error("Error processing payment");
         }
     },
-
-    // enrollInCourse: async (id) => {
-    //     set({ isEnrolling: true });
-
-    //     try {
-    //         const res = await axiosInstance.post(`/enrollment/enroll/${id}`);
-
-    //         set({ enrollmentResult: res.data });
-
-    //         toast.success(res.message || "Enrollment successful");
-    //     } catch (error) {
-    //         console.error("Enrollment failed", error);
-    //         toast.error("Enrollment failed");
-    //     } finally {
-    //         set({ isEnrolling: false });
-    //     }
-    // },
 }));
