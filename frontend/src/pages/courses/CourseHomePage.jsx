@@ -6,7 +6,6 @@ import { ReadMore } from "@/utils/ReadMore";
 import { timeAgo } from "@/utils/timeAgo";
 import { useModuleStore } from "@/stores/useModuleStore";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 export const CourseHomePage = () => {
     const { id } = useParams();
@@ -18,6 +17,7 @@ export const CourseHomePage = () => {
     useEffect(() => {
         getCourseById(id);
         getAllModules(id);
+        //eslint-disable-next-line
     }, [id]);
 
     //Optimized modules sorting
