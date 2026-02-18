@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useCourseStore } from "@/stores/useCourseStore";
-import { Loader } from "lucide-react";
-import { useParams } from "react-router-dom";
+import { ArrowLeft, Loader } from "lucide-react";
+import { Link, useParams } from "react-router-dom";
 import { ReadMore } from "@/utils/ReadMore";
 
 export const CourseHomePage = () => {
@@ -25,11 +25,19 @@ export const CourseHomePage = () => {
 
     return (
         <div className="h-full w-full">
-            <div className="flex flex-col gap-2">
-                <h1 className="text-3xl font-bold hover:underline underline-offset-4 cursor-pointer hover:text-foreground/95">
-                    {fetchedCourse?.data?.title}
-                </h1>
-                <ReadMore text={fetchedCourse?.data?.description} />
+            {/* NavBar */}
+            <div className="flex items-center gap-2">
+                <Link to={"/"} className="hidden md:block">
+                    <ArrowLeft size={18} />
+                </Link>
+                <div className="h-full w-full flex flex-col justify-center items-start pl-2">
+                    <h1 className="text-3xl font-bold hover:underline underline-offset-4 cursor-pointer hover:text-foreground/95">
+                        {fetchedCourse?.data?.title}
+                    </h1>
+                    <ReadMore text={fetchedCourse?.data?.description} />
+          </div>
+          
+          
             </div>
         </div>
     );
