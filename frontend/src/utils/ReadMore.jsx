@@ -12,13 +12,7 @@ export const ReadMore = ({ text, maxLen = 150 }) => {
             {isExpanded ? text : `${text.substring(0, maxLen)}...`}
             <button
                 onClick={() => setIsExpanded(!isExpanded)}
-                style={{
-                    color: "blue",
-                    marginLeft: "5px",
-                    cursor: "pointer",
-                    border: "none",
-                    background: "none",
-                }}
+                className="text-blue-800 dark:text-blue-400 cursor-pointer text-sm pl-2"
             >
                 {isExpanded ? "Show Less" : "Show More"}
             </button>
