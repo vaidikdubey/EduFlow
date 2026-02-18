@@ -69,7 +69,7 @@ export const CourseHomePage = () => {
                 <h6 className="font-semibold mx-auto pb-2 underline underline-offset-2">
                     Course Stats
                 </h6>
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center cursor-default">
                     <p>
                         <span>Modules: </span>
                         {fetchedCourse?.data?._count?.modules}
