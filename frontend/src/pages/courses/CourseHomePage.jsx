@@ -3,6 +3,7 @@ import { useCourseStore } from "@/stores/useCourseStore";
 import { ArrowLeft, Loader } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { ReadMore } from "@/utils/ReadMore";
+import { timeAgo } from "@/utils/timeAgo";
 
 export const CourseHomePage = () => {
     const { id } = useParams();
@@ -34,10 +35,47 @@ export const CourseHomePage = () => {
                     <h1 className="text-3xl font-bold hover:underline underline-offset-4 cursor-pointer hover:text-foreground/95">
                         {fetchedCourse?.data?.title}
                     </h1>
-                    <ReadMore text={fetchedCourse?.data?.description} />
-          </div>
-          
-          
+                    {fetchedCourse?.data?.description && (
+                        <ReadMore text={fetchedCourse?.data?.description} />
+                    )}
+                </div>
+            </div>
+            <div className="w-full flex flex-col gap-1 px-8 py-2">
+                <div className="flex justify-between items-center">
+                    <h5>
+                        <span className="font-semibold">Author: </span>
+                        {fetchedCourse?.data?.createdBy?.name}
+                    </h5>
+                    <p>
+                        <span className="font-semibold">Added: </span>
+                        {timeAgo(fetchedCourse?.data?.createdAt)}
+                    </p>
+                </div>
+                <p>
+                    <span className="font-semibold">Instructors: </span>{" "}
+                    {fetchedCourse?.data?.instructors
+                        .map((ins) => ins.name)
+                        .join(", ")}
+                </p>
+            </div>
+
+            {/* Course Statistics */}
+            <div className="flex flex-col px-8 py-2 border border-dotted rounded-xl">
+                <h6 className="font-semibold mx-auto pb-2 underline underline-offset-2">Course Stats</h6>
+                <div className="flex justify-between items-center">
+                    <p>
+                        <span>Modules: </span>
+                        {fetchedCourse?.data?._count?.modules}
+                    </p>
+                    <p>
+                        <span>Enrollments: </span>
+                        {fetchedCourse?.data?._count?.enrollments}
+                    </p>
+                    <p>
+                        <span>Quizzes: </span>
+                        {fetchedCourse?.data?._count?.quizzes}
+                    </p>
+                </div>
             </div>
         </div>
     );
