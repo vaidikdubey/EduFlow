@@ -38,12 +38,16 @@ export const CourseHomePage = () => {
         isMarkingCompleted,
         cancelEnrollment,
         isCancellingEnrollment,
+        checkCourseCompletion,
+        isCheckingCompletion,
+        courseCompletion,
     } = useEnrollmentStore();
 
     useEffect(() => {
         getCourseById(id);
         getAllModules(id);
         getCourseProgress(id);
+        checkCourseCompletion(id);
         //eslint-disable-next-line
     }, [id]);
 
@@ -62,7 +66,12 @@ export const CourseHomePage = () => {
 
     const handleGenerateCertificate = () => {};
 
-    if (isGettingCourse || isGettingAllModules || isGettingProgres) {
+    if (
+        isGettingCourse ||
+        isGettingAllModules ||
+        isGettingProgres ||
+        isCheckingCompletion
+    ) {
         return (
             <div className="h-full flex items-center justify-center">
                 <Loader className="animate-spin text-foreground" />
@@ -70,7 +79,7 @@ export const CourseHomePage = () => {
         );
     }
 
-    console.log("Course progress: ", courseProgress?.data);
+    console.log("Course completion: ", courseCompletion?.data);
 
     return (
         <div className="h-full w-full flex flex-col">
@@ -155,7 +164,7 @@ export const CourseHomePage = () => {
             </div>
 
             {/* Modules Section */}
-            <div className="flex-1 h-full w-full border border-dashed border-pink-200 my-4 p-4 rounded-2xl flex flex-col gap-3 overflow-y-auto no-scroll">
+            <div className="flex-1 h-full w-full border border-dashed border-pink-200 dark:border-pink-950 my-4 p-4 rounded-2xl flex flex-col gap-3 overflow-y-auto no-scroll">
                 {sortedModules?.map((module, idx) => {
                     return (
                         <div
@@ -227,7 +236,7 @@ export const CourseHomePage = () => {
                 </Button>
                 <Button
                     variant="outline"
-                    disabled={courseProgress?.data?.progressPercentage < 100}
+                    disabled={!courseCompletion?.data?.completionStatus}
                     className={cn("cursor-pointer")}
                     onClick={handleGenerateCertificate}
                 >

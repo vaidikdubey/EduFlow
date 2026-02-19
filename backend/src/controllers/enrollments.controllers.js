@@ -370,17 +370,14 @@ const checkCourseCompletionStatus = asyncHandler(async (req, res) => {
     ? "Course completed"
     : "Course incomplete";
 
-  res.status(
-    200,
-    json(
-      new ApiResponse(
-        200,
-        {
-          completionStatus: enrollmentCheck.completed,
-          enrollmentCheck,
-        },
-        message,
-      ),
+  res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        completionStatus: enrollmentCheck.completed,
+        enrollmentCheck,
+      },
+      message,
     ),
   );
 });
@@ -717,6 +714,7 @@ export {
   checkEnrollmentStatus,
   getMyEnrollments,
   markCourseCompleted,
+  checkCourseCompletionStatus,
   cancelEnrollment,
   getCourseCertificate,
   verifyCertificate,

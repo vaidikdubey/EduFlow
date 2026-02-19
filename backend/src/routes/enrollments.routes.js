@@ -2,6 +2,7 @@ import express, { Router } from "express";
 import { checkAdmin, isLoggedIn } from "../middlewares/auth.middleware.js";
 import {
   cancelEnrollment,
+  checkCourseCompletionStatus,
   checkEnrollmentStatus,
   enrollInCourse,
   getCourseCertificate,
@@ -27,7 +28,9 @@ router.route("/myEnrollments").get(isLoggedIn, getMyEnrollments);
 
 router.route("/completed/:courseId").patch(isLoggedIn, markCourseCompleted);
 
-router.route("/courseStatus/:courseId").get(isLoggedIn, checkCourseCompletionStatus);
+router
+  .route("/courseStatus/:courseId")
+  .get(isLoggedIn, checkCourseCompletionStatus);
 
 router.route("/cancel/:courseId").delete(isLoggedIn, cancelEnrollment);
 

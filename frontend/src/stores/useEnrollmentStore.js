@@ -4,11 +4,13 @@ import toast from "react-hot-toast";
 import { loadRazorpayScript } from "@/utils/loadRazorpay";
 import { useAuthStore } from "./useAuthStore";
 
-export const useEnrollmentStore = create((set, get) => ({
+export const useEnrollmentStore = create((set) => ({
     isEnrolling: false,
     enrollmentResult: null,
     isMarkingCompleted: false,
     isCancellingEnrollment: false,
+    isCheckingCompletion: false,
+    courseCompletion: null,
 
     enrollInCourse: async (courseId, navigate) => {
         try {
@@ -91,6 +93,23 @@ export const useEnrollmentStore = create((set, get) => ({
             toast.error("Error cancelling enrollment");
         } finally {
             set({ isCancellingEnrollment: false });
+        }
+    },
+
+    checkCourseCompletion: async (id) => {
+        set({ isCheckingCompletion: true });
+
+        try {
+            const res = await axiosInstance.get(
+                `/enrollment/courseStatus/${id}`,
+            );
+
+            set({ courseCompletion: res.data });
+        } catch (error) {
+            console.error("Error fetching course completion status", error);
+            toast.error("Error fetching course completion status");
+        } finally {
+            set({ isCheckingCompletion: false });
         }
     },
 }));
