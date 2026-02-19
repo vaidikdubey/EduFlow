@@ -131,15 +131,15 @@ export const CourseHomePage = () => {
 
             {/* Modules Section */}
             <div className="flex-1 h-full w-full border border-dashed border-pink-200 my-4 p-4 rounded-2xl flex flex-col gap-3 overflow-y-auto no-scroll">
-                {sortedModules?.map((module) => {
+                {sortedModules?.map((module, idx) => {
                     return (
                         <div
                             key={module.id}
-                            className="w-full p-2 border-2 rounded-xl flex justify-between items-center border-l-8 border-pink-400"
+                            className="w-full p-2 border-2 rounded-xl grid grid-cols-12 items-center border-l-8 border-pink-400"
                         >
-                            <div>
+                            <div className="col-span-6">
                                 <h3 className="font-bold">
-                                    <span>{module.order}. </span> {module.title}
+                                    <span>{idx + 1}. </span> {module.title}
                                 </h3>
                                 <p>
                                     <span className="font-semibold">
@@ -154,12 +154,30 @@ export const CourseHomePage = () => {
                                     {module._count.quiz}
                                 </p>
                             </div>
-                            <ProgressBar />
-                            <Button variant="icon" asChild>
-                                <Link to={`/module/get/${module.id}`}>
-                                    <ArrowRight />
-                                </Link>
-                            </Button>
+                            <div className="col-span-4 flex justify-center">
+                                {(() => {
+                                    const currentModuleProgress =
+                                        courseProgress?.data?.moduleProgress?.find(
+                                            (m) => m.moduleId === module.id,
+                                        );
+
+                                    return currentModuleProgress ? (
+                                        <ProgressBar
+                                            progress={
+                                                currentModuleProgress.progressPercentage
+                                            }
+                                            outerProps={"h-fit"}
+                                        />
+                                    ) : null;
+                                })()}
+                            </div>
+                            <div className="col-span-2 flex justify-end">
+                                <Button variant="icon" asChild>
+                                    <Link to={`/module/get/${module.id}`}>
+                                        <ArrowRight />
+                                    </Link>
+                                </Button>
+                            </div>
                         </div>
                     );
                 })}
