@@ -424,7 +424,15 @@ const getCourseCertificate = asyncHandler(async (req, res) => {
   }
 
   if (!enrollment.completed) {
-    throw new ApiError(400, "Course must be completed to generate certificate");
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          { success: false },
+          "Course must be completed to generate certificate",
+        ),
+      );
   }
 
   let certificate = await db.certificate.findUnique({

@@ -16,6 +16,8 @@ export const useCourseStore = create((set) => ({
     isCheckingEnrollment: false,
     enrollment: null,
     enrollmentStatus: false,
+    isGettingProgres: false,
+    courseProgress: null,
 
     createCourse: async (data) => {
         set({ isCreatingCourse: true });
@@ -130,6 +132,21 @@ export const useCourseStore = create((set) => ({
             return null;
         } finally {
             set({ isCheckingEnrollment: false });
+        }
+    },
+
+    getCourseProgress: async (id) => {
+        set({ isGettingProgres: true });
+
+        try {
+            const res = await axiosInstance.get(`/course/progress/${id}`);
+
+            set({ courseProgress: res.data });
+        } catch (error) {
+            console.error("Error fetching progress", error);
+            toast.error("Error fetching progress");
+        } finally {
+            set({ isGettingProgres: false });
         }
     },
 }));

@@ -17,13 +17,21 @@ import { Button } from "@/components/ui/button";
 export const CourseHomePage = () => {
     const { id } = useParams();
 
-    const { getCourseById, isGettingCourse, fetchedCourse } = useCourseStore();
+    const {
+        getCourseById,
+        isGettingCourse,
+        fetchedCourse,
+        getCourseProgress,
+        isGettingProgres,
+        courseProgress,
+    } = useCourseStore();
 
     const { isGettingAllModules, allModules, getAllModules } = useModuleStore();
 
     useEffect(() => {
         getCourseById(id);
         getAllModules(id);
+        getCourseProgress(id);
         //eslint-disable-next-line
     }, [id]);
 
@@ -34,7 +42,7 @@ export const CourseHomePage = () => {
         return [...allModules.data].sort((a, b) => a.order - b.order);
     }, [allModules]);
 
-    if (isGettingCourse || isGettingAllModules) {
+    if (isGettingCourse || isGettingAllModules || isGettingProgres) {
         return (
             <div className="h-full flex items-center justify-center">
                 <Loader className="animate-spin text-foreground" />
@@ -42,7 +50,7 @@ export const CourseHomePage = () => {
         );
     }
 
-    console.log("All modules: ", allModules?.data);
+    console.log("Course progress: ", courseProgress);
 
     return (
         <div className="h-full w-full flex flex-col">
@@ -144,6 +152,13 @@ export const CourseHomePage = () => {
                         </div>
                     );
                 })}
+            </div>
+
+            {/* Course Enrollment Buttons */}
+            <div className="flex justify-between items-center">
+                <Button variant="success">Mark Completed</Button>
+                <Button>Generate Certificate</Button>
+                <Button variant="destructive">Cancel Enrollment</Button>
             </div>
         </div>
     );
