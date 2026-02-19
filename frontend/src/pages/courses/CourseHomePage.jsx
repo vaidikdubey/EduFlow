@@ -14,6 +14,7 @@ import { timeAgo } from "@/utils/timeAgo";
 import { useModuleStore } from "@/stores/useModuleStore";
 import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/ProgressBar";
+import { cn } from "@/lib/utils";
 
 export const CourseHomePage = () => {
     const { id } = useParams();
@@ -56,14 +57,14 @@ export const CourseHomePage = () => {
     return (
         <div className="h-full w-full flex flex-col">
             {/* NavBar */}
-            <div>
-                <div className="flex justify-between items-center pr-15">
+            <div className="w-full">
+                <div className="flex justify-between items-center md:pr-15">
                     <div className="flex items-center gap-2">
                         <Link to={"/"} className="hidden md:block">
                             <ArrowLeft size={18} />
                         </Link>
                         <div className="h-full w-full flex flex-col justify-center items-start md:pl-2">
-                            <h1 className="text-3xl font-bold hover:underline underline-offset-4 cursor-pointer hover:text-foreground/95">
+                            <h1 className="text-xl md:text-3xl font-bold hover:underline underline-offset-4 cursor-pointer hover:text-foreground/95">
                                 {fetchedCourse?.data?.title}
                             </h1>
                             {fetchedCourse?.data?.description && (
@@ -76,11 +77,12 @@ export const CourseHomePage = () => {
                     {courseProgress?.data && (
                         <ProgressBar
                             progress={courseProgress?.data?.progressPercentage}
+                            outerProps={"w-30 md:w-50"}
                         />
                     )}
                 </div>
                 <div className="w-full flex justify-between items-center gap-1 md:px-8 py-2">
-                    <div className="flex flex-col justify-between items-start">
+                    <div className="flex flex-col justify-between items-start text-xs md:text-base">
                         <h5>
                             <span className="font-semibold">Author: </span>
                             {fetchedCourse?.data?.createdBy?.name}
@@ -90,38 +92,43 @@ export const CourseHomePage = () => {
                             {timeAgo(fetchedCourse?.data?.createdAt)}
                         </p>
                     </div>
-                    <div className="flex gap-1 border-2 w-fit max-w-120 px-5 py-2 rounded-full bg-foreground/80 text-background">
+                    <div className="flex gap-1 border-2 w-fit max-w-120 px-5 py-2 rounded-full bg-foreground/80 text-background text-xs md:text-base">
                         {fetchedCourse?.data?.instructors && (
                             <ReadMore
                                 text={`${fetchedCourse?.data?.instructors
                                     .map((ins) => ins.name)
                                     .join(", ")}`}
-                                maxLen={50}
-                                props={"text-sky-300 dark:text-sky-700 text-xs"}
+                                maxLen={15}
+                                props={
+                                    "text-sky-300 dark:text-sky-700 text-[6px] md:text-xs"
+                                }
                             />
                         )}
                     </div>
                 </div>
 
                 {/* Course Statistics */}
-                <div className="flex flex-col md:px-8 py-2 border border-dotted rounded-xl shadow-2xl">
+                <div className="flex flex-col md:px-8 py-2 px-2 border border-dotted rounded-xl shadow-2xl text-sm">
                     <h6 className="font-semibold pb-2">Course Stats</h6>
-                    <div className="flex justify-between items-center cursor-default">
-                        <p className="flex gap-2">
+                    <div className="flex justify-between items-center cursor-default flex-wrap">
+                        <p className="flex md:gap-2 text-xs md:text-base">
                             <span className="flex gap-2">
-                                <BookOpen /> Modules:{" "}
+                                <BookOpen className="hidden md:block" />{" "}
+                                Modules:{" "}
                             </span>
                             {fetchedCourse?.data?._count?.modules}
                         </p>
-                        <p className="flex gap-2">
+                        <p className="flex md:gap-2 text-xs md:text-base">
                             <span className="flex gap-2">
-                                <Users /> Enrollments:{" "}
+                                <Users className="hidden md:block" />{" "}
+                                Enrollments:{" "}
                             </span>
                             {fetchedCourse?.data?._count?.enrollments}
                         </p>
-                        <p className="flex gap-2">
+                        <p className="flex md:gap-2 text-xs md:text-base">
                             <span className="flex gap-2">
-                                <HelpCircle /> Quizzes:{" "}
+                                <HelpCircle className="hidden md:block" />{" "}
+                                Quizzes:{" "}
                             </span>
                             {fetchedCourse?.data?._count?.quizzes}
                         </p>
@@ -184,8 +191,10 @@ export const CourseHomePage = () => {
             </div>
 
             {/* Course Enrollment Buttons */}
-            <div className="flex justify-between items-center">
-                <Button variant="success">Mark Completed</Button>
+            <div className="grid grid-cols-2 gap-2 md:flex justify-between items-center">
+                <Button variant="success" className={cn("col-span-2")}>
+                    Mark Completed
+                </Button>
                 <Button
                     variant="outline"
                     disabled={courseProgress?.data?.progressPercentage < 100}
