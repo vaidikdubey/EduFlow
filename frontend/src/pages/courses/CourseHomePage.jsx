@@ -50,7 +50,7 @@ export const CourseHomePage = () => {
         );
     }
 
-    console.log("Course progress: ", courseProgress);
+    console.log("Course progress: ", courseProgress?.data);
 
     return (
         <div className="h-full w-full flex flex-col">
@@ -157,7 +157,10 @@ export const CourseHomePage = () => {
             {/* Course Enrollment Buttons */}
             <div className="flex justify-between items-center">
                 <Button variant="success">Mark Completed</Button>
-                <Button>Generate Certificate</Button>
+                <Button
+                    variant="outline"
+                    disabled={courseProgress?.data?.progressPercentage < 100}
+                >Generate Certificate</Button>
                 <Button variant="destructive">Cancel Enrollment</Button>
             </div>
         </div>

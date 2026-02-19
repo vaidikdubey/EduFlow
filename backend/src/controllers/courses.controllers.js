@@ -117,7 +117,9 @@ const getCourseProgress = asyncHandler(async (req, res) => {
     throw new ApiError(403, "You are not enrolled in this course");
 
   const courseData = await db.course.findUnique({
-    where: id,
+    where: {
+      id,
+    },
     select: {
       id: true,
       title: true,
@@ -163,9 +165,9 @@ const getCourseProgress = asyncHandler(async (req, res) => {
   let completedLessons = 0;
 
   courseData.modules.forEach((module) => {
-    totalLessons += module.lesson.length;
+    totalLessons += module.lessons.length;
 
-    module.length.forEach((lesson) => {
+    module.lessons.forEach((lesson) => {
       if (lesson.progress.length > 0 && lesson.progress[0].completed) {
         completedLessons++;
       }
