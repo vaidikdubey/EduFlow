@@ -9,10 +9,11 @@ import {
     Users,
 } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
-import { ReadMore } from "@/utils/ReadMore";
+import { ReadMore } from "@/components/ui/ReadMore";
 import { timeAgo } from "@/utils/timeAgo";
 import { useModuleStore } from "@/stores/useModuleStore";
 import { Button } from "@/components/ui/button";
+import { ProgressBar } from "@/components/ui/ProgressBar";
 
 export const CourseHomePage = () => {
     const { id } = useParams();
@@ -56,18 +57,27 @@ export const CourseHomePage = () => {
         <div className="h-full w-full flex flex-col">
             {/* NavBar */}
             <div>
-                <div className="flex items-center gap-2">
-                    <Link to={"/"} className="hidden md:block">
-                        <ArrowLeft size={18} />
-                    </Link>
-                    <div className="h-full w-full flex flex-col justify-center items-start md:pl-2">
-                        <h1 className="text-3xl font-bold hover:underline underline-offset-4 cursor-pointer hover:text-foreground/95">
-                            {fetchedCourse?.data?.title}
-                        </h1>
-                        {fetchedCourse?.data?.description && (
-                            <ReadMore text={fetchedCourse?.data?.description} />
-                        )}
+                <div className="flex justify-between items-center pr-15">
+                    <div className="flex items-center gap-2">
+                        <Link to={"/"} className="hidden md:block">
+                            <ArrowLeft size={18} />
+                        </Link>
+                        <div className="h-full w-full flex flex-col justify-center items-start md:pl-2">
+                            <h1 className="text-3xl font-bold hover:underline underline-offset-4 cursor-pointer hover:text-foreground/95">
+                                {fetchedCourse?.data?.title}
+                            </h1>
+                            {fetchedCourse?.data?.description && (
+                                <ReadMore
+                                    text={fetchedCourse?.data?.description}
+                                />
+                            )}
+                        </div>
                     </div>
+                    {courseProgress?.data && (
+                        <ProgressBar
+                            progress={courseProgress?.data?.progressPercentage}
+                        />
+                    )}
                 </div>
                 <div className="w-full flex justify-between items-center gap-1 md:px-8 py-2">
                     <div className="flex flex-col justify-between items-start">
@@ -144,6 +154,7 @@ export const CourseHomePage = () => {
                                     {module._count.quiz}
                                 </p>
                             </div>
+                            <ProgressBar />
                             <Button variant="icon" asChild>
                                 <Link to={`/module/get/${module.id}`}>
                                     <ArrowRight />
@@ -160,7 +171,9 @@ export const CourseHomePage = () => {
                 <Button
                     variant="outline"
                     disabled={courseProgress?.data?.progressPercentage < 100}
-                >Generate Certificate</Button>
+                >
+                    Generate Certificate
+                </Button>
                 <Button variant="destructive">Cancel Enrollment</Button>
             </div>
         </div>
