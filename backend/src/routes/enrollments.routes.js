@@ -1,4 +1,4 @@
-import express, { Router } from "express";
+import { Router } from "express";
 import { checkAdmin, isLoggedIn } from "../middlewares/auth.middleware.js";
 import {
   cancelEnrollment,
@@ -8,7 +8,7 @@ import {
   getCourseCertificate,
   getCourseEnrollments,
   getMyEnrollments,
-  handleRazorpayWebhook,
+  verifyPayment,
   markCourseCompleted,
   verifyCertificate,
 } from "../controllers/enrollments.controllers.js";
@@ -17,10 +17,7 @@ const router = Router();
 
 router.route("/enroll/:courseId").post(isLoggedIn, enrollInCourse);
 
-//Razorpay exposed route for payment webhook
-router
-  .route("/webhook/razorpay")
-  .post(express.raw({ type: "application/json" }), handleRazorpayWebhook);
+router.route("/enroll/verify").post(isLoggedIn, verifyPayment);
 
 router.route("/enrolled/:courseId").get(isLoggedIn, checkEnrollmentStatus);
 

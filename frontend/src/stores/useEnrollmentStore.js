@@ -14,6 +14,8 @@ export const useEnrollmentStore = create((set) => ({
     isGeneratingCertificate: false,
 
     enrollInCourse: async (courseId, navigate) => {
+        set({ isEnrolling: true });
+
         try {
             // 1. Load Razorpay SDK
             const isScriptLoaded = await loadRazorpayScript();
@@ -29,14 +31,14 @@ export const useEnrollmentStore = create((set) => ({
             );
 
             // SCENARIO A: Free Course
-            if (!response.data.razorpay_details) {
+            if (!response.data.data.razorpay_details) {
                 toast.success("Enrolled successfully!");
-                navigate(`/course/get/${courseId}`);
+                navigate(`/course/get/${courseId}`, { replace: true });
                 return;
             }
 
             // SCENARIO B: Paid Course
-            const { razorpay_details } = response.data;
+            const { razorpay_details } = response.data.data;
             const user = useAuthStore.getState().authUser.data;
 
             const options = {
@@ -46,15 +48,34 @@ export const useEnrollmentStore = create((set) => ({
                 name: "EduFlow Course",
                 description: razorpay_details.courseTitle,
                 order_id: razorpay_details.orderId,
-                handler: async (paymentResponse) => {
-                    toast.success("Payment successful!");
-                    setTimeout(() => navigate(`/course/get/${courseId}`), 1000);
-                },
                 prefill: {
                     name: user?.name || "",
                     email: user?.email || "",
                 },
-                theme: { color: "#ec4899" },
+                theme: { color: "#EC4899" },
+                handler: async (paymentResponse) => {
+                    try {
+                        await axiosInstance.post(
+                            "/enrollment/enroll/verify",
+                            paymentResponse,
+                        );
+                        setTimeout(
+                            () =>
+                                navigate(`/course/get/${courseId}`, {
+                                    replace: true,
+                                }),
+                            1000,
+                        );
+                    } catch (error) {
+                        console.error("Error verifying payment", error);
+                        toast.error("Error verifying payment");
+                    }
+                },
+                modal: {
+                    ondismiss: () => {
+                        toast("Payment cancelled", { icon: "❌" });
+                    },
+                },
             };
 
             const rzp = new window.Razorpay(options);
@@ -62,6 +83,8 @@ export const useEnrollmentStore = create((set) => ({
         } catch (error) {
             console.error("Error processing payment", error);
             toast.error("Error processing payment");
+        } finally {
+            set({ isEnrolling: false });
         }
     },
 
@@ -114,7 +137,5 @@ export const useEnrollmentStore = create((set) => ({
         }
     },
 
-    generateCertificate: async () => {
-        
-    },
+    generateCertificate: async () => {},
 }));

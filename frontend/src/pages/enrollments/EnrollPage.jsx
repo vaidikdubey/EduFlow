@@ -2,10 +2,6 @@ import React, { useEffect, useState, useRef } from "react";
 import { useCourseStore } from "@/stores/useCourseStore";
 import { useNavigate, useParams } from "react-router-dom";
 import { Loader } from "lucide-react";
-import { loadRazorpayScript } from "@/utils/loadRazorpay";
-import toast from "react-hot-toast";
-import { useAuthStore } from "@/stores/useAuthStore";
-import { axiosInstance } from "@/lib/axios";
 import { useEnrollmentStore } from "@/stores/useEnrollmentStore";
 
 export const EnrollPage = () => {
@@ -27,6 +23,7 @@ export const EnrollPage = () => {
             const isEnrolled = await checkEnrollment(id);
 
             if (isEnrolled) {
+                paymentInitiated.current = false;
                 navigate(`/course/get/${id}`);
                 return;
             }

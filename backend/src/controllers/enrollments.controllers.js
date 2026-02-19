@@ -3,12 +3,17 @@ import { asyncHandler } from "../utils/async-handler.js";
 import { ApiError } from "../utils/api-error.js";
 import { ApiResponse } from "../utils/api-response.js";
 import crypto from "crypto";
-import razorpay from "razorpay";
+import Razorpay from "razorpay";
 import PDFDocument from "pdfkit";
 import QRCode from "qrcode";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
 
 const enrollInCourse = asyncHandler(async (req, res) => {
   const { courseId } = req.params;
@@ -102,69 +107,37 @@ const enrollInCourse = asyncHandler(async (req, res) => {
   );
 });
 
-const handleRazorpayWebhook = asyncHandler(async (req, res) => {
-  const signature = req.headers["x-razorpay-signature"];
-  const body = req.body; //raw body Buffer
+const verifyPayment = asyncHandler(async (req, res) => {
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+    req.body;
 
-  //Verify webhook signature
+  // 1. Verify the signature
   const expectedSignature = crypto
-    .createHmac("sha256", process.env.RAZORPAY_WEBHOOK_SECRET)
-    .update(body.toString())
+    .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+    .update(`${razorpay_order_id}|${razorpay_payment_id}`)
     .digest("hex");
 
-  if (signature !== expectedSignature) {
-    console.error("Invalid razorpay webhook signature");
-    return res.status(400).json({ error: "Invalid signature" });
+  if (expectedSignature !== razorpay_signature) {
+    throw new ApiError(400, "Invalid payment signature");
   }
 
-  //Parse event
-  const event = JSON.parse(body.toString());
+  // 2. Find and Update the enrollment using the order_id
+  // We don't need 'notes' here because we saved the orderId in DB during 'enroll'
+  const updatedEnrollment = await db.enrollment.update({
+    where: {
+      paymentId: razorpay_order_id,
+    },
+    data: {
+      paymentStatus: "captured",
+      paidAt: new Date(),
+    },
+  });
 
-  //Handle event
-  let updatedEnrollment = null;
-  if (event.event === "payment.captured") {
-    const payment = event.payload.payment.entity;
-    const { notes } = payment;
-
-    const userId = notes.userId;
-    const courseId = notes.courseId;
-
-    if (!userId || !courseId) {
-      console.error("Missing notes in Razorpay payment");
-      return res.status(200).json({ status: "ok" });
-    }
-
-    //Update enrollment
-    updatedEnrollment = await db.enrollment.update({
-      where: {
-        userId_courseId: {
-          userId,
-          courseId,
-        },
-      },
-      data: {
-        paidAt: new Date(),
-        paymentId: payment.id,
-        amount: Number(payment.amount) / 100,
-        paymentStatus: "captured",
-      },
-      select: {
-        id: true,
-        userId: true,
-        courseId: true,
-        enrolledAt: true,
-        paidAt: true,
-        paymentId: true,
-        amount: true,
-        paymentStatus: true,
-      },
-    });
-
-    console.log(`Enrollment successful: user ${userId} → course ${courseId}`);
-  }
-
-  //Always respond Razorpay with 200 else they retry
-  res.status(200).json({ status: "ok", updatedEnrollment });
+  res
+    .status(200)
+    .json(
+      new ApiResponse(200, updatedEnrollment, "Payment verified successfully"),
+    );
 });
 
 const checkEnrollmentStatus = asyncHandler(async (req, res) => {
@@ -711,7 +684,7 @@ const getCourseEnrollments = asyncHandler(async (req, res) => {
 
 export {
   enrollInCourse,
-  handleRazorpayWebhook,
+  verifyPayment,
   checkEnrollmentStatus,
   getMyEnrollments,
   markCourseCompleted,
