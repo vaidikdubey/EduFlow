@@ -54,8 +54,8 @@ export const CourseHomePage = () => {
                         )}
                     </div>
                 </div>
-                <div className="w-full flex flex-col gap-1 md:px-8 py-2">
-                    <div className="flex flex-col md:flex-row justify-between md:items-center">
+                <div className="w-full flex justify-between items-center gap-1 md:px-8 py-2">
+                    <div className="flex flex-col justify-between items-start">
                         <h5>
                             <span className="font-semibold">Author: </span>
                             {fetchedCourse?.data?.createdBy?.name}
@@ -65,13 +65,12 @@ export const CourseHomePage = () => {
                             {timeAgo(fetchedCourse?.data?.createdAt)}
                         </p>
                     </div>
-                    <div className="flex gap-1">
-                        <span className="font-semibold">Instructors: </span>{" "}
+                    <div className="flex gap-1 border-2 w-fit max-w-120 px-2 rounded-full bg-foreground/80 text-background">
                         {fetchedCourse?.data?.instructors && (
                             <ReadMore
-                                text={fetchedCourse?.data?.instructors
+                                text={`${fetchedCourse?.data?.instructors
                                     .map((ins) => ins.name)
-                                    .join(", ")}
+                                    .join(", ")}, Instructor 5, Instructor 5, Instructor 5, Instructor 5`}
                                 maxLen={50}
                             />
                         )}
@@ -101,42 +100,38 @@ export const CourseHomePage = () => {
             </div>
 
             {/* Modules Section */}
-            <div className="flex-1 h-full w-full px-8 py-2 no-scroll">
-                <h2 className="font-bold text-xl">Modules: </h2>
-                <div className="h-full w-full border border-dashed my-1 p-4 rounded-2xl flex flex-col gap-3 overflow-y-auto no-scroll">
-                    {sortedModules?.map((module) => {
-                        return (
-                            <div
-                                key={module.id}
-                                className="w-full p-2 border-2 rounded-xl flex justify-between items-center"
-                            >
-                                <div>
-                                    <h3 className="font-bold">
-                                        <span>{module.order}. </span>{" "}
-                                        {module.title}
-                                    </h3>
-                                    <p>
-                                        <span className="font-semibold">
-                                            Lessons:{" "}
-                                        </span>{" "}
-                                        {module._count.lessons}
-                                    </p>
-                                    <p>
-                                        <span className="font-semibold">
-                                            Quiz:{" "}
-                                        </span>{" "}
-                                        {module._count.quiz}
-                                    </p>
-                                </div>
-                                <Button variant="icon" asChild>
-                                    <Link to={`/module/get/${module.id}`}>
-                                        <ArrowRight />
-                                    </Link>
-                                </Button>
+            <div className="flex-1 h-full w-full border border-dashed my-4 p-4 rounded-2xl flex flex-col gap-3 overflow-y-auto no-scroll">
+                {sortedModules?.map((module) => {
+                    return (
+                        <div
+                            key={module.id}
+                            className="w-full p-2 border-2 rounded-xl flex justify-between items-center"
+                        >
+                            <div>
+                                <h3 className="font-bold">
+                                    <span>{module.order}. </span> {module.title}
+                                </h3>
+                                <p>
+                                    <span className="font-semibold">
+                                        Lessons:{" "}
+                                    </span>{" "}
+                                    {module._count.lessons}
+                                </p>
+                                <p>
+                                    <span className="font-semibold">
+                                        Quiz:{" "}
+                                    </span>{" "}
+                                    {module._count.quiz}
+                                </p>
                             </div>
-                        );
-                    })}
-                </div>
+                            <Button variant="icon" asChild>
+                                <Link to={`/module/get/${module.id}`}>
+                                    <ArrowRight />
+                                </Link>
+                            </Button>
+                        </div>
+                    );
+                })}
             </div>
         </div>
     );
