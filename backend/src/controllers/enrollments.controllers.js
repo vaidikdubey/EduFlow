@@ -3,12 +3,76 @@ import { asyncHandler } from "../utils/async-handler.js";
 import { ApiError } from "../utils/api-error.js";
 import { ApiResponse } from "../utils/api-response.js";
 import crypto from "crypto";
-import razorpay from "razorpay";
+import Razorpay from "razorpay";
 import PDFDocument from "pdfkit";
 import QRCode from "qrcode";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
+
+const createOrder = asyncHandler(async (req, res) => {
+  const { courseId } = req.params;
+  const userId = req.user.id;
+
+  const existingEnrollment = await db.enrollment.findUnique({
+    where: {
+      userId_courseId: {
+        userId,
+        courseId,
+      },
+    },
+  });
+
+  if (existingEnrollment)
+    throw new ApiError(409, "You are already enrolled in this course");
+
+  let coursePrice = 0;
+
+  const course = await db.course.findUnique({
+    where: {
+      id: courseId,
+    },
+    select: {
+      id: true,
+      title: true,
+      type: true,
+      price: true,
+      isPublished: true,
+    },
+  });
+
+  if (!course || !course.isPublished)
+    throw new ApiError(404, "Course not found");
+
+  if (course.type === "FREE") {
+    coursePrice = 0;
+  } else {
+    coursePrice = course.price;
+  }
+
+  const options = {
+    amount: amount * 100, //convert amount to paise
+    currency: "INR",
+    receipt: `rcpt_${userId.toString().slice(-6)}_${Math.floor(Math.random() * 10000)}`,
+    payment_capture: 1,
+  };
+
+  const order = await razorpay.orders.create(options);
+
+  res.status(200).json(
+    new ApiResponse(200, {
+      orderId: order.id,
+      amount: order.amount,
+      currency: order.currency,
+      key: process.env.RAZORPAY_KEY_ID,
+    }),
+  );
+});
 
 const enrollInCourse = asyncHandler(async (req, res) => {
   const { courseId } = req.params;
@@ -63,7 +127,7 @@ const enrollInCourse = asyncHandler(async (req, res) => {
   if (course.type === "PAID" && (!course.price || course.price < 0))
     throw new ApiError(400, "Invalid course price");
 
-  const razorpayOrder = await razorpay.orders.create({
+  const razorpayOrder = await Razorpay.orders.create({
     amount: Math.round(course.price * 100),
     currency: "INR",
     receipt: `rcpt_${req.user.id.toString().slice(-6)}_${Math.floor(Math.random() * 10000)}`,
