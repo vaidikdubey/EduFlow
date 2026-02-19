@@ -27,6 +27,8 @@ router.route("/myEnrollments").get(isLoggedIn, getMyEnrollments);
 
 router.route("/completed/:courseId").patch(isLoggedIn, markCourseCompleted);
 
+router.route("/courseStatus/:courseId").get(isLoggedIn, checkCourseCompletionStatus);
+
 router.route("/cancel/:courseId").delete(isLoggedIn, cancelEnrollment);
 
 router

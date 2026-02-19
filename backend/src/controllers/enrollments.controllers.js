@@ -305,7 +305,7 @@ const markCourseCompleted = asyncHandler(async (req, res) => {
   if (!enrollmentCheck)
     throw new ApiError(404, "Course not found or you are not enrolled yet");
 
-  const markCourseCompleted = await db.enrollment.update({
+  const markCourseAsCompleted = await db.enrollment.update({
     where: {
       userId_courseId: {
         userId,
@@ -339,7 +339,50 @@ const markCourseCompleted = asyncHandler(async (req, res) => {
     ? "Course marked as completed"
     : "Course marked as incomplete";
 
-  res.status(200).json(new ApiResponse(200, markCourseCompleted, message));
+  res.status(200).json(new ApiResponse(200, markCourseAsCompleted, message));
+});
+
+const checkCourseCompletionStatus = asyncHandler(async (req, res) => {
+  const { courseId } = req.params;
+  const userId = req.user.id;
+
+  if (!courseId) throw new ApiError(404, "Course ID is required");
+
+  const enrollmentCheck = await db.enrollment.findUnique({
+    where: {
+      userId_courseId: {
+        userId,
+        courseId,
+      },
+    },
+    select: {
+      id: true,
+      enrolledAt: true,
+      completed: true,
+      completedAt: true,
+    },
+  });
+
+  if (!enrollmentCheck)
+    throw new ApiError(404, "Course not found or you are not enrolled");
+
+  const message = enrollmentCheck.completed
+    ? "Course completed"
+    : "Course incomplete";
+
+  res.status(
+    200,
+    json(
+      new ApiResponse(
+        200,
+        {
+          completionStatus: enrollmentCheck.completed,
+          enrollmentCheck,
+        },
+        message,
+      ),
+    ),
+  );
 });
 
 const cancelEnrollment = asyncHandler(async (req, res) => {
