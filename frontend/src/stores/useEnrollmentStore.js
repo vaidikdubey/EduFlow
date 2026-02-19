@@ -11,6 +11,7 @@ export const useEnrollmentStore = create((set) => ({
     isCancellingEnrollment: false,
     isCheckingCompletion: false,
     courseCompletion: null,
+    isGeneratingCertificate: false,
 
     enrollInCourse: async (courseId, navigate) => {
         try {
@@ -111,5 +112,9 @@ export const useEnrollmentStore = create((set) => ({
         } finally {
             set({ isCheckingCompletion: false });
         }
+    },
+
+    generateCertificate: async () => {
+        
     },
 }));

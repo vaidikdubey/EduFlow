@@ -79,8 +79,6 @@ export const CourseHomePage = () => {
         );
     }
 
-    console.log("Course completion: ", courseCompletion?.data);
-
     return (
         <div className="h-full w-full flex flex-col">
             {/* NavBar */}
@@ -224,14 +222,15 @@ export const CourseHomePage = () => {
                     className={cn("col-span-2 cursor-pointer")}
                     disabled={
                         isMarkingCompleted ||
-                        courseProgress?.data?.progressPercentage === 100
+                        courseProgress?.data?.progressPercentage === 100 ||
+                        courseCompletion?.data?.completionStatus
                     }
                     onClick={() => markCourseCompleted(id)}
                 >
                     {!isMarkingCompleted
-                        ? courseProgress?.data?.progressPercentage < 100
-                            ? "Mark Completed"
-                            : "Completed"
+                        ? courseCompletion?.data?.completionStatus
+                            ? "Completed"
+                            : "Mark Completed"
                         : "Please wait..."}
                 </Button>
                 <Button
