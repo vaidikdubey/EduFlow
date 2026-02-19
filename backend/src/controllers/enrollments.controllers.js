@@ -291,8 +291,10 @@ const markCourseCompleted = asyncHandler(async (req, res) => {
 
   const enrollmentCheck = await db.enrollment.findUnique({
     where: {
-      userId,
-      courseId,
+      userId_courseId: {
+        userId,
+        courseId,
+      },
     },
     select: {
       id: true,
@@ -305,8 +307,10 @@ const markCourseCompleted = asyncHandler(async (req, res) => {
 
   const markCourseCompleted = await db.enrollment.update({
     where: {
-      userId,
-      courseId,
+      userId_courseId: {
+        userId,
+        courseId,
+      },
     },
     data: {
       completed,

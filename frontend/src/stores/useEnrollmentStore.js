@@ -7,6 +7,8 @@ import { useAuthStore } from "./useAuthStore";
 export const useEnrollmentStore = create((set, get) => ({
     isEnrolling: false,
     enrollmentResult: null,
+    isMarkingCompleted: false,
+    isCancellingEnrollment: false,
 
     enrollInCourse: async (courseId, navigate) => {
         try {
@@ -57,6 +59,38 @@ export const useEnrollmentStore = create((set, get) => ({
         } catch (error) {
             console.error("Error processing payment", error);
             toast.error("Error processing payment");
+        }
+    },
+
+    markCourseCompleted: async (id) => {
+        set({ isMarkingCompleted: true });
+
+        try {
+            await axiosInstance.patch(`/enrollment/completed/${id}`, {
+                completed: true,
+            });
+
+            toast.success("Course completed");
+        } catch (error) {
+            console.error("Error marking course completed", error);
+            toast.error("Error marking course completed");
+        } finally {
+            set({ isMarkingCompleted: false });
+        }
+    },
+
+    cancelEnrollment: async (id) => {
+        set({ isCancellingEnrollment: true });
+
+        try {
+            await axiosInstance.delete(`/enrollment/cancel/${id}`);
+
+            toast.success("Enrollment cancelled");
+        } catch (error) {
+            console.error("Error cancelling enrollment", error);
+            toast.error("Error cancelling enrollment");
+        } finally {
+            set({ isCancellingEnrollment: false });
         }
     },
 }));

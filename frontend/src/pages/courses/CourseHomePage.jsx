@@ -8,16 +8,19 @@ import {
     Loader,
     Users,
 } from "lucide-react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { ReadMore } from "@/components/ui/ReadMore";
 import { timeAgo } from "@/utils/timeAgo";
 import { useModuleStore } from "@/stores/useModuleStore";
 import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { cn } from "@/lib/utils";
+import { useEnrollmentStore } from "@/stores/useEnrollmentStore";
 
 export const CourseHomePage = () => {
     const { id } = useParams();
+
+    const navigate = useNavigate();
 
     const {
         getCourseById,
@@ -29,6 +32,13 @@ export const CourseHomePage = () => {
     } = useCourseStore();
 
     const { isGettingAllModules, allModules, getAllModules } = useModuleStore();
+
+    const {
+        markCourseCompleted,
+        isMarkingCompleted,
+        cancelEnrollment,
+        isCancellingEnrollment,
+    } = useEnrollmentStore();
 
     useEffect(() => {
         getCourseById(id);
@@ -43,6 +53,14 @@ export const CourseHomePage = () => {
 
         return [...allModules.data].sort((a, b) => a.order - b.order);
     }, [allModules]);
+
+    const handleEnrollmentCancel = () => {
+        cancelEnrollment(id);
+
+        setTimeout(navigate("/course"), 5 * 1000);
+    };
+
+    const handleGenerateCertificate = () => {};
 
     if (isGettingCourse || isGettingAllModules || isGettingProgres) {
         return (
@@ -192,16 +210,37 @@ export const CourseHomePage = () => {
 
             {/* Course Enrollment Buttons */}
             <div className="grid grid-cols-2 gap-2 md:flex justify-between items-center">
-                <Button variant="success" className={cn("col-span-2")}>
-                    Mark Completed
+                <Button
+                    variant="success"
+                    className={cn("col-span-2 cursor-pointer")}
+                    disabled={
+                        isMarkingCompleted ||
+                        courseProgress?.data?.progressPercentage === 100
+                    }
+                    onClick={() => markCourseCompleted(id)}
+                >
+                    {!isMarkingCompleted
+                        ? courseProgress?.data?.progressPercentage < 100
+                            ? "Mark Completed"
+                            : "Completed"
+                        : "Please wait..."}
                 </Button>
                 <Button
                     variant="outline"
                     disabled={courseProgress?.data?.progressPercentage < 100}
+                    className={cn("cursor-pointer")}
+                    onClick={handleGenerateCertificate}
                 >
                     Generate Certificate
                 </Button>
-                <Button variant="destructive">Cancel Enrollment</Button>
+                <Button
+                    variant="destructive"
+                    disabled={isCancellingEnrollment}
+                    onClick={handleEnrollmentCancel}
+                    className={cn("cursor-pointer")}
+                >
+                    Cancel Enrollment
+                </Button>
             </div>
         </div>
     );
