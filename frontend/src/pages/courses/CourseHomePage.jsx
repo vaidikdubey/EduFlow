@@ -1,6 +1,13 @@
 import React, { useEffect, useMemo } from "react";
 import { useCourseStore } from "@/stores/useCourseStore";
-import { ArrowLeft, ArrowRight, Loader } from "lucide-react";
+import {
+    ArrowLeft,
+    ArrowRight,
+    BookOpen,
+    HelpCircle,
+    Loader,
+    Users,
+} from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { ReadMore } from "@/utils/ReadMore";
 import { timeAgo } from "@/utils/timeAgo";
@@ -65,34 +72,39 @@ export const CourseHomePage = () => {
                             {timeAgo(fetchedCourse?.data?.createdAt)}
                         </p>
                     </div>
-                    <div className="flex gap-1 border-2 w-fit max-w-120 px-2 rounded-full bg-foreground/80 text-background">
+                    <div className="flex gap-1 border-2 w-fit max-w-120 px-5 py-2 rounded-full bg-foreground/80 text-background">
                         {fetchedCourse?.data?.instructors && (
                             <ReadMore
                                 text={`${fetchedCourse?.data?.instructors
                                     .map((ins) => ins.name)
-                                    .join(", ")}, Instructor 5, Instructor 5, Instructor 5, Instructor 5`}
+                                    .join(", ")}`}
                                 maxLen={50}
+                                props={"text-sky-300 dark:text-sky-700 text-xs"}
                             />
                         )}
                     </div>
                 </div>
 
                 {/* Course Statistics */}
-                <div className="flex flex-col md:px-8 py-2 border border-dotted rounded-xl">
-                    <h6 className="font-semibold mx-auto pb-2 underline underline-offset-2">
-                        Course Stats
-                    </h6>
+                <div className="flex flex-col md:px-8 py-2 border border-dotted rounded-xl shadow-2xl">
+                    <h6 className="font-semibold pb-2">Course Stats</h6>
                     <div className="flex justify-between items-center cursor-default">
-                        <p>
-                            <span>Modules: </span>
+                        <p className="flex gap-2">
+                            <span className="flex gap-2">
+                                <BookOpen /> Modules:{" "}
+                            </span>
                             {fetchedCourse?.data?._count?.modules}
                         </p>
-                        <p>
-                            <span>Enrollments: </span>
+                        <p className="flex gap-2">
+                            <span className="flex gap-2">
+                                <Users /> Enrollments:{" "}
+                            </span>
                             {fetchedCourse?.data?._count?.enrollments}
                         </p>
-                        <p>
-                            <span>Quizzes: </span>
+                        <p className="flex gap-2">
+                            <span className="flex gap-2">
+                                <HelpCircle /> Quizzes:{" "}
+                            </span>
                             {fetchedCourse?.data?._count?.quizzes}
                         </p>
                     </div>
@@ -100,12 +112,12 @@ export const CourseHomePage = () => {
             </div>
 
             {/* Modules Section */}
-            <div className="flex-1 h-full w-full border border-dashed my-4 p-4 rounded-2xl flex flex-col gap-3 overflow-y-auto no-scroll">
+            <div className="flex-1 h-full w-full border border-dashed border-pink-200 my-4 p-4 rounded-2xl flex flex-col gap-3 overflow-y-auto no-scroll">
                 {sortedModules?.map((module) => {
                     return (
                         <div
                             key={module.id}
-                            className="w-full p-2 border-2 rounded-xl flex justify-between items-center"
+                            className="w-full p-2 border-2 rounded-xl flex justify-between items-center border-l-8 border-pink-400"
                         >
                             <div>
                                 <h3 className="font-bold">
