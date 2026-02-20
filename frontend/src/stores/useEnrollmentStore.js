@@ -45,7 +45,7 @@ export const useEnrollmentStore = create((set) => ({
                 key: razorpay_details.key,
                 amount: razorpay_details.amount,
                 currency: razorpay_details.currency,
-                name: "EduFlow Course",
+                name: `EduFlow Course - ${razorpay_details.courseTitle}`,
                 description: razorpay_details.courseTitle,
                 order_id: razorpay_details.orderId,
                 prefill: {
@@ -74,6 +74,7 @@ export const useEnrollmentStore = create((set) => ({
                 modal: {
                     ondismiss: () => {
                         toast("Payment cancelled", { icon: "❌" });
+                        navigate("/course", { replace: true });
                     },
                 },
             };

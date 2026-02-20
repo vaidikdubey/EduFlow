@@ -31,7 +31,7 @@ const enrollInCourse = asyncHandler(async (req, res) => {
   if (existingEnrollment)
     throw new ApiError(409, "You are already enrolled in this course");
 
-  const course = await db.course.findUnique({
+  const existingCourse = await db.course.findUnique({
     where: {
       id: courseId,
     },
@@ -44,10 +44,12 @@ const enrollInCourse = asyncHandler(async (req, res) => {
     },
   });
 
-  if (!course || !course.isPublished)
+  console.log("Existing course: ", existingCourse);
+
+  if (!existingCourse || !existingCourse.isPublished)
     throw new ApiError(404, "Course not found");
 
-  if (course.type === "FREE") {
+  if (existingCourse.type === "FREE") {
     const newEnrollment = await db.enrollment.create({
       data: {
         userId,
@@ -65,17 +67,20 @@ const enrollInCourse = asyncHandler(async (req, res) => {
       .json(new ApiResponse(201, newEnrollment, "Successfully enrolled"));
   }
 
-  if (course.type === "PAID" && (!course.price || course.price < 0))
+  if (
+    existingCourse.type === "PAID" &&
+    (!existingCourse.price || existingCourse.price < 0)
+  )
     throw new ApiError(400, "Invalid course price");
 
   const razorpayOrder = await razorpay.orders.create({
-    amount: Math.round(course.price * 100),
+    amount: Math.round(existingCourse.price * 100),
     currency: "INR",
     receipt: `rcpt_${req.user.id.toString().slice(-6)}_${Math.floor(Math.random() * 10000)}`,
     notes: {
       userId,
       courseId,
-      courseTitle: course.title,
+      courseTitle: existingCourse.title,
     },
   });
 
@@ -84,7 +89,7 @@ const enrollInCourse = asyncHandler(async (req, res) => {
       userId,
       courseId,
       paymentStatus: "pending",
-      amount: course.price,
+      amount: existingCourse.price,
       paymentId: razorpayOrder.id,
     },
   });
@@ -98,7 +103,7 @@ const enrollInCourse = asyncHandler(async (req, res) => {
           amount: razorpayOrder.amount,
           currency: razorpayOrder.currency,
           courseId,
-          courseTitle: course.title,
+          courseTitle: existingCourse.title,
           key: process.env.RAZORPAY_KEY_ID,
         },
       },
