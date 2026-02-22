@@ -1,6 +1,6 @@
+import React, { useEffect } from "react";
 import { useLessonStore } from "@/stores/useLessonStore";
 import { ArrowLeft, Loader } from "lucide-react";
-import React, { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 
 export const LessonsPage = () => {
