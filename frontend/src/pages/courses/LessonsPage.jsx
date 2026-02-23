@@ -10,6 +10,7 @@ export const LessonsPage = () => {
 
     useEffect(() => {
         getAllLessons(id);
+        //eslint-disable-next-line
     }, [id]);
 
     console.log("All lessons: ", allLessons?.data);
