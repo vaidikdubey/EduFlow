@@ -83,7 +83,15 @@ export const LessonsPage = () => {
                                         </Link>
                                     )}
                             </div>
-                            <Button variant="success">Mark Completed</Button>
+                            <Button
+                                variant="success"
+                                onClick={() => markLessonComplete(lesson.id)}
+                                disabled={isMarkingComplete}
+                            >
+                                {isMarkingComplete
+                                    ? "Please wait..."
+                                    : "Mark Completed"}
+                            </Button>
                         </div>
                     );
                 })}
