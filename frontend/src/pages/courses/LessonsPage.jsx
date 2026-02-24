@@ -7,7 +7,13 @@ import { Button } from "@/components/ui/button";
 export const LessonsPage = () => {
     const { id } = useParams();
 
-    const { getAllLessons, isGettingAllLessons, allLessons } = useLessonStore();
+    const {
+        getAllLessons,
+        isGettingAllLessons,
+        allLessons,
+        markLessonComplete,
+        isMarkingComplete,
+    } = useLessonStore();
 
     useEffect(() => {
         getAllLessons(id);

@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 export const useLessonStore = create((set) => ({
     isGettingAllLessons: false,
     allLessons: [],
+    isMarkingComplete: false,
 
     getAllLessons: async (moduleId) => {
         set({ isGettingAllLessons: true });
@@ -20,6 +21,25 @@ export const useLessonStore = create((set) => ({
             toast.error("Error getting lessons");
         } finally {
             set({ isGettingAllLessons: false });
+        }
+    },
+
+    markLessonComplete: async (id) => {
+        set({ isMarkingComplete: true });
+
+        try {
+            await axiosInstance.patch(`/lesson/markCompleted/${id}`, {
+                completed: true,
+            });
+
+            toast.success("Lesson completed");
+        } catch (error) {
+            console.error("Error marking lesson completed", error);
+            toast.error(
+                error.response.data.message || "Error marking lesson completed",
+            );
+        } finally {
+            set({ isMarkingComplete: false });
         }
     },
 }));
