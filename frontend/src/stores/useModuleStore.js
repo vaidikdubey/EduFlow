@@ -15,7 +15,7 @@ export const useModuleStore = create((set) => ({
             set({ allModules: res.data });
         } catch (error) {
             console.error("Error getting modules", error);
-            toast.error("Error getting modules");
+            toast.error(error.response.data.message || "Error getting modules");
         } finally {
             set({ isGettingAllModules: false });
         }
