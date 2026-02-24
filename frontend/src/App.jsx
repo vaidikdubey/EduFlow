@@ -18,6 +18,8 @@ import { AllCoursesPage } from "./pages/courses/All Courses Page/AllCoursesPage"
 import { EnrollPage } from "./pages/enrollments/EnrollPage";
 import { LessonsPage } from "./pages/lessons/LessonsPage";
 import { AttemptQuiz } from "./pages/quiz/AttemptQuiz";
+import { CreateLesson } from "./pages/lessons/CreateLesson";
+import { CreateBulkLessons } from "./pages/lessons/CreateBulkLessons";
 
 function App() {
     const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -122,6 +124,16 @@ function App() {
                         <Route
                             path="/quiz/attempt/:id"
                             element={<AttemptQuiz />}
+                        />
+
+                        <Route
+                            path="/lesson/create/:id"
+                            element={<CreateLesson />}
+                        />
+
+                        <Route
+                            path="/lesson/createBulk/:id"
+                            element={<CreateBulkLessons />}
                         />
                     </Route>
                 </Route>
