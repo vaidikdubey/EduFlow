@@ -82,5 +82,5 @@ export const createLessonSchema = z.object({
         invalid_type_error: "Please select valid content type",
     }),
     contentUrl: z.url("Content URL must be a valid URL"),
-    order: z.number().optional(),
+    order: z.number().optional().nullable(),
 });
