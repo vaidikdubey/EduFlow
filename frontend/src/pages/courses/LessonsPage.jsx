@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useLessonStore } from "@/stores/useLessonStore";
 import { ArrowLeft, Loader } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 export const LessonsPage = () => {
     const { id } = useParams();
@@ -45,11 +46,38 @@ export const LessonsPage = () => {
                 </p>
             </div>
 
-            <div className="h-full w-full flex-1 flex flex-col border-2 border-dashed">
-                {allLessons?.data?.lessons?.map((lesson) => {
+            <div className="h-full w-full flex-1 flex flex-col border border-dashed border-pink-200 dark:border-pink-950 my-2 rounded-2xl">
+                {allLessons?.data?.lessons?.map((lesson, idx) => {
                     return (
-                        <div className="flex flex-col">
-                            <h6>{lesson.title}</h6>
+                        <div
+                            key={lesson.id}
+                            className="flex justify-between items-center px-5 m-2 border-2 rounded-xl border-l-8 border-pink-400"
+                        >
+                            <div className="flex flex-col">
+                                <h6 className="text-xl font-semibold">
+                                    <span className="font-normal text-sm">
+                                        {idx + 1}.
+                                    </span>{" "}
+                                    {lesson.title}
+                                </h6>
+                                <p>
+                                    <span className="font-semibold">
+                                        Type:{" "}
+                                    </span>{" "}
+                                    {lesson.contentType}
+                                </p>
+                                {lesson.contentType != "TEXT" &&
+                                    lesson.contentUrl && (
+                                        <Link
+                                            to={`${lesson.contentUrl}`}
+                                            target="_blank"
+                                            className="hover:underline hover:underline-offset-2 text-blue-600 hover:text-blue-700 visited:text-purple-600"
+                                        >
+                                            View Content
+                                        </Link>
+                                    )}
+                            </div>
+                            <Button variant="success">Mark Completed</Button>
                         </div>
                     );
                 })}
