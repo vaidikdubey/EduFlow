@@ -405,11 +405,8 @@ const createLesson = asyncHandler(async (req, res) => {
   if (!["TEXT", "VIDEO", "PDF"].includes(contentType.toUpperCase()))
     throw new ApiError(400, "Invalid content type");
 
-  if (contentType.toLowerCase() !== "text" && !contentUrl)
-    throw new ApiError(
-      400,
-      "contentUrl is required for non-text content types",
-    );
+  if (!contentUrl)
+    throw new ApiError(400, "contentUrl is required for every content types");
 
   const moduleData = await db.module.findUnique({
     where: { id: moduleId },
@@ -455,7 +452,7 @@ const createLesson = asyncHandler(async (req, res) => {
     data: {
       title: title.trim(),
       contentType: contentType.toUpperCase(),
-      contentUrl: contentUrl || null,
+      contentUrl: contentUrl.trim(),
       order: lessonOrder,
       moduleId,
     },
@@ -492,8 +489,11 @@ const bulkCreateLessons = asyncHandler(async (req, res) => {
         `Lesson at index ${index} is missing contentType`,
       );
     }
-    if (!['TEXT', 'VIDEO', 'PDF'].includes(lesson.contentType.toUpperCase())) {
-      throw new ApiError(400, `Invalid content type for lesson at index ${index}`);
+    if (!["TEXT", "VIDEO", "PDF"].includes(lesson.contentType.toUpperCase())) {
+      throw new ApiError(
+        400,
+        `Invalid content type for lesson at index ${index}`,
+      );
     }
     if (lesson.contentType.toLowerCase() !== "text" && !lesson.contentUrl) {
       throw new ApiError(400, `Lesson at index ${index} is missing contentUrl`);
