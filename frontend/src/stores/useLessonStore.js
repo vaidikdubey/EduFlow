@@ -6,6 +6,8 @@ export const useLessonStore = create((set) => ({
     isGettingAllLessons: false,
     allLessons: [],
     isMarkingComplete: false,
+    isCreatingLesson: false,
+    createdLesson: null,
 
     getAllLessons: async (moduleId) => {
         set({ isGettingAllLessons: true });
@@ -40,6 +42,26 @@ export const useLessonStore = create((set) => ({
             );
         } finally {
             set({ isMarkingComplete: false });
+        }
+    },
+
+    createLesson: async (id, response) => {
+        set({ isCreatingLesson: true });
+
+        try {
+            const res = await axiosInstance.post(
+                `/lesson/create/${id}`,
+                response,
+            );
+
+            set({ createdLesson: res.data });
+
+            toast.success(res.message || "Lesson created");
+        } catch (error) {
+            console.error("Error creating lesson", error);
+            toast.error(error.response.data.message || "Error creating lesson");
+        } finally {
+            set({ isCreatingLesson: false });
         }
     },
 }));
