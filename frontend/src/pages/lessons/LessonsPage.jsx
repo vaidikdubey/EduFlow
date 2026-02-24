@@ -42,33 +42,33 @@ export const LessonsPage = () => {
                     <Link to={"/"}>
                         <ArrowLeft />
                     </Link>
-                    <div className="flex flex-col">
-                        <h1 className="text-3xl font-bold underline underline-offset-2">
+                    <div className="flex flex-col gap-2 md:gap-0">
+                        <h1 className="text-2xl md:text-3xl font-bold underline underline-offset-2">
                             {allLessons?.data?.module?.courseTitle}
                         </h1>
-                        <h3 className="text-xl">
+                        <h3 className="text-sm md:text-xl">
                             {allLessons?.data?.module?.title}
                         </h3>
                     </div>
                 </div>
                 <div className="flex justify-between items-center px-8">
-                    <p>
+                    <p className="text-xs md:text-base">
                         <span className="font-semibold">Total Lessons: </span>{" "}
                         {allLessons?.data?.totalLessons}
                     </p>
-                    <p>
+                    <p className="text-xs md:text-base">
                         <span className="font-semibold">Total Quizzes: </span>{" "}
                         {allQuizForModule?.data?.totalQuizzes}
                     </p>
                 </div>
             </div>
 
-            <div className="h-full w-full flex-1 flex flex-col border border-dashed border-pink-200 dark:border-pink-950 my-2 rounded-2xl">
+            <div className="h-full w-full flex-1 flex flex-col border border-dashed border-pink-200 dark:border-pink-950 my-2 rounded-2xl overflow-y-auto no-scroll">
                 {allLessons?.data?.lessons?.map((lesson) => {
                     return (
                         <div
                             key={lesson.id}
-                            className="flex justify-between items-center px-5 m-2 border-2 rounded-xl border-l-8 border-pink-400 py-2"
+                            className="flex flex-col md:flex-row gap-2 md:gap-0 justify-between items-center px-5 m-2 border-2 rounded-xl border-l-8 border-pink-400 py-2"
                         >
                             <div className="flex flex-col">
                                 <h6 className="text-xl font-semibold">
@@ -110,7 +110,7 @@ export const LessonsPage = () => {
                     return (
                         <div
                             key={quiz.id}
-                            className="flex justify-between items-center px-5 m-2 border-2 rounded-xl border-l-8 border-pink-400 py-2"
+                            className="flex flex-col md:flex-row gap-2 md:gap-0 justify-between items-center px-5 m-2 border-2 rounded-xl border-l-8 border-pink-400 py-2"
                         >
                             <div className="flex flex-col">
                                 <h6 className="text-xl font-semibold">
