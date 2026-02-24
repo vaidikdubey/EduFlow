@@ -68,7 +68,10 @@ export const useEnrollmentStore = create((set) => ({
                         );
                     } catch (error) {
                         console.error("Error verifying payment", error);
-                        toast.error("Error verifying payment");
+                        toast.error(
+                            error.response.data.message ||
+                                "Error verifying payment",
+                        );
                     }
                 },
                 modal: {
@@ -83,7 +86,9 @@ export const useEnrollmentStore = create((set) => ({
             rzp.open();
         } catch (error) {
             console.error("Error processing payment", error);
-            toast.error("Error processing payment");
+            toast.error(
+                error.response.data.message || "Error processing payment",
+            );
         } finally {
             set({ isEnrolling: false });
         }
@@ -100,7 +105,9 @@ export const useEnrollmentStore = create((set) => ({
             toast.success("Course completed");
         } catch (error) {
             console.error("Error marking course completed", error);
-            toast.error("Error marking course completed");
+            toast.error(
+                error.response.data.message || "Error marking course completed",
+            );
         } finally {
             set({ isMarkingCompleted: false });
         }
@@ -115,7 +122,9 @@ export const useEnrollmentStore = create((set) => ({
             toast.success("Enrollment cancelled");
         } catch (error) {
             console.error("Error cancelling enrollment", error);
-            toast.error("Error cancelling enrollment");
+            toast.error(
+                error.response.data.message || "Error cancelling enrollment",
+            );
         } finally {
             set({ isCancellingEnrollment: false });
         }
@@ -132,7 +141,10 @@ export const useEnrollmentStore = create((set) => ({
             set({ courseCompletion: res.data });
         } catch (error) {
             console.error("Error fetching course completion status", error);
-            toast.error("Error fetching course completion status");
+            toast.error(
+                error.response.data.message ||
+                    "Error fetching course completion status",
+            );
         } finally {
             set({ isCheckingCompletion: false });
         }
