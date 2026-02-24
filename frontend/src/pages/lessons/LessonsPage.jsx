@@ -83,16 +83,19 @@ export const LessonsPage = () => {
                                     </span>{" "}
                                     {lesson.contentType}
                                 </p>
-                                {lesson.contentType != "TEXT" &&
-                                    lesson.contentUrl && (
-                                        <Link
-                                            to={`${lesson.contentUrl}`}
-                                            target="_blank"
-                                            className="hover:underline hover:underline-offset-2 text-blue-600 hover:text-blue-700 visited:text-purple-600"
-                                        >
-                                            View Content
-                                        </Link>
-                                    )}
+                                {lesson.contentUrl ? (
+                                    <Link
+                                        to={`${lesson.contentUrl}`}
+                                        target="_blank"
+                                        className="hover:underline hover:underline-offset-2 text-blue-600 hover:text-blue-700 visited:text-purple-600"
+                                    >
+                                        View Content
+                                    </Link>
+                                ) : (
+                                    <p className="text-xs italic cursor-not-allowed">
+                                        URL Not provided
+                                    </p>
+                                )}
                             </div>
                             <Button
                                 variant="success"
