@@ -52,7 +52,7 @@ export const createCourseSchema = z
 export const updateCourseSchema = z
     .object({
         title: z
-            .string("Title is required")
+            .string()
             .min(3, "Title must be atleast 3 characters")
             .optional(),
         description: z.string().optional(),
@@ -72,3 +72,15 @@ export const updateCourseSchema = z
         error: "Price is required and must be greater than 0 for PAID courses",
         path: ["price"],
     });
+
+export const createLessonSchema = z.object({
+    title: z
+        .string("Title is required")
+        .min(3, "Title must be atleast 3 characters"),
+    contentType: z.enum(["TEXT", "PDF", "VIDEO"], {
+        required_error: "Please select content type",
+        invalid_type_error: "Please select valid content type",
+    }),
+    contentUrl: z.url("Content URL must be a valid URL"),
+    order: z.number().optional(),
+});
