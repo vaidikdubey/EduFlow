@@ -34,7 +34,7 @@ export const useAuthStore = create((set) => ({
             set({ authUser: res.data });
         } catch (error) {
             console.error("Error logging in", error);
-            toast.error("Error logging in");
+            toast.error(error.response.data.message || "Error logging in");
         } finally {
             set({ isLoggingIn: false });
         }
@@ -51,7 +51,7 @@ export const useAuthStore = create((set) => ({
             set({ authUser: res.data });
         } catch (error) {
             console.error("Error signing in", error);
-            toast.error("Error signing in");
+            toast.error(error.response.data.message || "Error signing in");
         } finally {
             set({ isSigninUp: false });
         }
@@ -65,7 +65,7 @@ export const useAuthStore = create((set) => ({
             toast.success("Logout successful");
         } catch (error) {
             console.error("Error logging out", error);
-            toast.error("Error logging out");
+            toast.error(error.response.data.message || "Error logging out");
         }
     },
 
@@ -78,7 +78,7 @@ export const useAuthStore = create((set) => ({
             return { status: "success" };
         } catch (error) {
             console.error("Error verifying email", error);
-            toast.error("Error verifying email");
+            toast.error(error.response.data.message || "Error verifying email");
             return { status: "error" };
         }
     },
@@ -90,7 +90,9 @@ export const useAuthStore = create((set) => ({
             toast.success("Check your email for reset link");
         } catch (error) {
             console.error("Error in forgot password", error);
-            toast.error("Error sending reset link");
+            toast.error(
+                error.response.data.message || "Error sending reset link",
+            );
         }
     },
 
@@ -106,7 +108,9 @@ export const useAuthStore = create((set) => ({
             return { status: true };
         } catch (error) {
             console.error("Error resetting password", error);
-            toast.error("Error resetting password");
+            toast.error(
+                error.response.data.message || "Error resetting password",
+            );
 
             return { status: false };
         }
@@ -119,7 +123,9 @@ export const useAuthStore = create((set) => ({
             toast.success(res.message || "Password changed");
         } catch (error) {
             console.error("Error changing password", error);
-            toast.error("Error changing password");
+            toast.error(
+                error.response.data.message || "Error changing password",
+            );
         }
     },
 
@@ -134,7 +140,9 @@ export const useAuthStore = create((set) => ({
             return true;
         } catch (error) {
             console.error("Error updating profile", error);
-            toast.error("Error updating profile");
+            toast.error(
+                error.response.data.message || "Error updating profile",
+            );
 
             return false;
         } finally {
@@ -155,7 +163,7 @@ export const useAuthStore = create((set) => ({
             return true;
         } catch (error) {
             console.error("Error deleting user", error);
-            toast.error("Error deleting user");
+            toast.error(error.response.data.message || "Error deleting user");
 
             return false;
         } finally {
