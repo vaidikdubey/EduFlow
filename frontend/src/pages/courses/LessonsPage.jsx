@@ -20,8 +20,6 @@ export const LessonsPage = () => {
         //eslint-disable-next-line
     }, [id]);
 
-    console.log("All lessons: ", allLessons?.data);
-
     if (isGettingAllLessons) {
         return (
             <div className="h-full flex items-center justify-center">
@@ -57,7 +55,7 @@ export const LessonsPage = () => {
                     return (
                         <div
                             key={lesson.id}
-                            className="flex justify-between items-center px-5 m-2 border-2 rounded-xl border-l-8 border-pink-400"
+                            className="flex justify-between items-center px-5 m-2 border-2 rounded-xl border-l-8 border-pink-400 py-2"
                         >
                             <div className="flex flex-col">
                                 <h6 className="text-xl font-semibold">
