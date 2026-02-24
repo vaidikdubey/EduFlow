@@ -3,6 +3,7 @@ import { useLessonStore } from "@/stores/useLessonStore";
 import { ArrowLeft, Loader } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useQuizStore } from "@/stores/useQuizStore";
 
 export const LessonsPage = () => {
     const { id } = useParams();
@@ -15,12 +16,20 @@ export const LessonsPage = () => {
         isMarkingComplete,
     } = useLessonStore();
 
+    const { isGettingQuizForModule, allQuizForModule, getAllQuizForModule } =
+        useQuizStore();
+
     useEffect(() => {
         getAllLessons(id);
+        getAllQuizForModule(id);
         //eslint-disable-next-line
     }, [id]);
 
-    if (isGettingAllLessons) {
+    console.log("All quizzes: ", allQuizForModule?.data);
+
+    let serialNo = 1;
+
+    if (isGettingAllLessons || isGettingQuizForModule) {
         return (
             <div className="h-full flex items-center justify-center">
                 <Loader className="animate-spin text-foreground" />
@@ -44,14 +53,20 @@ export const LessonsPage = () => {
                         </h3>
                     </div>
                 </div>
-                <p className="pl-8">
-                    <span className="font-semibold">Total Lessons: </span>{" "}
-                    {allLessons?.data?.totalLessons}
-                </p>
+                <div className="flex justify-between items-center px-8">
+                    <p>
+                        <span className="font-semibold">Total Lessons: </span>{" "}
+                        {allLessons?.data?.totalLessons}
+                    </p>
+                    <p>
+                        <span className="font-semibold">Total Quizzes: </span>{" "}
+                        {allQuizForModule?.data?.totalQuizzes}
+                    </p>
+                </div>
             </div>
 
             <div className="h-full w-full flex-1 flex flex-col border border-dashed border-pink-200 dark:border-pink-950 my-2 rounded-2xl">
-                {allLessons?.data?.lessons?.map((lesson, idx) => {
+                {allLessons?.data?.lessons?.map((lesson) => {
                     return (
                         <div
                             key={lesson.id}
@@ -60,7 +75,7 @@ export const LessonsPage = () => {
                             <div className="flex flex-col">
                                 <h6 className="text-xl font-semibold">
                                     <span className="font-normal text-sm">
-                                        {idx + 1}.
+                                        {serialNo++}.
                                     </span>{" "}
                                     {lesson.title}
                                 </h6>
@@ -89,6 +104,40 @@ export const LessonsPage = () => {
                                 {isMarkingComplete
                                     ? "Please wait..."
                                     : "Mark Completed"}
+                            </Button>
+                        </div>
+                    );
+                })}
+                {allQuizForModule?.data?.quizzes?.map((quiz) => {
+                    return (
+                        <div
+                            key={quiz.id}
+                            className="flex justify-between items-center px-5 m-2 border-2 rounded-xl border-l-8 border-pink-400 py-2"
+                        >
+                            <div className="flex flex-col">
+                                <h6 className="text-xl font-semibold">
+                                    <span className="font-normal text-sm">
+                                        {serialNo++}.
+                                    </span>{" "}
+                                    {quiz.title}
+                                </h6>
+                                <p>
+                                    <span className="font-semibold">
+                                        Type:{" "}
+                                    </span>{" "}
+                                    Quiz
+                                </p>
+                                <p className="text-sm">
+                                    <span>Attemps:</span> {quiz._count.attempts}
+                                </p>
+                            </div>
+                            <Button variant="success" asChild>
+                                <Link
+                                    to={`/quiz/attempt/${quiz.id}`}
+                                    target="_blank"
+                                >
+                                    Attempt Quiz
+                                </Link>
                             </Button>
                         </div>
                     );
