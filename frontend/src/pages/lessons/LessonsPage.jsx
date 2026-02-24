@@ -25,8 +25,6 @@ export const LessonsPage = () => {
         //eslint-disable-next-line
     }, [id]);
 
-    console.log("All quizzes: ", allQuizForModule?.data);
-
     let serialNo = 1;
 
     if (isGettingAllLessons || isGettingQuizForModule) {
