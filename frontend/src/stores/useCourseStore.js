@@ -35,7 +35,7 @@ export const useCourseStore = create((set) => ({
             return true;
         } catch (error) {
             console.error("Error creating course", error);
-            toast.error("Error creating course");
+            toast.error(error.response.data.message || "Error creating course");
 
             return false;
         } finally {
@@ -54,7 +54,9 @@ export const useCourseStore = create((set) => ({
             set({ allInstructors: res.data });
         } catch (error) {
             console.error("Error getting all instructors", error);
-            toast.error("Error getting all instructors");
+            toast.error(
+                error.response.data.message || "Error getting all instructors",
+            );
         } finally {
             set({ isGettingInstructors: false });
         }
@@ -74,7 +76,7 @@ export const useCourseStore = create((set) => ({
             toast.success(res.message || "Course updated");
         } catch (error) {
             console.error("Error updating course", error);
-            toast.error("Error updating course");
+            toast.error(error.response.data.message || "Error updating course");
         } finally {
             set({ isUpdatingCourse: false });
         }
@@ -91,7 +93,7 @@ export const useCourseStore = create((set) => ({
             toast.success(res.message || "Course fetched");
         } catch (error) {
             console.error("Error fetching course by id", error);
-            toast.error("Error fetching course");
+            toast.error(error.response.data.message || "Error fetching course");
         } finally {
             set({ isGettingCourse: false });
         }
@@ -108,7 +110,9 @@ export const useCourseStore = create((set) => ({
             toast.success(res.data.message || "Courses fetched");
         } catch (error) {
             console.error("Error fetching courses", error);
-            toast.error("Error fetching courses");
+            toast.error(
+                error.response.data.message || "Error fetching courses",
+            );
         } finally {
             set({ isGettingAllCourses: false });
         }
@@ -127,7 +131,9 @@ export const useCourseStore = create((set) => ({
             return res.data.data.status;
         } catch (error) {
             console.error("Error checking enrollment", error);
-            toast.error("Error checking enrollment");
+            toast.error(
+                error.response.data.message || "Error checking enrollment",
+            );
 
             return null;
         } finally {
@@ -144,7 +150,9 @@ export const useCourseStore = create((set) => ({
             set({ courseProgress: res.data });
         } catch (error) {
             console.error("Error fetching progress", error);
-            toast.error("Error fetching progress");
+            toast.error(
+                error.response.data.message || "Error fetching progress",
+            );
         } finally {
             set({ isGettingProgres: false });
         }
