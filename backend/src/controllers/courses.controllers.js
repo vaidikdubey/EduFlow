@@ -144,7 +144,7 @@ const getCourseProgress = asyncHandler(async (req, res) => {
               title: true,
               order: true,
               progress: {
-                where: { id: userId },
+                where: { userId },
                 select: {
                   completed: true,
                   completedAt: true,
