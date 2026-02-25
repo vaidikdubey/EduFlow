@@ -8,6 +8,8 @@ export const useLessonStore = create((set) => ({
     isMarkingComplete: false,
     isCreatingLesson: false,
     createdLesson: null,
+    isUpdatingLesson: false,
+    updatedLesson: null,
 
     getAllLessons: async (moduleId) => {
         set({ isGettingAllLessons: true });
@@ -45,14 +47,11 @@ export const useLessonStore = create((set) => ({
         }
     },
 
-    createLesson: async (id, response) => {
+    createLesson: async (id, data) => {
         set({ isCreatingLesson: true });
 
         try {
-            const res = await axiosInstance.post(
-                `/lesson/create/${id}`,
-                response,
-            );
+            const res = await axiosInstance.post(`/lesson/create/${id}`, data);
 
             set({ createdLesson: res.data });
 
@@ -66,6 +65,27 @@ export const useLessonStore = create((set) => ({
             return false;
         } finally {
             set({ isCreatingLesson: false });
+        }
+    },
+
+    updateLesson: async (id, data) => {
+        set({ isUpdatingLesson: true });
+
+        try {
+            const res = await axiosInstance.patch(`/lesson/update/${id}`, data);
+
+            set({ updatedLesson: res.data });
+
+            toast.success(res.message || "Lesson updated");
+
+            return true;
+        } catch (error) {
+            console.error("Error updating lesson", error);
+            toast.error(error.response.data.message || "Error updating lesson");
+
+            return false;
+        } finally {
+            set({ isUpdatingLesson: false });
         }
     },
 }));
