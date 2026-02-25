@@ -5,6 +5,8 @@ import toast from "react-hot-toast";
 export const useLessonStore = create((set) => ({
     isGettingAllLessons: false,
     allLessons: [],
+    isGettingLesson: false,
+    lessonById: null,
     isMarkingComplete: false,
     isCreatingLesson: false,
     createdLesson: null,
@@ -22,9 +24,26 @@ export const useLessonStore = create((set) => ({
             toast.success(res.message || "Lessons fetched");
         } catch (error) {
             console.error("Error fetching all lessons", error);
-            toast.error("Error getting lessons");
+            toast.error(error.response.data.message || "Error getting lessons");
         } finally {
             set({ isGettingAllLessons: false });
+        }
+    },
+
+    getLessonById: async (id) => {
+        set({ isGettingLesson: true });
+
+        try {
+            const res = await axiosInstance.get(`/lesson/getLesson/${id}`);
+
+            set({ lessonById: res.data });
+
+            toast.success(res.message || "Lesson fetched");
+        } catch (error) {
+            console.log("Error getting lesson by id", error);
+            toast.error(error.response.data.message || "Error getting lesson");
+        } finally {
+            set({ isGettingLesson: false });
         }
     },
 
