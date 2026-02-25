@@ -20,6 +20,7 @@ import { LessonsPage } from "./pages/lessons/LessonsPage";
 import { AttemptQuiz } from "./pages/quiz/AttemptQuiz";
 import { CreateLesson } from "./pages/lessons/CreateLesson";
 import { CreateBulkLessons } from "./pages/lessons/CreateBulkLessons";
+import { UpdateLessonPage } from "./pages/lessons/UpdateLessonPage";
 
 function App() {
     const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -134,6 +135,11 @@ function App() {
                         <Route
                             path="/lesson/createBulk/:id"
                             element={<CreateBulkLessons />}
+                        />
+
+                        <Route
+                            path="/lesson/update/:id"
+                            element={<UpdateLessonPage />}
                         />
                     </Route>
                 </Route>
