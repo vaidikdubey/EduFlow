@@ -84,3 +84,18 @@ export const createLessonSchema = z.object({
     contentUrl: z.url("Content URL must be a valid URL"),
     order: z.number().optional().nullable(),
 });
+
+export const updateLessonSchema = z.object({
+    title: z
+        .string("Title is required")
+        .min(3, "Title must be atleast 3 characters")
+        .optional(),
+    contentType: z
+        .enum(["TEXT", "PDF", "VIDEO"], {
+            required_error: "Please select content type",
+            invalid_type_error: "Please select valid content type",
+        })
+        .optional(),
+    contentUrl: z.url("Content URL must be a valid URL").optional(),
+    order: z.number().optional().nullable(),
+});
