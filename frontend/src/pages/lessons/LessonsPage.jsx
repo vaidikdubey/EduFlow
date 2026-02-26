@@ -132,14 +132,21 @@ export const LessonsPage = () => {
                                     <span>Attemps:</span> {quiz._count.attempts}
                                 </p>
                             </div>
-                            <Button variant="success" asChild>
-                                <Link
-                                    to={`/quiz/attempt/${quiz.id}`}
-                                    target="_blank"
-                                >
-                                    Attempt Quiz
-                                </Link>
-                            </Button>
+                            <div className="flex justify-center items-center gap-5">
+                                <Button variant="success" asChild>
+                                    <Link
+                                        to={`/quiz/attempt/${quiz.id}`}
+                                        target="_blank"
+                                    >
+                                        Attempt Quiz
+                                    </Link>
+                                </Button>
+                                <Button variant="default" asChild>
+                                    <Link to={`/quiz/myAttempt/${quiz.id}`}>
+                                        View Attempts
+                                    </Link>
+                                </Button>
+                            </div>
                         </div>
                     );
                 })}
