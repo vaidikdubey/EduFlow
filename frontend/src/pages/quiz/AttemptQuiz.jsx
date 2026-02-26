@@ -19,7 +19,6 @@ export const AttemptQuiz = () => {
         quizById,
         submitQuiz,
         isSubmittingQuiz,
-        submittedQuiz,
     } = useQuizStore();
 
     useEffect(() => {
@@ -45,12 +44,10 @@ export const AttemptQuiz = () => {
 
         const status = await submitQuiz(id, data);
 
-        setTimeout(() => <></>, 5 * 1000);
-
         if (status) {
-            const quizId = submittedQuiz?.data?.attempt?.id;
+            const moduleId = quizById?.data?.module?.id;
 
-            setTimeout(navigate(`/quiz/myAttempt/${quizId}`, 1000));
+            setTimeout(navigate(`/module/get/${moduleId}`, 1000));
         }
     };
 
