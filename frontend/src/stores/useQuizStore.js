@@ -7,6 +7,8 @@ export const useQuizStore = create((set) => ({
     allQuizForModule: [],
     isGettingQuiz: false,
     quizById: null,
+    isSubmittingQuiz: false,
+    submittedQuiz: null,
 
     getAllQuizForModule: async (id) => {
         set({ isGettingQuizForModule: true });
@@ -39,6 +41,27 @@ export const useQuizStore = create((set) => ({
             toast.error(error.response.data.message || "Error fetching quiz");
         } finally {
             set({ isGettingQuiz: false });
+        }
+    },
+
+    submitQuiz: async (id, data) => {
+        set({ isSubmittingQuiz: true });
+
+        try {
+            const res = await axiosInstance.post(`/quiz/submit/${id}`, data);
+
+            set({ submittedQuiz: res.data });
+
+            toast.success(res.message || "Quiz submitted");
+
+            return true;
+        } catch (error) {
+            console.error("Error submitting quiz", error);
+            toast.error(error.response.data.message || "Error submitting quiz");
+
+            return false;
+        } finally {
+            set({ isSubmittingQuiz: false });
         }
     },
 }));
