@@ -142,7 +142,7 @@ export const LessonsPage = () => {
                                     </Link>
                                 </Button>
                                 <Button variant="default" asChild>
-                                    <Link to={`/quiz/myAttempt/${quiz.id}`}>
+                                    <Link to={`/quiz/myAttempts/${quiz.id}`}>
                                         View Attempts
                                     </Link>
                                 </Button>

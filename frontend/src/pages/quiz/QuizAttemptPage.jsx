@@ -1,11 +1,13 @@
 import React, { useEffect } from "react";
 import { useQuizStore } from "@/stores/useQuizStore";
 import { Loader } from "lucide-react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { timeAgo } from "@/utils/timeAgo";
 
 export const QuizAttemptPage = () => {
     const { id } = useParams();
+
+    const navigate = useNavigate();
 
     const {
         getQuizAttempt,
@@ -22,9 +24,16 @@ export const QuizAttemptPage = () => {
         //eslint-disable-next-line
     }, []);
 
-    console.log("Quiz: ", quizById?.data);
+    const handleSingleResponse = (idx) => {
+        const attemptId = quizAttempts?.data[idx]?.id;
+        const response = quizAttempts?.data[idx]?.answers;
 
-    if (isGettingQuizAttempt) {
+        navigate(`/quiz/myAttempt/${id}/${attemptId}`, {
+            state: { attempt: response },
+        });
+    };
+
+    if (isGettingQuizAttempt || isGettingQuiz) {
         return (
             <div className="h-full flex items-center justify-center">
                 <Loader className="animate-spin text-foreground" />
@@ -52,6 +61,7 @@ export const QuizAttemptPage = () => {
                         <div
                             key={quiz.id}
                             className="border-2 border-l-8 border-yellow-400 h-fit md:w-fit p-5 rounded-2xl hover:shadow-2xl cursor-pointer"
+                            onClick={() => handleSingleResponse(idx)}
                         >
                             <p>Attempt {idx + 1}</p>
                             <p>Score: {quiz.score}</p>
