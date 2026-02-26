@@ -1,17 +1,28 @@
-import { useQuizStore } from "@/stores/useQuizStore";
 import React, { useEffect } from "react";
+import { useQuizStore } from "@/stores/useQuizStore";
+import { Loader } from "lucide-react";
 import { useParams } from "react-router-dom";
+import { timeAgo } from "@/utils/timeAgo";
 
 export const QuizAttemptPage = () => {
     const { id } = useParams();
 
-    const { getQuizAttempt, isGettingQuizAttempt, quizAttempts } =
-        useQuizStore();
+    const {
+        getQuizAttempt,
+        isGettingQuizAttempt,
+        quizAttempts,
+        getQuizById,
+        isGettingQuiz,
+        quizById,
+    } = useQuizStore();
 
     useEffect(() => {
         getQuizAttempt(id);
+        getQuizById(id);
         //eslint-disable-next-line
     }, []);
+
+    console.log("Quiz: ", quizById?.data);
 
     if (isGettingQuizAttempt) {
         return (
@@ -21,7 +32,33 @@ export const QuizAttemptPage = () => {
         );
     }
 
-  return (
-    <div>QuizAttemptPage</div>
-  );
+    return (
+        <div className="h-full w-full flex flex-col gap-5 m-2 border-2 border-dashed border-pink-400 px-5 py-3 rounded-2xl overflow-y-auto no-scroll">
+            <div className="flex flex-col">
+                <h1 className="text-3xl font-bold underline underline-offset-2">
+                    {quizById?.data?.title}
+                </h1>
+                <h5>
+                    <span className="font-semibold">Module: </span>
+                    {quizById?.data?.module?.title}
+                </h5>
+            </div>
+            <p className="text-center text-2xl text-bold underline underline-offset-2">
+                Your Attempts
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                {quizAttempts?.data?.length > 0 &&
+                    quizAttempts?.data?.map((quiz, idx) => (
+                        <div
+                            key={quiz.id}
+                            className="border-2 border-l-8 border-yellow-400 h-fit md:w-fit p-5 rounded-2xl hover:shadow-2xl cursor-pointer"
+                        >
+                            <p>Attempt {idx + 1}</p>
+                            <p>Score: {quiz.score}</p>
+                            <p>Attempted on: {timeAgo(quiz.attemptedAt)}</p>
+                        </div>
+                    ))}
+            </div>
+        </div>
+    );
 };
