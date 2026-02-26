@@ -61,7 +61,7 @@ export const AttemptQuiz = () => {
 
     return (
         <div className="h-full w-full flex flex-col">
-            <div className="flex justify-between items-center pr-15">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center pr-15">
                 <div className="flex justify-center items-center gap-3">
                     <Link to={"/"} className="hidden md:block">
                         <ArrowLeft size={18} />

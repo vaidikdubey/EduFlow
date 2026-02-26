@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 export const QuizAttemptPage = () => {
     const { id } = useParams();
 
-    const { getQuizAttempt, isGettingQuizAttempt, quizAttempt } =
+    const { getQuizAttempt, isGettingQuizAttempt, quizAttempts } =
         useQuizStore();
 
     useEffect(() => {
@@ -13,5 +13,15 @@ export const QuizAttemptPage = () => {
         //eslint-disable-next-line
     }, []);
 
-    return <div>QuizAttemptPage</div>;
+    if (isGettingQuizAttempt) {
+        return (
+            <div className="h-full flex items-center justify-center">
+                <Loader className="animate-spin text-foreground" />
+            </div>
+        );
+    }
+
+  return (
+    <div>QuizAttemptPage</div>
+  );
 };
