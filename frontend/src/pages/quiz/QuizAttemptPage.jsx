@@ -26,7 +26,7 @@ export const QuizAttemptPage = () => {
 
     const handleSingleResponse = (idx) => {
         const attemptId = quizAttempts?.data[idx]?.id;
-        const response = quizAttempts?.data[idx]?.answers;
+        const response = quizAttempts?.data?.[idx];
 
         navigate(`/quiz/myAttempt/${id}/${attemptId}`, {
             state: { attempt: response },
