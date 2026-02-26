@@ -9,6 +9,8 @@ export const useQuizStore = create((set) => ({
     quizById: null,
     isSubmittingQuiz: false,
     submittedQuiz: null,
+    isGettingQuizAttempt: false,
+    quizAttempt: null,
 
     getAllQuizForModule: async (id) => {
         set({ isGettingQuizForModule: true });
@@ -62,6 +64,25 @@ export const useQuizStore = create((set) => ({
             return false;
         } finally {
             set({ isSubmittingQuiz: false });
+        }
+    },
+
+    getQuizAttempt: async (id) => {
+        set({ isGettingQuizAttempt: true });
+
+        try {
+            const res = await axiosInstance.get(`/quiz/getQuizAttempt/${id}`);
+
+            set({ quizAttempt: res.data });
+
+            toast.success(res.message || "Quiz attempt fetched");
+        } catch (error) {
+            console.error("Error fetching quiz attempt", error);
+            toast.error(
+                error.response.data.message || "Error fetching quiz attempt",
+            );
+        } finally {
+            set({ isGettingQuizAttempt: false });
         }
     },
 }));
