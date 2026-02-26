@@ -21,6 +21,7 @@ import { AttemptQuiz } from "./pages/quiz/AttemptQuiz";
 import { CreateLesson } from "./pages/lessons/CreateLesson";
 import { CreateBulkLessons } from "./pages/lessons/CreateBulkLessons";
 import { UpdateLessonPage } from "./pages/lessons/UpdateLessonPage";
+import { QuizAttemptPage } from "./pages/quiz/QuizAttemptPage";
 
 function App() {
     const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -140,6 +141,11 @@ function App() {
                         <Route
                             path="/lesson/update/:id"
                             element={<UpdateLessonPage />}
+                        />
+
+                        <Route
+                            path="/quiz/myAttempt/:id"
+                            element={<QuizAttemptPage />}
                         />
                     </Route>
                 </Route>

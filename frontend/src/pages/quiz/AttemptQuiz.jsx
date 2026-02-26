@@ -45,7 +45,7 @@ export const AttemptQuiz = () => {
 
         const status = await submitQuiz(id, data);
 
-        setTimeout(() => <div></div>, 5 * 1000);
+        setTimeout(() => <></>, 5 * 1000);
 
         if (status) {
             const quizId = submittedQuiz?.data?.attempt?.id;
@@ -61,8 +61,6 @@ export const AttemptQuiz = () => {
             </div>
         );
     }
-
-    console.log("Fetched Quiz: ", quizById?.data);
 
     return (
         <div className="h-full w-full flex flex-col">
@@ -106,7 +104,7 @@ export const AttemptQuiz = () => {
                                         className="flex items-center gap-3"
                                     >
                                         <RadioGroupItem
-                                            value={optIdx.toString()}
+                                            value={optIdx}
                                             id={`q${idx}-opt${optIdx}`}
                                         />
                                         <Label htmlFor={`q${idx}-opt${optIdx}`}>
