@@ -39,7 +39,10 @@ export const QuizSingleAttemptPage = () => {
         <div className="h-full w-full flex flex-col">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center pr-15">
                 <div className="flex justify-center items-center gap-3">
-                    <Link to={"/"} className="hidden md:block">
+                    <Link
+                        to={`/quiz/myAttempts/${id}`}
+                        className="hidden md:block"
+                    >
                         <ArrowLeft size={18} />
                     </Link>
                     <div>
@@ -78,6 +81,10 @@ export const QuizSingleAttemptPage = () => {
                                             value={optIdx}
                                             id={`q${idx}-opt${optIdx}`}
                                             default
+                                            className={cn(
+                                                "data-[state=checked]:[&_svg]:fill-yellow-700 dark:data-[state=checked]:[&_svg]:fill-sky-400",
+                                                "data-[state=checked]:[&_svg]:text-yellow-700 dark:data-[state=checked]:[&_svg]:text-sky-400",
+                                            )}
                                         />
                                         <Label htmlFor={`q${idx}-opt${optIdx}`}>
                                             {opt}
