@@ -4,6 +4,7 @@ import { ArrowLeft, Loader } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useQuizStore } from "@/stores/useQuizStore";
+import { useModuleStore } from "@/stores/useModuleStore";
 
 export const LessonsPage = () => {
     const { id } = useParams();
@@ -19,15 +20,20 @@ export const LessonsPage = () => {
     const { isGettingQuizForModule, allQuizForModule, getAllQuizForModule } =
         useQuizStore();
 
+    const { getModuleById, isGettingModule, moduleById } = useModuleStore();
+
     useEffect(() => {
         getAllLessons(id);
         getAllQuizForModule(id);
+        getModuleById(id);
         //eslint-disable-next-line
     }, [id]);
 
+    // console.log("Module by id: ", moduleById?.data?.lessons?.filter((les) => les.id === "1ee671e3-1b21-4529-8295-3fc46a710db3")[0]?.progress[0]?.completed)
+
     let serialNo = 1;
 
-    if (isGettingAllLessons || isGettingQuizForModule) {
+    if (isGettingAllLessons || isGettingQuizForModule || isGettingModule) {
         return (
             <div className="h-full flex items-center justify-center">
                 <Loader className="animate-spin text-foreground" />
@@ -97,15 +103,25 @@ export const LessonsPage = () => {
                                     </p>
                                 )}
                             </div>
-                            <Button
-                                variant="success"
-                                onClick={() => markLessonComplete(lesson.id)}
-                                disabled={isMarkingComplete}
-                            >
-                                {isMarkingComplete
-                                    ? "Please wait..."
-                                    : "Mark Completed"}
-                            </Button>
+                            {!moduleById?.data?.lessons?.filter(
+                                (les) => les.id === lesson.id,
+                            )[0]?.progress[0]?.completed ? (
+                                <Button
+                                    variant="success"
+                                    onClick={() =>
+                                        markLessonComplete(lesson.id)
+                                    }
+                                    disabled={isMarkingComplete}
+                                >
+                                    {isMarkingComplete
+                                        ? "Please wait..."
+                                        : "Mark Completed"}
+                                </Button>
+                            ) : (
+                                <Button variant="default" disabled={true}>
+                                    Completed
+                                </Button>
+                            )}
                         </div>
                     );
                 })}
