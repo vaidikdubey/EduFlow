@@ -29,8 +29,6 @@ export const LessonsPage = () => {
         //eslint-disable-next-line
     }, [id]);
 
-    // console.log("Module by id: ", moduleById?.data?.lessons?.filter((les) => les.id === "1ee671e3-1b21-4529-8295-3fc46a710db3")[0]?.progress[0]?.completed)
-
     let serialNo = 1;
 
     if (isGettingAllLessons || isGettingQuizForModule || isGettingModule) {
