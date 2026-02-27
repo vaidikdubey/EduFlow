@@ -7,6 +7,8 @@ export const useModuleStore = create((set) => ({
     allModules: [],
     isGettingModule: false,
     moduleById: null,
+    isCreatingModule: false,
+    createdModule: null,
 
     getAllModules: async (id) => {
         set({ isGettingAllModules: true });
@@ -37,6 +39,26 @@ export const useModuleStore = create((set) => ({
             toast.error(error.response.data.message || "Error getting module");
         } finally {
             set({ isGettingModule: false });
+        }
+    },
+
+    createModule: async (courseId, data) => {
+        set({ isCreatingModule: true });
+
+        try {
+            const res = await axiosInstance.post(
+                `/module/create/${courseId}`,
+                data,
+            );
+
+            set({ createdModule: res.data });
+
+            toast.success(res.message || "Module created");
+        } catch (error) {
+            console.error("Error creating module", error);
+            toast.error(error.response.data.message || "Error creating module");
+        } finally {
+            set({ isCreatingModule: false });
         }
     },
 }));
