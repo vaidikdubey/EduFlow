@@ -99,3 +99,10 @@ export const updateLessonSchema = z.object({
     contentUrl: z.url("Content URL must be a valid URL").optional(),
     order: z.number().optional().nullable(),
 });
+
+export const createModuleSchema = z.object({
+    title: z
+        .string("Title is required")
+        .min(3, "Title must be atleast 3 characters"),
+    order: z.number().optional().nullable(),
+});
