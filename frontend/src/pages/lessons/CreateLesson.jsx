@@ -159,8 +159,11 @@ export const CreateLesson = () => {
                             <div className="flex flex-col gap-2">
                                 <Label>Lesson Order</Label>
                                 <Input
+                                    type="number"
                                     placeholder="Specify the order of this lesson."
-                                    {...register("order")}
+                                    {...register("order", {
+                                        valueAsNumber: true,
+                                    })}
                                 />
                                 {errors.order && (
                                     <p

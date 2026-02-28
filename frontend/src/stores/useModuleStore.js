@@ -54,9 +54,13 @@ export const useModuleStore = create((set) => ({
             set({ createdModule: res.data });
 
             toast.success(res.message || "Module created");
+
+            return true;
         } catch (error) {
             console.error("Error creating module", error);
             toast.error(error.response.data.message || "Error creating module");
+
+            return false;
         } finally {
             set({ isCreatingModule: false });
         }
