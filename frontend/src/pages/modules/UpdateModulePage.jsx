@@ -22,7 +22,14 @@ export const UpdateModulePage = () => {
 
     const navigate = useNavigate();
 
-    const { getModuleById, isGettingModule, moduleById } = useModuleStore();
+    const {
+        getModuleById,
+        isGettingModule,
+        moduleById,
+        updateModule,
+        isUpdatingModule,
+        updatedModule,
+    } = useModuleStore();
 
     const {
         register,
@@ -37,17 +44,21 @@ export const UpdateModulePage = () => {
         },
     });
 
-    // useEffect(() => {
-    //     if (!lessonById?.data?.lesson) return;
+    useEffect(() => {
+        getModuleById(id);
+        //eslint-disable-next-line
+    }, [id]);
 
-    //     reset({
-    //         title: lessonById?.data?.lesson?.title || "",
-    //         order: lessonById?.data?.lesson?.order || null,
-    //     });
-    // }, [lessonById, reset]);
+    useEffect(() => {
+        if (!moduleById?.data?.title) return;
+
+        reset({
+            title: moduleById?.data?.title || "",
+        });
+    }, [moduleById, reset]);
 
     const onSubmit = async (data) => {
-        // const status = await createModule(courseId, data);
+        updateModule(id, data);
         // if (status) {
         //     console.log("Created module: ", createdModule?.data);
         //     setTimeout(() => navigate(`/course/get/${courseId}`), 1000);
@@ -103,7 +114,7 @@ export const UpdateModulePage = () => {
                                 <Label>Module Order</Label>
                                 <Input
                                     type="number"
-                                    placeholder="Specify the order of this lesson."
+                                    placeholder="Update the order of this lesson. Leave blank if unsure of order."
                                     {...register("order", {
                                         valueAsNumber: true,
                                     })}
@@ -125,9 +136,9 @@ export const UpdateModulePage = () => {
                         <Button
                             type="submit"
                             className="w-full cursor-pointer"
-                            disabled={isCreatingModule}
+                            disabled={isUpdatingModule}
                         >
-                            {isCreatingModule ? "Creating..." : "Create Module"}
+                            {isUpdatingModule ? "Updating..." : "Update Module"}
                         </Button>
                     </form>
                 </CardContent>
