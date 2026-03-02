@@ -106,3 +106,8 @@ export const createModuleSchema = z.object({
         .min(3, "Title must be atleast 3 characters"),
     order: z.number().optional().nullable(),
 });
+
+export const updateModuleSchema = z.object({
+    title: z.string().min(3, "Title must be atleast 3 characters").optional(),
+    order: z.number().optional().nullable(),
+});

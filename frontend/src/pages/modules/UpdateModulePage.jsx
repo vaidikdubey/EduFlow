@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { useModuleStore } from "@/stores/useModuleStore";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createModuleSchema } from "@/lib/zod";
 import { useNavigate, useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import {
@@ -37,7 +36,7 @@ export const UpdateModulePage = () => {
         formState: { errors },
         reset,
     } = useForm({
-        resolver: zodResolver(createModuleSchema),
+        resolver: zodResolver(),
         defaultValues: {
             title: "",
             order: null,
