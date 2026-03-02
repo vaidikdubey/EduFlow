@@ -104,10 +104,16 @@ export const createModuleSchema = z.object({
     title: z
         .string("Title is required")
         .min(3, "Title must be atleast 3 characters"),
-    order: z.number().optional().nullable(),
+    order: z.preprocess(
+        (val) => (val === "" || val === null ? undefined : Number(val)),
+        z.number().optional(),
+    ),
 });
 
 export const updateModuleSchema = z.object({
     title: z.string().min(3, "Title must be atleast 3 characters").optional(),
-    order: z.number().optional().nullable(),
+    order: z.preprocess(
+        (val) => (val === "" || val === null ? undefined : Number(val)),
+        z.number().optional(),
+    ),
 });

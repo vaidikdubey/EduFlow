@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader } from "lucide-react";
+import { updateModuleSchema } from "@/lib/zod";
 
 export const UpdateModulePage = () => {
     const { id } = useParams();
@@ -36,10 +37,10 @@ export const UpdateModulePage = () => {
         formState: { errors },
         reset,
     } = useForm({
-        resolver: zodResolver(),
+        resolver: zodResolver(updateModuleSchema),
         defaultValues: {
             title: "",
-            order: null,
+            order: "",
         },
     });
 
@@ -53,15 +54,14 @@ export const UpdateModulePage = () => {
 
         reset({
             title: moduleById?.data?.title || "",
+            order: "",
         });
     }, [moduleById, reset]);
 
     const onSubmit = async (data) => {
         updateModule(id, data);
-        // if (status) {
-        //     console.log("Created module: ", createdModule?.data);
-        //     setTimeout(() => navigate(`/course/get/${courseId}`), 1000);
-        // }
+
+        setTimeout(navigate(`/module/get/${id}`), 1000);
     };
 
     if (isGettingModule) {
