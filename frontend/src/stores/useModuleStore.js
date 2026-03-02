@@ -9,6 +9,8 @@ export const useModuleStore = create((set) => ({
     moduleById: null,
     isCreatingModule: false,
     createdModule: null,
+    isUpdatingModule: false,
+    updatedModule: null,
 
     getAllModules: async (id) => {
         set({ isGettingAllModules: true });
@@ -63,6 +65,23 @@ export const useModuleStore = create((set) => ({
             return false;
         } finally {
             set({ isCreatingModule: false });
+        }
+    },
+
+    updateModule: async (id, data) => {
+        set({ isUpdatingModule: true });
+
+        try {
+            const res = await axiosInstance.patch(`/module/update/${id}`, data);
+
+            set({ updatedModule: res.data });
+
+            toast.success(res.message || "Module updated");
+        } catch (error) {
+            console.error("Error updating module", error);
+            toast.error(error.response.data.message || "Error updating module");
+        } finally {
+            set({ isUpdatingModule: false });
         }
     },
 }));
