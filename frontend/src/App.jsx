@@ -26,6 +26,7 @@ import { QuizSingleAttemptPage } from "./pages/quiz/QuizSingleAttemptPage";
 import { CreateQuizPage } from "./pages/quiz/CreateQuizPage";
 import { UpdateQuizPage } from "./pages/quiz/UpdateQuizPage";
 import { CreateModulePage } from "./pages/modules/CreateModulePage";
+import { UpdateModulePage } from "./pages/modules/UpdateModulePage";
 
 function App() {
     const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -170,6 +171,11 @@ function App() {
                         <Route
                             path="/module/create/:courseId"
                             element={<CreateModulePage />}
+                        />
+
+                        <Route
+                            path="/module/update/:id"
+                            element={<UpdateModulePage />}
                         />
                     </Route>
                 </Route>
