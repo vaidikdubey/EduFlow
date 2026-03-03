@@ -28,7 +28,6 @@ export const UpdateModulePage = () => {
         moduleById,
         updateModule,
         isUpdatingModule,
-        updatedModule,
     } = useModuleStore();
 
     const {
