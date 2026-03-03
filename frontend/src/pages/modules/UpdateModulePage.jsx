@@ -40,7 +40,7 @@ export const UpdateModulePage = () => {
         resolver: zodResolver(updateModuleSchema),
         defaultValues: {
             title: "",
-            order: "",
+            order: null,
         },
     });
 
