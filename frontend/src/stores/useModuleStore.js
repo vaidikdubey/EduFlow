@@ -11,6 +11,7 @@ export const useModuleStore = create((set) => ({
     createdModule: null,
     isUpdatingModule: false,
     updatedModule: null,
+    isDeletingModule: false,
 
     getAllModules: async (id) => {
         set({ isGettingAllModules: true });
@@ -82,6 +83,21 @@ export const useModuleStore = create((set) => ({
             toast.error(error.response.data.message || "Error updating module");
         } finally {
             set({ isUpdatingModule: false });
+        }
+    },
+
+    deleteModule: async (id) => {
+        set({ isDeletingModule: true });
+
+        try {
+            await axiosInstance.delete(`/module/delete/${id}`);
+
+            toast.success("Module deleted");
+        } catch (error) {
+            console.error("Error deleting module", error);
+            toast.error(error.response.data.message || "Error deleting module");
+        } finally {
+            set({ isDeletingModule: false });
         }
     },
 }));
