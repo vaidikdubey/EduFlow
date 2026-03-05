@@ -159,7 +159,7 @@ function App() {
                         />
 
                         <Route
-                            path="/quiz/create"
+                            path="/quiz/create/:moduleId"
                             element={<CreateQuizPage />}
                         />
 
