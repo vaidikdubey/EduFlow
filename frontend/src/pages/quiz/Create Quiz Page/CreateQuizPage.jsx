@@ -3,17 +3,28 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+import { Field, FieldGroup } from "@/components/ui/field";
+import { Label } from "@/components/ui/label";
 
 export const CreateQuizPage = () => {
     const [data, setData] = useState({ title: "", questions: [] });
+    const [isPublishDialogOpen, setIsPublishDialogOpen] = useState(false);
 
     const handleTitleChange = (e) => {
         setData((prev) => ({
             title: e.target.value,
             questions: [...prev.questions],
         }));
-
-        console.log("Data", data);
     };
 
     return (
@@ -27,7 +38,10 @@ export const CreateQuizPage = () => {
                 value={data.title}
             />
             <div className="h-full w-full border-dashed flex flex-col items-center">
-                <Button className={cn("cursor-pointer hover:shadow-2xl")}>
+                <Button
+                    onClick={() => setIsPublishDialogOpen(true)}
+                    className={cn("cursor-pointer hover:shadow-2xl")}
+                >
                     <Plus /> Add Question
                 </Button>
             </div>

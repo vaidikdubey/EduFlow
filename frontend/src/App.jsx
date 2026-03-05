@@ -23,7 +23,7 @@ import { CreateBulkLessons } from "./pages/lessons/CreateBulkLessons";
 import { UpdateLessonPage } from "./pages/lessons/UpdateLessonPage";
 import { QuizAttemptPage } from "./pages/quiz/QuizAttemptPage";
 import { QuizSingleAttemptPage } from "./pages/quiz/QuizSingleAttemptPage";
-import { CreateQuizPage } from "./pages/quiz/CreateQuizPage";
+import { CreateQuizPage } from "./pages/quiz/Create Quiz Page/CreateQuizPage";
 import { UpdateQuizPage } from "./pages/quiz/UpdateQuizPage";
 import { CreateModulePage } from "./pages/modules/CreateModulePage";
 import { UpdateModulePage } from "./pages/modules/UpdateModulePage";
