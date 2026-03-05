@@ -3,22 +3,11 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
-import { Field, FieldGroup } from "@/components/ui/field";
-import { Label } from "@/components/ui/label";
+import { CreateQuestionDialogBox } from "./CreateQuestionDialogBox";
 
 export const CreateQuizPage = () => {
     const [data, setData] = useState({ title: "", questions: [] });
-    const [isPublishDialogOpen, setIsPublishDialogOpen] = useState(false);
+    const [isQuestionDialogOpen, setIsQuestionDialogOpen] = useState(false);
 
     const handleTitleChange = (e) => {
         setData((prev) => ({
@@ -39,11 +28,16 @@ export const CreateQuizPage = () => {
             />
             <div className="h-full w-full border-dashed flex flex-col items-center">
                 <Button
-                    onClick={() => setIsPublishDialogOpen(true)}
+                    onClick={() => setIsQuestionDialogOpen(true)}
                     className={cn("cursor-pointer hover:shadow-2xl")}
                 >
                     <Plus /> Add Question
                 </Button>
+                <CreateQuestionDialogBox
+                    open={isQuestionDialogOpen}
+                    onOpenChange={setIsQuestionDialogOpen}
+                    setData={setData}
+                />
             </div>
         </div>
     );
