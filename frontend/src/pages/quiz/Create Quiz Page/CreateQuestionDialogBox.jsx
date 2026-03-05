@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     Dialog,
     DialogClose,
@@ -15,23 +15,28 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 
 export const CreateQuestionDialogBox = ({ open, onOpenChange, setData }) => {
+    const [questionObject, setQuestionObject] = useState({
+        question: "",
+        options: [],
+        correct: null,
+    });
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-sm">
                 <DialogHeader>
-                    <DialogTitle>Edit profile</DialogTitle>
+                    <DialogTitle>Add New Question</DialogTitle>
                     <DialogDescription>
-                        Make changes to your profile here. Click save when
-                        you&apos;re done.
+                        Create a question for this quiz.
                     </DialogDescription>
                 </DialogHeader>
                 <FieldGroup>
                     <Field>
-                        <Label htmlFor="name-1">Name</Label>
+                        <Label htmlFor="question">Question</Label>
                         <Input
-                            id="name-1"
-                            name="name"
-                            defaultValue="Pedro Duarte"
+                            id="question"
+                            name="question"
+                            placeholder="Add question"
                         />
                     </Field>
                     <Field>
@@ -47,7 +52,7 @@ export const CreateQuestionDialogBox = ({ open, onOpenChange, setData }) => {
                     <DialogClose asChild>
                         <Button variant="outline">Cancel</Button>
                     </DialogClose>
-                    <Button type="submit">Save changes</Button>
+                    <Button type="submit">Add Question</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
