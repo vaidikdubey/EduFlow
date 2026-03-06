@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Circle, DotIcon, Plus, Trash2 } from "lucide-react";
+import { DotIcon, Plus, Trash2 } from "lucide-react";
 import { CreateQuestionDialogBox } from "./CreateQuestionDialogBox";
 
 export const CreateQuizPage = () => {
@@ -23,9 +23,7 @@ export const CreateQuizPage = () => {
         }));
     };
 
-    const handleSubmit = () => {
-        
-    }
+    const handleSubmit = () => {};
 
     return (
         <div className="h-full w-full max-w-6xl mx-auto border-l-2 border-r-2 px-5">
@@ -79,15 +77,21 @@ export const CreateQuizPage = () => {
                 <div className="w-full flex flex-col items-center gap-2">
                     <Button
                         onClick={() => setIsQuestionDialogOpen(true)}
-                        className={cn("w-full cursor-pointer hover:shadow-2xl text-lg font-semibold")}
+                        className={cn(
+                            "w-full cursor-pointer hover:shadow-2xl text-lg font-semibold",
+                        )}
                     >
-                        <Plus fontWeight={"semibold"}/> Add Question
+                        <Plus fontWeight={"semibold"} /> Add Question
                     </Button>
                     <Button
                         variant="success"
-                        className={cn("w-full cursor-pointer hover:shadow-2xl text-lg font-semibold")}
+                        className={cn(
+                            "w-full cursor-pointer hover:shadow-2xl text-lg font-semibold",
+                        )}
                         onClick={handleSubmit}
-                    >Submit</Button>
+                    >
+                        Submit
+                    </Button>
                 </div>
                 <CreateQuestionDialogBox
                     open={isQuestionDialogOpen}
