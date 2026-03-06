@@ -23,6 +23,10 @@ export const CreateQuizPage = () => {
         }));
     };
 
+    const handleSubmit = () => {
+        
+    }
+
     return (
         <div className="h-full w-full max-w-6xl mx-auto border-l-2 border-r-2 px-5">
             <Input

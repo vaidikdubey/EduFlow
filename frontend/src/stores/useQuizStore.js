@@ -11,6 +11,8 @@ export const useQuizStore = create((set) => ({
     submittedQuiz: null,
     isGettingQuizAttempt: false,
     quizAttempts: [],
+    isCreatingQuiz: false,
+    createdQuiz: null,
 
     getAllQuizForModule: async (id) => {
         set({ isGettingQuizForModule: true });
@@ -83,6 +85,26 @@ export const useQuizStore = create((set) => ({
             );
         } finally {
             set({ isGettingQuizAttempt: false });
+        }
+    },
+
+    createQuiz: async (data, moduleId) => {
+        set({ isCreatingQuiz: true });
+
+        try {
+            const res = await axiosInstance.post(
+                `/quiz/create/${moduleId}`,
+                data,
+            );
+
+            set({ createdQuiz: res.data });
+
+            toast.success(res.message || "Quiz created");
+        } catch (error) {
+            console.error("Error creating quiz", error);
+            toast.error(error.response.data.message || "Error creating quiz");
+        } finally {
+            set({ isCreatingQuiz: false });
         }
     },
 }));
