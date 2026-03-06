@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Circle, DotIcon, Plus } from "lucide-react";
 import { CreateQuestionDialogBox } from "./CreateQuestionDialogBox";
 
 export const CreateQuizPage = () => {
@@ -27,6 +27,35 @@ export const CreateQuizPage = () => {
                 value={data.title}
             />
             <div className="h-full w-full border-dashed flex flex-col items-center">
+                <div className="flex flex-col w-full gap-3 mb-5">
+                    {data.questions.map((question, idx) => {
+                        return (
+                            <div
+                                key={idx}
+                                className="bg-gray-200 dark:bg-gray-800 rounded-xl p-3"
+                            >
+                                <h3>
+                                    {idx + 1}. {question.question}
+                                </h3>
+                                {question.options.map((opt, i) => {
+                                    return (
+                                        <div key={i}>
+                                            <p
+                                                className={cn(
+                                                    i === question.correct &&
+                                                        "text-green-400",
+                                                    "flex items-center gap-1",
+                                                )}
+                                            >
+                                                <DotIcon size={25} /> {opt}
+                                            </p>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        );
+                    })}
+                </div>
                 <Button
                     onClick={() => setIsQuestionDialogOpen(true)}
                     className={cn("cursor-pointer hover:shadow-2xl")}
