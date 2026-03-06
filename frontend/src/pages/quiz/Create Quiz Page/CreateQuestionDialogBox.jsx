@@ -24,6 +24,8 @@ export const CreateQuestionDialogBox = ({ open, onOpenChange, setData }) => {
 
     const [currentOption, setCurrentOption] = useState("");
 
+    const [correctOption, setCorrectOption] = useState("");
+
     const handleOptionAddition = (e) => {
         e.preventDefault();
 
@@ -47,6 +49,18 @@ export const CreateQuestionDialogBox = ({ open, onOpenChange, setData }) => {
             };
         });
     };
+
+    const handleCorrectAddition = (e) => {
+        e.preventDefault();
+
+        if (!correctOption.trim()) return;
+
+        let option = undefined;
+
+        setQuestionObject((prev) => {
+            option = prev.options.filter((opt, i) => opt === correctOption)
+        })
+    }
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -97,7 +111,7 @@ export const CreateQuestionDialogBox = ({ open, onOpenChange, setData }) => {
                                         <X
                                             size={15}
                                             color="red"
-                                            onClick={(idx) =>
+                                            onClick={() =>
                                                 handleOptionRemove(idx)
                                             }
                                             className="cursor-pointer"
@@ -105,6 +119,21 @@ export const CreateQuestionDialogBox = ({ open, onOpenChange, setData }) => {
                                     }
                                 </div>
                             ))}
+                    </Field>
+                    <Field>
+                        <Label htmlFor="correct">Correct Answer</Label>
+                        <div className="flex gap-2">
+                            <Input
+                            id="correct"
+                            name="correct"
+                            placeholder="Enter the correct option"
+                            value={correctOption}
+                            onChange={(e) => setCorrectOption(e.target.value)}
+                            />
+                            <Button onClick={(e) => handleCorrectAddition(e)}>
+                                Add
+                            </Button>
+                        </div>
                     </Field>
                 </FieldGroup>
                 <DialogFooter>
