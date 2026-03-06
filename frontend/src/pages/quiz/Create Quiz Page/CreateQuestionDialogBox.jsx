@@ -22,17 +22,21 @@ export const CreateQuestionDialogBox = ({ open, onOpenChange, setData }) => {
         correct: null,
     });
 
-    const handleOptionAddition = (e) => {
-        const option = e.target.value;
+    const [currentOption, setCurrentOption] = useState("");
 
-        if (option) {
-            setQuestionObject((prev) => {
-                return {
-                    ...prev,
-                    options: [...prev.options, option],
-                };
-            });
-        }
+    const handleOptionAddition = (e) => {
+        e.preventDefault();
+
+        if (!currentOption.trim()) return;
+
+        setQuestionObject((prev) => {
+            return {
+                ...prev,
+                options: [...prev.options, currentOption],
+            };
+        });
+
+        setCurrentOption("");
     };
 
     const handleOptionRemove = (idx) => {
@@ -60,6 +64,7 @@ export const CreateQuestionDialogBox = ({ open, onOpenChange, setData }) => {
                             id="question"
                             name="question"
                             placeholder="Add question"
+                            value={questionObject.question}
                             onChange={(e) => {
                                 setQuestionObject((prev) => ({
                                     ...prev,
@@ -70,26 +75,36 @@ export const CreateQuestionDialogBox = ({ open, onOpenChange, setData }) => {
                     </Field>
                     <Field>
                         <Label htmlFor="options">Options</Label>
-                        <Input
-                            id="options"
-                            name="options"
-                            placeholder="Add options"
-                            onChange={(e) => handleOptionAddition(e)}
-                        />
-                        {questionObject.options.map((option, idx) => (
-                            <div key={idx} className="flex justify-between">
-                                {idx + 1}. {option}{" "}
-                                {
-                                    <X
-                                        size={15}
-                                        color="red"
-                                        onClick={(idx) =>
-                                            handleOptionRemove(idx)
-                                        }
-                                    />
+                        <div className="flex gap-2">
+                            <Input
+                                id="options"
+                                name="options"
+                                placeholder="Enter option here"
+                                value={currentOption}
+                                onChange={(e) =>
+                                    setCurrentOption(e.target.value)
                                 }
-                            </div>
-                        ))}
+                            />{" "}
+                            <Button onClick={(e) => handleOptionAddition(e)}>
+                                Add
+                            </Button>
+                        </div>
+                        {questionObject.options &&
+                            questionObject.options.map((option, idx) => (
+                                <div key={idx} className="flex justify-between">
+                                    {idx + 1}. {option}{" "}
+                                    {
+                                        <X
+                                            size={15}
+                                            color="red"
+                                            onClick={(idx) =>
+                                                handleOptionRemove(idx)
+                                            }
+                                            className="cursor-pointer"
+                                        />
+                                    }
+                                </div>
+                            ))}
                     </Field>
                 </FieldGroup>
                 <DialogFooter>
