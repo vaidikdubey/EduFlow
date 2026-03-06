@@ -58,9 +58,9 @@ export const CreateQuestionDialogBox = ({ open, onOpenChange, setData }) => {
         let option = undefined;
 
         setQuestionObject((prev) => {
-            option = prev.options.filter((opt, i) => opt === correctOption)
-        })
-    }
+            option = prev.options.filter((opt, i) => opt === correctOption);
+        });
+    };
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -124,11 +124,13 @@ export const CreateQuestionDialogBox = ({ open, onOpenChange, setData }) => {
                         <Label htmlFor="correct">Correct Answer</Label>
                         <div className="flex gap-2">
                             <Input
-                            id="correct"
-                            name="correct"
-                            placeholder="Enter the correct option"
-                            value={correctOption}
-                            onChange={(e) => setCorrectOption(e.target.value)}
+                                id="correct"
+                                name="correct"
+                                placeholder="Enter the correct option"
+                                value={correctOption}
+                                onChange={(e) =>
+                                    setCorrectOption(e.target.value)
+                                }
                             />
                             <Button onClick={(e) => handleCorrectAddition(e)}>
                                 Add
@@ -140,7 +142,14 @@ export const CreateQuestionDialogBox = ({ open, onOpenChange, setData }) => {
                     <DialogClose asChild>
                         <Button variant="outline">Cancel</Button>
                     </DialogClose>
-                    <Button type="submit">Add Question</Button>
+                    <Button
+                        onClick={setData((prev) => ({
+                            ...prev,
+                            questions: [...prev.questions, questionObject],
+                        }))}
+                    >
+                        Add Question
+                    </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
