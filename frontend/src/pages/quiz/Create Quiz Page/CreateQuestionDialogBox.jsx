@@ -13,6 +13,7 @@ import { Field, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
 
 export const CreateQuestionDialogBox = ({ open, onOpenChange, setData }) => {
     const [questionObject, setQuestionObject] = useState({
@@ -20,6 +21,28 @@ export const CreateQuestionDialogBox = ({ open, onOpenChange, setData }) => {
         options: [],
         correct: null,
     });
+
+    const handleOptionAddition = (e) => {
+        const option = e.target.value;
+
+        if (option) {
+            setQuestionObject((prev) => {
+                return {
+                    ...prev,
+                    options: [...prev.options, option],
+                };
+            });
+        }
+    };
+
+    const handleOptionRemove = (idx) => {
+        setQuestionObject((prev) => {
+            return {
+                ...prev,
+                options: prev.options.filter((_, i) => i !== idx),
+            };
+        });
+    };
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -37,15 +60,36 @@ export const CreateQuestionDialogBox = ({ open, onOpenChange, setData }) => {
                             id="question"
                             name="question"
                             placeholder="Add question"
+                            onChange={(e) => {
+                                setQuestionObject((prev) => ({
+                                    ...prev,
+                                    question: e.target.value,
+                                }));
+                            }}
                         />
                     </Field>
                     <Field>
-                        <Label htmlFor="username-1">Username</Label>
+                        <Label htmlFor="options">Options</Label>
                         <Input
-                            id="username-1"
-                            name="username"
-                            defaultValue="@peduarte"
+                            id="options"
+                            name="options"
+                            placeholder="Add options"
+                            onChange={(e) => handleOptionAddition(e)}
                         />
+                        {questionObject.options.map((option, idx) => (
+                            <div key={idx} className="flex justify-between">
+                                {idx + 1}. {option}{" "}
+                                {
+                                    <X
+                                        size={15}
+                                        color="red"
+                                        onClick={(idx) =>
+                                            handleOptionRemove(idx)
+                                        }
+                                    />
+                                }
+                            </div>
+                        ))}
                     </Field>
                 </FieldGroup>
                 <DialogFooter>
