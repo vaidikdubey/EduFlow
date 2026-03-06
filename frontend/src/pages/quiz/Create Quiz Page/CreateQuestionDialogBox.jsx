@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
+import toast from "react-hot-toast";
 
 export const CreateQuestionDialogBox = ({ open, onOpenChange, setData }) => {
     const [questionObject, setQuestionObject] = useState({
@@ -55,11 +56,16 @@ export const CreateQuestionDialogBox = ({ open, onOpenChange, setData }) => {
 
         if (!correctOption.trim()) return;
 
-        let option = undefined;
+        const option = questionObject.options.findIndex(
+            (opt) => opt === correctOption,
+        );
 
-        setQuestionObject((prev) => {
-            option = prev.options.filter((opt, i) => opt === correctOption);
-        });
+        if (option === -1) {
+            toast.error("Invalid correct option");
+            return;
+        }
+
+        setQuestionObject((prev) => ({ ...prev, correct: option }));
     };
 
     return (
