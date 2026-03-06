@@ -72,12 +72,19 @@ export const CreateQuizPage = () => {
                         );
                     })}
                 </div>
-                <Button
-                    onClick={() => setIsQuestionDialogOpen(true)}
-                    className={cn("cursor-pointer hover:shadow-2xl")}
-                >
-                    <Plus /> Add Question
-                </Button>
+                <div className="w-full flex flex-col items-center gap-2">
+                    <Button
+                        onClick={() => setIsQuestionDialogOpen(true)}
+                        className={cn("w-full cursor-pointer hover:shadow-2xl text-lg font-semibold")}
+                    >
+                        <Plus fontWeight={"semibold"}/> Add Question
+                    </Button>
+                    <Button
+                        variant="success"
+                        className={cn("w-full cursor-pointer hover:shadow-2xl text-lg font-semibold")}
+                        onClick={handleSubmit}
+                    >Submit</Button>
+                </div>
                 <CreateQuestionDialogBox
                     open={isQuestionDialogOpen}
                     onOpenChange={setIsQuestionDialogOpen}
