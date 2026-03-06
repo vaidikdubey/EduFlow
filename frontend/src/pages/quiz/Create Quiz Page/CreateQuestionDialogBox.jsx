@@ -72,9 +72,38 @@ export const CreateQuestionDialogBox = ({ open, onOpenChange, setData }) => {
         setQuestionObject((prev) => ({ ...prev, correct: null }));
     };
 
-    const handleAddQuestion = () => {
-        
-    }
+    const handleAddQuestion = (onOpenChange) => {
+        if (!questionObject.question.trim()) {
+            toast.error("Please enter a question");
+            return;
+        }
+
+        if (!questionObject.options) {
+            toast.error("Please enter valid options");
+            return;
+        }
+
+        if (questionObject.options.length < 2) {
+            toast.error("Please enter atlease 2 options");
+            return;
+        }
+
+        if (!questionObject.correct) {
+            toast.error("Please enter correct option");
+            return;
+        }
+
+        setData((prev) => {
+            return {
+                ...prev,
+                questions: [...prev.questions, questionObject],
+            };
+        });
+
+        onOpenChange(false);
+
+        toast.success("Question added");
+    };
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -180,7 +209,9 @@ export const CreateQuestionDialogBox = ({ open, onOpenChange, setData }) => {
                         <Button variant="outline">Cancel</Button>
                     </DialogClose>
                     <Button
-                    onClick={handleAddQuestion}
+                        onClick={() => {
+                            handleAddQuestion(onOpenChange);
+                        }}
                     >
                         Add Question
                     </Button>
