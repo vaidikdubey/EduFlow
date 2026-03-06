@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Circle, DotIcon, Plus } from "lucide-react";
+import { Circle, DotIcon, Plus, Trash2 } from "lucide-react";
 import { CreateQuestionDialogBox } from "./CreateQuestionDialogBox";
 
 export const CreateQuizPage = () => {
@@ -13,6 +13,13 @@ export const CreateQuizPage = () => {
         setData((prev) => ({
             title: e.target.value,
             questions: [...prev.questions],
+        }));
+    };
+
+    const handleQuestionDelete = (idx) => {
+        setData((prev) => ({
+            title: prev.title,
+            questions: prev.questions.filter((_, i) => i !== idx),
         }));
     };
 
@@ -32,26 +39,35 @@ export const CreateQuizPage = () => {
                         return (
                             <div
                                 key={idx}
-                                className="bg-gray-200 dark:bg-gray-800 rounded-xl p-3"
+                                className="bg-gray-200 dark:bg-gray-800 rounded-xl p-3 flex justify-between"
                             >
-                                <h3>
-                                    {idx + 1}. {question.question}
-                                </h3>
-                                {question.options.map((opt, i) => {
-                                    return (
-                                        <div key={i}>
-                                            <p
-                                                className={cn(
-                                                    i === question.correct &&
-                                                        "text-green-400",
-                                                    "flex items-center gap-1",
-                                                )}
-                                            >
-                                                <DotIcon size={25} /> {opt}
-                                            </p>
-                                        </div>
-                                    );
-                                })}
+                                <div>
+                                    <h3>
+                                        {idx + 1}. {question.question}
+                                    </h3>
+                                    {question.options.map((opt, i) => {
+                                        return (
+                                            <div key={i}>
+                                                <p
+                                                    className={cn(
+                                                        i ===
+                                                            question.correct &&
+                                                            "text-green-400",
+                                                        "flex items-center gap-1",
+                                                    )}
+                                                >
+                                                    <DotIcon size={25} /> {opt}
+                                                </p>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                                <Trash2
+                                    size={20}
+                                    color="red"
+                                    className="cursor-pointer"
+                                    onClick={() => handleQuestionDelete(idx)}
+                                />
                             </div>
                         );
                     })}
