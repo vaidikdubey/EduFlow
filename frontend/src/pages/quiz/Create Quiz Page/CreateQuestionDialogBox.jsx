@@ -68,6 +68,14 @@ export const CreateQuestionDialogBox = ({ open, onOpenChange, setData }) => {
         setQuestionObject((prev) => ({ ...prev, correct: option }));
     };
 
+    const handleCorrectRemove = () => {
+        setQuestionObject((prev) => ({ ...prev, correct: null }));
+    };
+
+    const handleAddQuestion = () => {
+        
+    }
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-sm">
@@ -111,7 +119,10 @@ export const CreateQuestionDialogBox = ({ open, onOpenChange, setData }) => {
                         </div>
                         {questionObject.options &&
                             questionObject.options.map((option, idx) => (
-                                <div key={idx} className="flex justify-between">
+                                <div
+                                    key={idx}
+                                    className="flex justify-between items-center text-muted-foreground"
+                                >
                                     {idx + 1}. {option}{" "}
                                     {
                                         <X
@@ -142,6 +153,26 @@ export const CreateQuestionDialogBox = ({ open, onOpenChange, setData }) => {
                                 Add
                             </Button>
                         </div>
+                        {questionObject.correct && (
+                            <div className="flex justify-between items-center">
+                                <div>
+                                    Correct:{" "}
+                                    <span className="text-muted-foreground">
+                                        {
+                                            questionObject.options[
+                                                questionObject.correct
+                                            ]
+                                        }
+                                    </span>
+                                </div>
+                                <X
+                                    size={15}
+                                    color="red"
+                                    onClick={handleCorrectRemove}
+                                    className="cursor-pointer"
+                                />
+                            </div>
+                        )}
                     </Field>
                 </FieldGroup>
                 <DialogFooter>
@@ -149,10 +180,7 @@ export const CreateQuestionDialogBox = ({ open, onOpenChange, setData }) => {
                         <Button variant="outline">Cancel</Button>
                     </DialogClose>
                     <Button
-                        onClick={setData((prev) => ({
-                            ...prev,
-                            questions: [...prev.questions, questionObject],
-                        }))}
+                    onClick={handleAddQuestion}
                     >
                         Add Question
                     </Button>
