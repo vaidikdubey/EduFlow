@@ -100,11 +100,14 @@ export const CreateQuestionDialogBox = ({ open, onOpenChange, setData }) => {
             };
         });
 
+        //Reset all values
         setQuestionObject({
             question: "",
             options: [],
             correct: -1,
         });
+        setCurrentOption("");
+        setCorrectOption("");
 
         onOpenChange(false);
 
