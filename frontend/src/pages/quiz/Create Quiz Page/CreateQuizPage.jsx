@@ -15,7 +15,7 @@ export const CreateQuizPage = () => {
     const [data, setData] = useState({ title: "", questions: [] });
     const [isQuestionDialogOpen, setIsQuestionDialogOpen] = useState(false);
 
-    const { createQuiz, isCreatingQuiz, createdQuiz } = useQuizStore();
+    const { createQuiz, isCreatingQuiz } = useQuizStore();
 
     const handleTitleChange = (e) => {
         setData((prev) => ({
