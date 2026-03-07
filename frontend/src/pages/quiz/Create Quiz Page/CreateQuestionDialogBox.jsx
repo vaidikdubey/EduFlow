@@ -20,7 +20,7 @@ export const CreateQuestionDialogBox = ({ open, onOpenChange, setData }) => {
     const [questionObject, setQuestionObject] = useState({
         question: "",
         options: [],
-        correct: null,
+        correct: -1,
     });
 
     const [currentOption, setCurrentOption] = useState("");
@@ -98,6 +98,12 @@ export const CreateQuestionDialogBox = ({ open, onOpenChange, setData }) => {
                 ...prev,
                 questions: [...prev.questions, questionObject],
             };
+        });
+
+        setQuestionObject({
+            question: "",
+            options: [],
+            correct: -1,
         });
 
         onOpenChange(false);
@@ -182,7 +188,7 @@ export const CreateQuestionDialogBox = ({ open, onOpenChange, setData }) => {
                                 Add
                             </Button>
                         </div>
-                        {questionObject.correct !== null && (
+                        {(questionObject.correct !== null || questionObject.correct !== -1) && (
                             <div className="flex justify-between items-center">
                                 <div>
                                     Correct:{" "}
