@@ -82,8 +82,9 @@ export const QuizSingleAttemptPage = () => {
                                             id={`q${idx}-opt${optIdx}`}
                                             default
                                             className={cn(
-                                                "data-[state=checked]:[&_svg]:fill-yellow-700 dark:data-[state=checked]:[&_svg]:fill-sky-400",
-                                                "data-[state=checked]:[&_svg]:text-yellow-700 dark:data-[state=checked]:[&_svg]:text-sky-400",
+                                                optIdx === question.correct
+                                                    ? "border-green-400 [&+label]:text-green-400 [&+label]:font-semibold data-[state=checked]:[&_svg]:fill-green-400 data-[state=checked]:[&_svg]:text-green-400"
+                                                    : "data-[state=checked]:[&_svg]:fill-yellow-700 data-[state=checked]:[&_svg]:text-yellow-700 dark:data-[state=checked]:[&_svg]:fill-sky-400 dark:data-[state=checked]:[&_svg]:text-sky-400",
                                             )}
                                         />
                                         <Label htmlFor={`q${idx}-opt${optIdx}`}>
