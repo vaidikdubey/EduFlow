@@ -88,7 +88,7 @@ export const CreateQuestionDialogBox = ({ open, onOpenChange, setData }) => {
             return;
         }
 
-        if (!questionObject.correct) {
+        if (questionObject.correct === null || questionObject.correct === -1) {
             toast.error("Please enter correct option");
             return;
         }
@@ -182,7 +182,7 @@ export const CreateQuestionDialogBox = ({ open, onOpenChange, setData }) => {
                                 Add
                             </Button>
                         </div>
-                        {questionObject.correct && (
+                        {questionObject.correct !== null && (
                             <div className="flex justify-between items-center">
                                 <div>
                                     Correct:{" "}

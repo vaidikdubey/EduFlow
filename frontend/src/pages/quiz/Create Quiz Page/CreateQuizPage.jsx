@@ -35,7 +35,7 @@ export const CreateQuizPage = () => {
                 onChange={(e) => handleTitleChange(e)}
                 value={data.title}
             />
-            <div className="h-full w-full border-dashed flex flex-col items-center">
+            <div className="h-fit w-full border-dashed flex flex-col items-center">
                 <div className="flex flex-col w-full gap-3 mb-5">
                     {data.questions.map((question, idx) => {
                         return (
