@@ -4,10 +4,18 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { DotIcon, Plus, Trash2 } from "lucide-react";
 import { CreateQuestionDialogBox } from "./CreateQuestionDialogBox";
+import { useQuizStore } from "@/stores/useQuizStore";
+import { useNavigate, useParams } from "react-router-dom";
 
 export const CreateQuizPage = () => {
+    const navigate = useNavigate();
+    
+    const { moduleId } = useParams();
+
     const [data, setData] = useState({ title: "", questions: [] });
     const [isQuestionDialogOpen, setIsQuestionDialogOpen] = useState(false);
+
+    const { createQuiz, isCreatingQuiz, createdQuiz } = useQuizStore();
 
     const handleTitleChange = (e) => {
         setData((prev) => ({
@@ -23,7 +31,11 @@ export const CreateQuizPage = () => {
         }));
     };
 
-    const handleSubmit = () => {};
+    const handleSubmit = () => {
+        createQuiz(data, moduleId);
+
+        
+    };
 
     return (
         <div className="h-full w-full max-w-6xl mx-auto border-l-2 border-r-2 px-5 overflow-y-auto no-scroll">
@@ -81,6 +93,7 @@ export const CreateQuizPage = () => {
                         className={cn(
                             "w-full cursor-pointer hover:shadow-2xl text-lg font-semibold",
                         )}
+                        disabled={isCreatingQuiz}
                     >
                         <Plus fontWeight={"semibold"} /> Add Question
                     </Button>
@@ -89,6 +102,7 @@ export const CreateQuizPage = () => {
                         className={cn(
                             "w-full cursor-pointer hover:shadow-2xl text-lg font-semibold",
                         )}
+                        disabled={isCreatingQuiz}
                         onClick={handleSubmit}
                     >
                         Submit

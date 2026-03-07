@@ -100,9 +100,13 @@ export const useQuizStore = create((set) => ({
             set({ createdQuiz: res.data });
 
             toast.success(res.message || "Quiz created");
+
+            return true;
         } catch (error) {
             console.error("Error creating quiz", error);
             toast.error(error.response.data.message || "Error creating quiz");
+
+            return false;
         } finally {
             set({ isCreatingQuiz: false });
         }
