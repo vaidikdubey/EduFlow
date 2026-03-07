@@ -9,7 +9,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 export const CreateQuizPage = () => {
     const navigate = useNavigate();
-    
+
     const { moduleId } = useParams();
 
     const [data, setData] = useState({ title: "", questions: [] });
@@ -31,10 +31,12 @@ export const CreateQuizPage = () => {
         }));
     };
 
-    const handleSubmit = () => {
-        createQuiz(data, moduleId);
+    const handleSubmit = async () => {
+        const status = await createQuiz(data, moduleId);
 
-        
+        if (status) {
+            setTimeout(navigate(`/module/get/${moduleId}`), 1000);
+        }
     };
 
     return (
