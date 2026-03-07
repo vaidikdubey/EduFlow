@@ -26,11 +26,12 @@ export const CreateQuizPage = () => {
     const handleSubmit = () => {};
 
     return (
-        <div className="h-full w-full max-w-6xl mx-auto border-l-2 border-r-2 px-5">
+        <div className="h-full w-full max-w-6xl mx-auto border-l-2 border-r-2 px-5 overflow-y-auto no-scroll">
             <Input
+                type="text"
                 placeholder="Enter quiz title"
                 className={cn(
-                    "mb-5 placeholder:text-lg placeholder:text-muted-foreground placeholder:p-2",
+                    "mb-5 placeholder:text-muted-foreground placeholder:p-2 sticky top-2 z-10",
                 )}
                 onChange={(e) => handleTitleChange(e)}
                 value={data.title}
