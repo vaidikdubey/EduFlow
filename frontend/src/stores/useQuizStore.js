@@ -13,6 +13,8 @@ export const useQuizStore = create((set) => ({
     quizAttempts: [],
     isCreatingQuiz: false,
     createdQuiz: null,
+    isUpdatingQuiz: false,
+    updatedQuiz: null,
 
     getAllQuizForModule: async (id) => {
         set({ isGettingQuizForModule: true });
@@ -109,6 +111,25 @@ export const useQuizStore = create((set) => ({
             return false;
         } finally {
             set({ isCreatingQuiz: false });
+        }
+    },
+
+    updateQuiz: async (id, data) => {
+        set({ isUpdatingQuiz: true });
+
+        try {
+            const res = await axiosInstance.patch(`/quiz/update/${id}`, data);
+
+            set({ updatedQuiz: res.data });
+
+            toast.success(res.message || "Quiz updated");
+
+            return true;
+        } catch (error) {
+            console.error("Error updating quiz", error);
+            toast.error(error.response.data.message || "Error updating quiz");
+        } finally {
+            set({ isUpdatingQuiz: false });
         }
     },
 }));
