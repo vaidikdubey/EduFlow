@@ -23,10 +23,10 @@ export const UpdateQuizPage = () => {
     } = useQuizStore();
 
     useEffect(() => {
-        quizById(id);
+        getQuizById(id);
     }, [id]);
 
-    console.log("Quiz: ", getQuizById?.data);
+    console.log("Quiz: ", quizById?.data);
 
     const handleTitleChange = (e) => {
         setData((prev) => ({
@@ -46,6 +46,8 @@ export const UpdateQuizPage = () => {
         updateQuiz(data, id);
     };
 
+    let serial = 1;
+
     if (isGettingQuiz) {
         return (
             <div className="h-full flex items-center justify-center">
@@ -63,10 +65,46 @@ export const UpdateQuizPage = () => {
                     "mb-5 placeholder:text-muted-foreground placeholder:p-2 sticky top-2 z-10",
                 )}
                 onChange={(e) => handleTitleChange(e)}
-                value={data.title}
+                value={data.title ?? ""}
             />
             <div className="h-fit w-full border-dashed flex flex-col items-center">
                 <div className="flex flex-col w-full gap-3 mb-5">
+                    {quizById?.data?.questions?.map((question, idx) => {
+                        return (
+                            <div
+                                key={idx}
+                                className="bg-gray-200 dark:bg-gray-800 rounded-xl p-3 flex justify-between"
+                            >
+                                <div>
+                                    <h3>
+                                        {serial++}. {question.question}
+                                    </h3>
+                                    {question.options.map((opt, i) => {
+                                        return (
+                                            <div key={i}>
+                                                <p
+                                                    className={cn(
+                                                        i ===
+                                                            question.correct &&
+                                                            "text-green-400",
+                                                        "flex items-center gap-1",
+                                                    )}
+                                                >
+                                                    <DotIcon size={25} /> {opt}
+                                                </p>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                                <Trash2
+                                    size={20}
+                                    color="red"
+                                    className="cursor-pointer"
+                                    onClick={() => handleQuestionDelete(idx)}
+                                />
+                            </div>
+                        );
+                    })}
                     {data.questions.map((question, idx) => {
                         return (
                             <div
@@ -75,7 +113,7 @@ export const UpdateQuizPage = () => {
                             >
                                 <div>
                                     <h3>
-                                        {idx + 1}. {question.question}
+                                        {serial++}. {question.question}
                                     </h3>
                                     {question.options.map((opt, i) => {
                                         return (
