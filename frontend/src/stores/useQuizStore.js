@@ -114,7 +114,7 @@ export const useQuizStore = create((set) => ({
         }
     },
 
-    updateQuiz: async (id, data) => {
+    updateQuiz: async (data, id) => {
         set({ isUpdatingQuiz: true });
 
         try {

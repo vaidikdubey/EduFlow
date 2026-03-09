@@ -18,9 +18,8 @@ export const UpdateQuizPage = () => {
 
     useEffect(() => {
         getQuizById(id);
+        //eslint-disable-next-line
     }, [id]);
-
-    console.log("Quiz: ", quizById?.data);
 
     const handleTitleChange = (e) => {
         setData((prev) => ({
