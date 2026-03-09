@@ -12,6 +12,8 @@ export const useEnrollmentStore = create((set) => ({
     isCheckingCompletion: false,
     courseCompletion: null,
     isGeneratingCertificate: false,
+    isGettingMyEnrollments: false,
+    myEnrollments: [],
 
     enrollInCourse: async (courseId, navigate) => {
         set({ isEnrolling: true });
@@ -151,4 +153,21 @@ export const useEnrollmentStore = create((set) => ({
     },
 
     generateCertificate: async () => {},
+
+    getMyEnrollments: async () => {
+        set({ isGettingMyEnrollments: true });
+
+        try {
+            const res = await axiosInstance.get(`/enrollment/myEnrollments`);
+
+            set({ myEnrollments: res.data });
+        } catch (error) {
+            console.error("Error fetching enrollments", error);
+            toast.error(
+                error.response.data.message || "Error fetching enrollments",
+            );
+        } finally {
+            set({ isGettingMyEnrollments: false });
+        }
+    },
 }));
