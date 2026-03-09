@@ -38,44 +38,48 @@ export const HomePage = () => {
         <div className="w-full h-full flex flex-col justify-center items-center gap-5">
             <div className="h-full w-full grid grid-cols-4 gap-5 overflow-y-auto no-scroll">
                 {allCourses?.data?.map((course) => (
-                    <div className="bg-gray-300 rounded-lg p-2">
-                        <h2 className="">{course.title}</h2>
-                        <p>{course.description}</p>
-                        <div>
+                    <div className="bg-linear-to-br from-cyan-100/20 to-cyan-50 dark:bg-linear-to-br dark:from-cyan-800/20 dark:to-cyan-800/20 rounded-lg p-2">
+                        <h2 className="text-xl font-bold cursor-pointer hover:underline hover:underline-offset-2">
+                            {course.title}
+                        </h2>
+                        <p className="text-sm">{course.description}</p>
+                        <div className="flex justify-between text-sm">
                             <p>
-                                <span>Type: </span>
+                                <span className="font-semibold">Type: </span>
                                 {course.price ? "PAID" : "FREE"}
                             </p>
                             <p>
-                                <span>Price: </span>
+                                <span className="font-semibold">Price: </span>
                                 {course.price ? `₹${course.price}` : "₹0"}
                             </p>
                         </div>
-                        <div>
+                        <div className="flex justify-between text-sm">
                             <p>
-                                <span>Author: </span>
+                                <span className="font-semibold">Author: </span>
                                 {course.createdBy.name}
                             </p>
                             <p>
-                                <span>Added: </span>
+                                <span className="font-semibold">Added: </span>
                                 {timeAgo(course.createdAt)}
                             </p>
                         </div>
-                        <HoverCard openDelay={10} closeDelay={100}>
-                            <HoverCardTrigger asChild>
-                                <Button variant="hover">Instructors</Button>
-                            </HoverCardTrigger>
-                            <HoverCardContent className="flex gap-2 h-fit w-fit">
-                                {course.instructors.map((ins, idx) => (
-                                    <span>
-                                        {ins.name}{" "}
-                                        {idx !==
-                                            course.instructors.length - 1 &&
-                                            ", "}
-                                    </span>
-                                ))}
-                            </HoverCardContent>
-                        </HoverCard>
+                        <div className="flex justify-start items-center mx-0">
+                            <HoverCard openDelay={10} closeDelay={100}>
+                                <HoverCardTrigger asChild>
+                                    <Button variant="hover" className={cn("text-start")}>Instructors</Button>
+                                </HoverCardTrigger>
+                                <HoverCardContent className="flex gap-2 h-fit w-fit">
+                                    {course.instructors.map((ins, idx) => (
+                                        <span>
+                                            {ins.name}{" "}
+                                            {idx !==
+                                                course.instructors.length - 1 &&
+                                                ", "}
+                                        </span>
+                                    ))}
+                                </HoverCardContent>
+                            </HoverCard>
+                        </div>
                     </div>
                 ))}
             </div>
