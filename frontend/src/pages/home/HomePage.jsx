@@ -74,7 +74,8 @@ export const HomePage = () => {
                             "font-bold underline underline-offset-2 text-pink-500",
                     )}
                 >
-                    My Enrollments
+                    My Enrollments{" "}
+                    {myEnrollmentsPage && `(${myEnrollments?.data?.length})`}
                 </p>
             </div>
             <div className="h-full w-full grid grid-cols-3 gap-5 overflow-y-auto no-scroll">
@@ -169,7 +170,7 @@ export const HomePage = () => {
                             idx < 6 && (
                                 <div
                                     key={enr.courseId}
-                                    className="bg-linear-to-br from-cyan-100/20 to-cyan-50 dark:bg-linear-to-br dark:from-cyan-800/20 dark:to-cyan-800/20 rounded-lg p-2"
+                                    className="h-fit bg-linear-to-br from-cyan-100/20 to-cyan-50 dark:bg-linear-to-br dark:from-cyan-800/20 dark:to-cyan-800/20 rounded-lg p-2"
                                 >
                                     <h2 className="text-xl font-bold cursor-pointer hover:underline hover:underline-offset-2 h-15">
                                         <Link
