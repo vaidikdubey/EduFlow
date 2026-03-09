@@ -13,14 +13,8 @@ export const UpdateQuizPage = () => {
     const [data, setData] = useState({ title: "", questions: [] });
     const [isQuestionDialogOpen, setIsQuestionDialogOpen] = useState(false);
 
-    const {
-        getQuizById,
-        isGettingQuiz,
-        quizById,
-        updateQuiz,
-        isUpdatingQuiz,
-        updatedQuiz,
-    } = useQuizStore();
+    const { getQuizById, isGettingQuiz, quizById, updateQuiz, isUpdatingQuiz } =
+        useQuizStore();
 
     useEffect(() => {
         getQuizById(id);
@@ -58,15 +52,20 @@ export const UpdateQuizPage = () => {
 
     return (
         <div className="h-full w-full max-w-6xl mx-auto border-l-2 border-r-2 px-5 overflow-y-auto no-scroll">
-            <Input
-                type="text"
-                placeholder="Update quiz title"
-                className={cn(
-                    "mb-5 placeholder:text-muted-foreground placeholder:p-2 sticky top-2 z-10",
-                )}
-                onChange={(e) => handleTitleChange(e)}
-                value={data.title ?? ""}
-            />
+            <div className="flex flex-col items-start justify-center">
+                <Input
+                    type="text"
+                    placeholder="Update quiz title"
+                    className={cn(
+                        "mb-5 placeholder:text-muted-foreground placeholder:p-2 sticky top-2 z-10",
+                    )}
+                    onChange={(e) => handleTitleChange(e)}
+                    value={data.title || quizById?.data?.title}
+                />
+                <p className="text-red-500 text-xs">
+                    * Select all the title and then start typing the new title
+                </p>
+            </div>
             <div className="h-fit w-full border-dashed flex flex-col items-center">
                 <div className="flex flex-col w-full gap-3 mb-5">
                     {quizById?.data?.questions?.map((question, idx) => {
