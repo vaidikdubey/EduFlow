@@ -12,33 +12,37 @@ import {
 } from "@/components/ui/hover-card";
 import { Link } from "react-router-dom";
 import { ReadMore } from "@/components/ui/ReadMore";
+import { useEnrollmentStore } from "@/stores/useEnrollmentStore";
 
 export const HomePage = () => {
     const { logout } = useAuthStore();
 
     const { getAllCourses, isGettingAllCourses, allCourses } = useCourseStore();
 
-    const [latestCourse, setLatestCourse] = useState(true);
-    const [myEnrollments, setMyEnrollments] = useState(false);
+    const { getMyEnrollments, isGettingMyEnrollments, myEnrollments } =
+        useEnrollmentStore();
+
+    const [latestCoursesPage, setLatestCoursesPage] = useState(true);
+    const [myEnrollmentsPage, setMyEnrollmentsPage] = useState(false);
 
     useEffect(() => {
         getAllCourses();
+        getMyEnrollments();
     }, []);
 
     const handleLogout = () => {
         logout();
     };
 
-    if (isGettingAllCourses) {
+    console.log("My enrollments: ", myEnrollments?.data);
+
+    if (isGettingAllCourses || isGettingMyEnrollments) {
         return (
             <div className="h-full flex items-center justify-center">
                 <Loader className="animate-spin text-foreground" />
             </div>
         );
     }
-
-    //Latest courses
-    //My enrollments
 
     return (
         <div className="w-full h-full flex flex-col justify-center items-center gap-5">
@@ -48,11 +52,12 @@ export const HomePage = () => {
             <div className="w-full flex gap-4">
                 <p
                     onClick={() => {
-                        (setLatestCourse(true), setMyEnrollments(false));
+                        (setLatestCoursesPage(true),
+                            setMyEnrollmentsPage(false));
                     }}
                     className={cn(
                         "cursor-pointer",
-                        latestCourse &&
+                        latestCoursesPage &&
                             "font-bold underline underline-offset-2 text-pink-500",
                     )}
                 >
@@ -60,11 +65,12 @@ export const HomePage = () => {
                 </p>
                 <p
                     onClick={() => {
-                        (setLatestCourse(false), setMyEnrollments(true));
+                        (setLatestCoursesPage(false),
+                            setMyEnrollmentsPage(true));
                     }}
                     className={cn(
                         "cursor-pointer",
-                        myEnrollments &&
+                        myEnrollmentsPage &&
                             "font-bold underline underline-offset-2 text-pink-500",
                     )}
                 >
@@ -72,7 +78,7 @@ export const HomePage = () => {
                 </p>
             </div>
             <div className="h-full w-full grid grid-cols-3 gap-5 overflow-y-auto no-scroll">
-                {latestCourse &&
+                {latestCoursesPage &&
                     allCourses?.data?.map(
                         (course, idx) =>
                             idx < 6 && (
@@ -157,7 +163,67 @@ export const HomePage = () => {
                                 </div>
                             ),
                     )}
-                {myEnrollments && <div>My enrollments</div>}
+                {myEnrollmentsPage &&
+                    myEnrollments?.data?.map(
+                        (enr, idx) =>
+                            idx < 6 && (
+                                <div
+                                    key={enr.courseId}
+                                    className="bg-linear-to-br from-cyan-100/20 to-cyan-50 dark:bg-linear-to-br dark:from-cyan-800/20 dark:to-cyan-800/20 rounded-lg p-2"
+                                >
+                                    <h2 className="text-xl font-bold cursor-pointer hover:underline hover:underline-offset-2 h-15">
+                                        <Link
+                                            to={`/course/enroll/${
+                                                enr.courseId
+                                            }`}
+                                        >
+                                            {enr.course.title}
+                                        </Link>
+                                    </h2>
+                                    <ReadMore
+                                        text={enr.course.description}
+                                        maxLen={100}
+                                        props={cn("mb-3")}
+                                    />
+                                    <div className="flex justify-between text-sm">
+                                        <p>
+                                            <span className="font-semibold">
+                                                Type:{" "}
+                                            </span>
+                                            {enr.course.price ? "PAID" : "FREE"}
+                                        </p>
+                                        <p>
+                                            <span className="font-semibold">
+                                                Price:{" "}
+                                            </span>
+                                            {enr.course.price
+                                                ? `₹${enr.course.price}`
+                                                : "₹0"}
+                                        </p>
+                                    </div>
+                                    <div className="flex justify-between text-sm">
+                                        <p>
+                                            <span className="font-semibold">
+                                                Added:{" "}
+                                            </span>
+                                            {timeAgo(enr.course.createdAt)}
+                                        </p>
+                                        <p>
+                                            <span className="font-semibold">
+                                                Enrolled:{" "}
+                                            </span>
+                                            {timeAgo(enr.enrolledAt)}
+                                        </p>
+                                    </div>
+                                    <Button
+                                        variant="default"
+                                        className={cn("w-full")}
+                                    >
+                                        View Course
+                                    </Button>
+                                </div>
+                            ),
+                    )}
             </div>
 
             <Button
