@@ -6,40 +6,47 @@ import { DotIcon, Loader, Plus, Trash2 } from "lucide-react";
 import { CreateQuestionDialogBox } from "./Create Quiz Page/CreateQuestionDialogBox";
 import { useQuizStore } from "@/stores/useQuizStore";
 import { useParams } from "react-router-dom";
+import { useForm, useFieldArray } from "react-hook-form";
 
 export const UpdateQuizPage = () => {
     const { id } = useParams();
-
-    const [data, setData] = useState({ title: "", questions: [] });
     const [isQuestionDialogOpen, setIsQuestionDialogOpen] = useState(false);
 
     const { getQuizById, isGettingQuiz, quizById, updateQuiz, isUpdatingQuiz } =
         useQuizStore();
 
+    const { register, control, handleSubmit, reset, setValue, watch } = useForm(
+        {
+            defaultValues: {
+                title: "",
+                questions: [],
+            },
+        },
+    );
+
+    const { fields, append, remove } = useFieldArray({
+        control,
+        name: "questions",
+    });
+
+    const watchedQuestions = watch("questions");
+
     useEffect(() => {
         getQuizById(id);
-        //eslint-disable-next-line
     }, [id]);
 
-    const handleTitleChange = (e) => {
-        setData((prev) => ({
-            title: e.target.value,
-            questions: [...prev.questions],
-        }));
-    };
+    useEffect(() => {
+        if (quizById?.data) {
+            reset({
+                title: quizById.data.title,
+                questions: quizById.data.questions,
+            });
+        }
+    }, [quizById, reset]);
 
-    const handleQuestionDelete = (idx) => {
-        setData((prev) => ({
-            title: prev.title,
-            questions: prev.questions.filter((_, i) => i !== idx),
-        }));
+    const onSubmit = (formData) => {
+        updateQuiz(formData, id);
     };
-
-    const handleSubmit = () => {
-        updateQuiz(data, id);
-    };
-
-    let serial = 1;
 
     if (isGettingQuiz) {
         return (
@@ -58,37 +65,58 @@ export const UpdateQuizPage = () => {
                     className={cn(
                         "mb-5 placeholder:text-muted-foreground placeholder:p-2 sticky top-2 z-10",
                     )}
-                    onChange={(e) => handleTitleChange(e)}
-                    value={data.title || quizById?.data?.title}
+                    {...register("title")}
                 />
-                <p className="text-red-500 text-xs">
-                    * Select all the title and then start typing the new title
-                </p>
             </div>
             <div className="h-fit w-full border-dashed flex flex-col items-center">
                 <div className="flex flex-col w-full gap-3 mb-5">
-                    {quizById?.data?.questions?.map((question, idx) => {
+                    {fields.map((field, idx) => {
                         return (
                             <div
-                                key={idx}
+                                key={field.id}
                                 className="bg-gray-200 dark:bg-gray-800 rounded-xl p-3 flex justify-between"
                             >
                                 <div>
-                                    <h3>
-                                        {serial++}. {question.question}
-                                    </h3>
-                                    {question.options.map((opt, i) => {
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <h3 className="font-bold">
+                                            {idx + 1}.
+                                        </h3>
+                                        <input
+                                            className="bg-transparent border-none outline-none focus:ring-0 w-full font-semibold"
+                                            {...register(
+                                                `questions.${idx}.question`,
+                                            )}
+                                        />
+                                    </div>
+                                    {field.options.map((_, i) => {
+                                        const isCorrect =
+                                            watchedQuestions[idx]?.correct ===
+                                            i;
+
                                         return (
                                             <div key={i}>
                                                 <p
                                                     className={cn(
-                                                        i ===
-                                                            question.correct &&
-                                                            "text-green-400",
-                                                        "flex items-center gap-1",
+                                                        isCorrect &&
+                                                            "text-green-400 font-bold",
+                                                        "flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity",
                                                     )}
                                                 >
-                                                    <DotIcon size={25} /> {opt}
+                                                    <DotIcon
+                                                        onClick={() =>
+                                                            setValue(
+                                                                `questions.${idx}.correct`,
+                                                                i,
+                                                            )
+                                                        }
+                                                        size={25}
+                                                    />
+                                                    <input
+                                                        className="bg-transparent border-none outline-none focus:ring-0 text-sm"
+                                                        {...register(
+                                                            `questions.${idx}.options.${i}`,
+                                                        )}
+                                                    />
                                                 </p>
                                             </div>
                                         );
@@ -98,43 +126,7 @@ export const UpdateQuizPage = () => {
                                     size={20}
                                     color="red"
                                     className="cursor-pointer"
-                                    onClick={() => handleQuestionDelete(idx)}
-                                />
-                            </div>
-                        );
-                    })}
-                    {data.questions.map((question, idx) => {
-                        return (
-                            <div
-                                key={idx}
-                                className="bg-gray-200 dark:bg-gray-800 rounded-xl p-3 flex justify-between"
-                            >
-                                <div>
-                                    <h3>
-                                        {serial++}. {question.question}
-                                    </h3>
-                                    {question.options.map((opt, i) => {
-                                        return (
-                                            <div key={i}>
-                                                <p
-                                                    className={cn(
-                                                        i ===
-                                                            question.correct &&
-                                                            "text-green-400",
-                                                        "flex items-center gap-1",
-                                                    )}
-                                                >
-                                                    <DotIcon size={25} /> {opt}
-                                                </p>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                                <Trash2
-                                    size={20}
-                                    color="red"
-                                    className="cursor-pointer"
-                                    onClick={() => handleQuestionDelete(idx)}
+                                    onClick={() => remove(idx)}
                                 />
                             </div>
                         );
@@ -142,6 +134,7 @@ export const UpdateQuizPage = () => {
                 </div>
                 <div className="w-full flex flex-col items-center gap-2">
                     <Button
+                        type="button"
                         onClick={() => setIsQuestionDialogOpen(true)}
                         className={cn(
                             "w-full cursor-pointer hover:shadow-2xl text-lg font-semibold",
@@ -156,7 +149,7 @@ export const UpdateQuizPage = () => {
                             "w-full cursor-pointer hover:shadow-2xl text-lg font-semibold",
                         )}
                         disabled={isUpdatingQuiz}
-                        onClick={handleSubmit}
+                        onClick={handleSubmit(onSubmit)}
                     >
                         Submit
                     </Button>
@@ -164,7 +157,10 @@ export const UpdateQuizPage = () => {
                 <CreateQuestionDialogBox
                     open={isQuestionDialogOpen}
                     onOpenChange={setIsQuestionDialogOpen}
-                    setData={setData}
+                    setData={(cb) => {
+                        const result = cb({ questions: [] });
+                        append(result.questions[0]);
+                    }}
                 />
             </div>
         </div>
