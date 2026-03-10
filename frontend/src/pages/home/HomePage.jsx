@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useCourseStore } from "@/stores/useCourseStore";
 import { timeAgo } from "@/utils/timeAgo";
-import { Loader } from "lucide-react";
+import { Loader, Menu } from "lucide-react";
 import {
     HoverCard,
     HoverCardContent,
@@ -24,6 +24,7 @@ export const HomePage = () => {
 
     const [latestCoursesPage, setLatestCoursesPage] = useState(true);
     const [myEnrollmentsPage, setMyEnrollmentsPage] = useState(false);
+    const [sideBar, setSideBar] = useState(false);
 
     useEffect(() => {
         getAllCourses();
@@ -45,7 +46,17 @@ export const HomePage = () => {
     }
 
     return (
-        <div className="w-full h-full flex flex-col justify-center items-center gap-5">
+        <div className="relative w-full h-full flex flex-col justify-center items-center gap-5">
+            <Menu
+                className={cn(sideBar && "hidden", "absolute top-3 left-2")}
+                onClick={() => setSideBar(true)}
+            />
+
+            {sideBar && (
+                <div className="absolute z-20 top-0 left-0 h-full w-[20%] bg-red-500 rounded-md">
+                    Hello
+                </div>
+            )}
             <div className="w-full bg-amber-300 p-3 rounded-2xl text-center">
                 Navbar comes here
             </div>
@@ -61,7 +72,7 @@ export const HomePage = () => {
                             "font-bold underline underline-offset-2 text-pink-500",
                     )}
                 >
-                    New Courses
+                    All Courses
                 </p>
                 <p
                     onClick={() => {
