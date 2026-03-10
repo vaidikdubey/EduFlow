@@ -54,7 +54,9 @@ export const HomePage = () => {
 
             {sideBar && (
                 <div className="absolute z-20 top-0 left-0 h-full w-[20%] bg-red-500 rounded-md">
-                    Hello
+                    <h1>EduFlow</h1>
+
+                    <p>Courses</p>
                 </div>
             )}
             <div className="w-full bg-amber-300 p-3 rounded-2xl text-center">
