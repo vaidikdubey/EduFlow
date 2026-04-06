@@ -44,8 +44,6 @@ const enrollInCourse = asyncHandler(async (req, res) => {
     },
   });
 
-  console.log("Existing course: ", existingCourse);
-
   if (!existingCourse || !existingCourse.isPublished)
     throw new ApiError(404, "Course not found");
 
@@ -64,57 +62,85 @@ const enrollInCourse = asyncHandler(async (req, res) => {
 
     return res
       .status(201)
-      .json(new ApiResponse(201, newEnrollment, "Successfully enrolled"));
-  }
+      .json(
+        new ApiResponse(
+          201,
+          { newEnrollment, type: "Free" },
+          "Successfully enrolled",
+        ),
+      );
+  } else {
+    if (
+      existingCourse.type === "PAID" &&
+      (!existingCourse.price || existingCourse.price < 0)
+    )
+      throw new ApiError(400, "Invalid course price");
 
-  if (
-    existingCourse.type === "PAID" &&
-    (!existingCourse.price || existingCourse.price < 0)
-  )
-    throw new ApiError(400, "Invalid course price");
+    const options = {
+      amount: Math.round(existingCourse.price * 100),
+      currency: "INR",
+      receipt: `rcpt_${req.user.id.toString().slice(-6)}_${Math.floor(Math.random() * 10000)}`,
+      payment_capture: 1, //Auto capture payment once authorized. 1 for yes, 0 for no
+    };
 
-  const razorpayOrder = await razorpay.orders.create({
-    amount: Math.round(existingCourse.price * 100),
-    currency: "INR",
-    receipt: `rcpt_${req.user.id.toString().slice(-6)}_${Math.floor(Math.random() * 10000)}`,
-    notes: {
-      userId,
-      courseId,
-      courseTitle: existingCourse.title,
-    },
-  });
+    const razorpayOrder = await razorpay.orders.create(options);
 
-  await db.enrollment.create({
-    data: {
-      userId,
-      courseId,
-      paymentStatus: "pending",
-      amount: existingCourse.price,
-      paymentId: razorpayOrder.id,
-    },
-  });
-
-  res.status(201).json(
-    new ApiResponse(
-      201,
-      {
-        razorpay_details: {
-          orderId: razorpayOrder.id,
-          amount: razorpayOrder.amount,
-          currency: razorpayOrder.currency,
+    const newEnrollment = await db.enrollment.upsert({
+      where: {
+        userId_courseId: {
+          userId,
           courseId,
-          courseTitle: existingCourse.title,
-          key: process.env.RAZORPAY_KEY_ID,
         },
       },
-      "Razorpay order created - proceed to payment",
-    ),
-  );
+      update: {
+        paymentId: razorpayOrder.id,
+        paymentStatus: "pending",
+      },
+      create: {
+        userId,
+        courseId,
+        paymentStatus: "pending",
+        amount: existingCourse.price,
+        paymentId: razorpayOrder.id,
+      },
+      select: {
+        id: true,
+        userId: true,
+        courseId: true,
+        enrolledAt: true,
+        paymentId: true,
+        amount: true,
+        paymentStatus: true,
+      },
+    });
+
+    res.status(201).json(
+      new ApiResponse(
+        201,
+        {
+          razorpay_details: {
+            orderId: razorpayOrder.id,
+            amount: razorpayOrder.amount,
+            currency: razorpayOrder.currency,
+            courseId,
+            courseTitle: existingCourse.title,
+            key: process.env.RAZORPAY_KEY_ID,
+          },
+          newEnrollment,
+          type: "PAID",
+        },
+        "Razorpay order created - proceed to payment",
+      ),
+    );
+  }
 });
 
 const verifyPayment = asyncHandler(async (req, res) => {
   const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
     req.body;
+
+  if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature)
+    throw new ApiError(400, "Payment details missing");
 
   // 1. Verify the signature
   const expectedSignature = crypto

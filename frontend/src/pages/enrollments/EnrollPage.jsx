@@ -3,47 +3,140 @@ import { useCourseStore } from "@/stores/useCourseStore";
 import { useNavigate, useParams } from "react-router-dom";
 import { Loader } from "lucide-react";
 import { useEnrollmentStore } from "@/stores/useEnrollmentStore";
+import { useAuthStore } from "@/stores/useAuthStore";
+import toast from "react-hot-toast";
 
 export const EnrollPage = () => {
     const navigate = useNavigate();
     const { id } = useParams();
     const { checkEnrollment } = useCourseStore();
     const [status, setStatus] = useState("checking"); // checking | processing | failed
-    const { enrollInCourse } = useEnrollmentStore();
+    const { createOrder, isVerifyingPayment, isCreatingOrder, verifyPayment } =
+        useEnrollmentStore();
+    const { authUser } = useAuthStore();
 
-    // We use a ref to prevent double-firing
-    const paymentInitiated = useRef(false);
+    const enrollmentRetry = async () => {
+        if (isCreatingOrder || isVerifyingPayment) return;
+
+        try {
+            const order = await createOrder(id);
+
+            if (order?.data?.type?.toUpperCase() === "FREE") {
+                setTimeout(navigate(`/course/get/${id}`, { replace: true }), 0);
+                return;
+            } else {
+                const options = {
+                    key: order.data.razorpay_details.key,
+                    amount: order.data.razorpay_details.amount,
+                    currency: order.data.razorpay_details.currency,
+                    name: order.data.razorpay_details.courseTitle,
+                    description:
+                        "Unlock full access to this premium course, including all lessons, resources, and future updates.",
+                    order_id: order.data.razorpay_details.orderId,
+                    prefill: {
+                        name: authUser?.data?.name || "User",
+                        email: authUser?.data?.email || "",
+                    },
+                    theme: {
+                        color: "#EC4899",
+                    },
+                    handler: async (response) => {
+                        await verifyPayment(response);
+                        setTimeout(
+                            () =>
+                                navigate(`/course/get/${id}`, {
+                                    replace: true,
+                                }),
+                            0,
+                        );
+                    },
+                    modal: {
+                        ondismiss: () => {
+                            toast("Payment cancelled", { icon: "❌" });
+                        },
+                    },
+                };
+
+                const rzp = new window.Razorpay(options);
+                rzp.open();
+            }
+        } catch (error) {
+            console.error("Enroll in course error", error);
+        }
+    };
 
     useEffect(() => {
-        const handleEnrollmentFlow = async () => {
-            if (paymentInitiated.current) return;
-            paymentInitiated.current = true;
-
+        const handleEnrollment = async () => {
             setStatus("checking");
             const isEnrolled = await checkEnrollment(id);
 
             if (isEnrolled) {
-                paymentInitiated.current = false;
-                navigate(`/course/get/${id}`);
+                setTimeout(navigate(`/course/get/${id}`, { replace: true }), 0);
                 return;
             }
 
-            // If not enrolled, immediately start payment
-            await enrollInCourse(id, navigate);
+            if (isCreatingOrder || isVerifyingPayment) return;
+
+            try {
+                const order = await createOrder(id);
+
+                console.log(order?.data?.type);
+
+                if (order?.data?.type?.toUpperCase() === "FREE") {
+                    setTimeout(
+                        navigate(`/course/get/${id}`, { replace: true }),
+                        0,
+                    );
+                    return;
+                } else {
+                    const options = {
+                        key: order.data.razorpay_details.key,
+                        amount: order.data.razorpay_details.amount,
+                        currency: order.data.razorpay_details.currency,
+                        name: order.data.razorpay_details.courseTitle,
+                        description:
+                            "Unlock full access to this premium course, including all lessons, resources, and future updates.",
+                        order_id: order.data.razorpay_details.orderId,
+                        prefill: {
+                            name: authUser?.data?.name || "User",
+                            email: authUser?.data?.email || "",
+                        },
+                        theme: {
+                            color: "#EC4899",
+                        },
+                        handler: async (response) => {
+                            await verifyPayment(response);
+                            setTimeout(
+                                () =>
+                                    navigate(`/course/get/${id}`, {
+                                        replace: true,
+                                    }),
+                                0,
+                            );
+                        },
+                        modal: {
+                            ondismiss: () => {
+                                toast("Payment cancelled", { icon: "❌" });
+                            },
+                        },
+                    };
+
+                    const rzp = new window.Razorpay(options);
+                    rzp.open();
+                }
+            } catch (error) {
+                console.error("Enroll in course error", error);
+            }
         };
 
-        handleEnrollmentFlow();
+        handleEnrollment();
+        //eslint-disable-next-line
     }, [id]);
 
-    if (status === "checking" || status === "processing") {
+    if (isCreatingOrder || isVerifyingPayment || status === "checking") {
         return (
             <div className="h-full flex flex-col items-center justify-center gap-4">
                 <Loader className="animate-spin text-pink-500 w-10 h-10" />
-                <p className="text-gray-500 font-medium">
-                    {status === "checking"
-                        ? "Checking enrollment..."
-                        : "Opening payment gateway..."}
-                </p>
             </div>
         );
     }
@@ -56,10 +149,7 @@ export const EnrollPage = () => {
                 Please complete payment to access this course.
             </p>
             <button
-                onClick={() => {
-                    paymentInitiated.current = false;
-                    enrollInCourse(id, navigate);
-                }}
+                onClick={enrollmentRetry}
                 className="bg-pink-500 text-white px-6 py-2 rounded-lg hover:bg-pink-600 transition"
             >
                 Enroll Now

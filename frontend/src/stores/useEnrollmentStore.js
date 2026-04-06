@@ -14,85 +14,131 @@ export const useEnrollmentStore = create((set) => ({
     isGeneratingCertificate: false,
     isGettingMyEnrollments: false,
     myEnrollments: [],
+    isCreatingOrder: false,
+    paymentData: null,
+    isVerifyingPayment: false,
+    verifyPaymentData: null,
+    isPaymentLoading: false,
 
-    enrollInCourse: async (courseId, navigate) => {
-        set({ isEnrolling: true });
+    // enrollInCourse: async (courseId, navigate) => {
+    //     set({ isEnrolling: true });
+
+    //     try {
+    //         // 1. Load Razorpay SDK
+    //         const isScriptLoaded = await loadRazorpayScript();
+    //         if (!isScriptLoaded) {
+    //             toast.error("Razorpay SDK failed to load");
+    //             return;
+    //         }
+
+    //         // 2. Request Enrollment/Order from Backend
+    //         const response = await axiosInstance.post(
+    //             `/enrollment/enroll/${courseId}`,
+    //             {},
+    //         );
+
+    //         // SCENARIO A: Free Course
+    //         if (!response.data.data.razorpay_details) {
+    //             toast.success("Enrolled successfully!");
+    //             navigate(`/course/get/${courseId}`, { replace: true });
+    //             return;
+    //         }
+
+    //         // SCENARIO B: Paid Course
+    //         const { razorpay_details } = response.data.data;
+    //         const user = useAuthStore.getState().authUser.data;
+
+    //         const options = {
+    //             key: razorpay_details.key,
+    //             amount: razorpay_details.amount,
+    //             currency: razorpay_details.currency,
+    //             name: `EduFlow Course - ${razorpay_details.courseTitle}`,
+    //             description: razorpay_details.courseTitle,
+    //             order_id: razorpay_details.orderId,
+    //             prefill: {
+    //                 name: user?.name || "",
+    //                 email: user?.email || "",
+    //             },
+    //             theme: { color: "#EC4899" },
+    //             handler: async (paymentResponse) => {
+    //                 try {
+    //                     await axiosInstance.post(
+    //                         "/enrollment/enroll/verify",
+    //                         paymentResponse,
+    //                     );
+    //                     setTimeout(
+    //                         () =>
+    //                             navigate(`/course/get/${courseId}`, {
+    //                                 replace: true,
+    //                             }),
+    //                         1000,
+    //                     );
+    //                 } catch (error) {
+    //                     console.error("Error verifying payment", error);
+    //                     toast.error(
+    //                         error.response.data.message ||
+    //                             "Error verifying payment",
+    //                     );
+    //                 }
+    //             },
+    //             modal: {
+    //                 ondismiss: () => {
+    //                     toast("Payment cancelled", { icon: "❌" });
+    //                     navigate("/course", { replace: true });
+    //                 },
+    //             },
+    //         };
+
+    //         const rzp = new window.Razorpay(options);
+    //         rzp.open();
+    //     } catch (error) {
+    //         console.error("Error processing payment", error);
+    //         toast.error(
+    //             error.response.data.message || "Error processing payment",
+    //         );
+    //     } finally {
+    //         set({ isEnrolling: false });
+    //     }
+    // },
+
+    createOrder: async (courseId) => {
+        set({ isPaymentLoading: true });
 
         try {
-            // 1. Load Razorpay SDK
-            const isScriptLoaded = await loadRazorpayScript();
-            if (!isScriptLoaded) {
-                toast.error("Razorpay SDK failed to load");
-                return;
-            }
-
-            // 2. Request Enrollment/Order from Backend
-            const response = await axiosInstance.post(
+            const res = await axiosInstance.post(
                 `/enrollment/enroll/${courseId}`,
                 {},
             );
 
-            // SCENARIO A: Free Course
-            if (!response.data.data.razorpay_details) {
-                toast.success("Enrolled successfully!");
-                navigate(`/course/get/${courseId}`, { replace: true });
-                return;
-            }
+            set({ paymentData: res.data });
 
-            // SCENARIO B: Paid Course
-            const { razorpay_details } = response.data.data;
-            const user = useAuthStore.getState().authUser.data;
-
-            const options = {
-                key: razorpay_details.key,
-                amount: razorpay_details.amount,
-                currency: razorpay_details.currency,
-                name: `EduFlow Course - ${razorpay_details.courseTitle}`,
-                description: razorpay_details.courseTitle,
-                order_id: razorpay_details.orderId,
-                prefill: {
-                    name: user?.name || "",
-                    email: user?.email || "",
-                },
-                theme: { color: "#EC4899" },
-                handler: async (paymentResponse) => {
-                    try {
-                        await axiosInstance.post(
-                            "/enrollment/enroll/verify",
-                            paymentResponse,
-                        );
-                        setTimeout(
-                            () =>
-                                navigate(`/course/get/${courseId}`, {
-                                    replace: true,
-                                }),
-                            1000,
-                        );
-                    } catch (error) {
-                        console.error("Error verifying payment", error);
-                        toast.error(
-                            error.response.data.message ||
-                                "Error verifying payment",
-                        );
-                    }
-                },
-                modal: {
-                    ondismiss: () => {
-                        toast("Payment cancelled", { icon: "❌" });
-                        navigate("/course", { replace: true });
-                    },
-                },
-            };
-
-            const rzp = new window.Razorpay(options);
-            rzp.open();
+            return res.data;
         } catch (error) {
-            console.error("Error processing payment", error);
+            console.error("Error creating order", error);
+            toast.error(error.response.data.message || "Error creating order");
+        } finally {
+            set({ isPaymentLoading: false });
+        }
+    },
+
+    verifyPayment: async (response) => {
+        set({ isVerifyingPayment: true });
+
+        try {
+            const res = await axiosInstance.post(
+                `/enrollment/enroll/verify`,
+                response,
+            );
+
+            set({ verifyPaymentData: res.data });
+            toast.success(res.message || "Payment verified🎉");
+        } catch (error) {
+            console.error("Error verifying payment", error);
             toast.error(
-                error.response.data.message || "Error processing payment",
+                error.response.data.message || "Error verifying payment",
             );
         } finally {
-            set({ isEnrolling: false });
+            set({ isVerifyingPayment: false });
         }
     },
 
