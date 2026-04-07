@@ -4,17 +4,19 @@ import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useCourseStore } from "@/stores/useCourseStore";
 import { timeAgo } from "@/utils/timeAgo";
-import { Loader, Menu } from "lucide-react";
+import { Loader, Menu, X, Cog, LogOut } from "lucide-react";
 import {
     HoverCard,
     HoverCardContent,
     HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ReadMore } from "@/components/ui/ReadMore";
 import { useEnrollmentStore } from "@/stores/useEnrollmentStore";
 
 export const HomePage = () => {
+    const navigate = useNavigate();
+
     const { logout } = useAuthStore();
 
     const { getAllCourses, isGettingAllCourses, allCourses } = useCourseStore();
@@ -53,10 +55,63 @@ export const HomePage = () => {
             />
 
             {sideBar && (
-                <div className="absolute z-20 top-0 left-0 h-full w-[20%] bg-red-500 rounded-md">
-                    <h1>EduFlow</h1>
+                <div className="absolute z-20 top-0 left-0 h-full w-[20%] bg-gray-300/90 rounded-md p-3">
+                    <div className="relative h-full w-full flex flex-col justify-between items-center">
+                        <div className="w-full">
+                            <div className="flex justify-between">
+                                <h1 className="text-3xl text-pink-600 cursor-none">
+                                    EduFlow
+                                </h1>
+                                <X
+                                    className="absolute top-2 right-2 hover:text-red-500"
+                                    onClick={() => setSideBar(false)}
+                                />
+                            </div>
+                            <div className="h-full w-full flex flex-col gap-4 py-2">
+                                <p
+                                    className="hover:bg-gray-500/70 p-2 text-lg rounded-lg cursor-pointer"
+                                    onClick={() => {
+                                        setSideBar(false);
+                                        navigate("/course");
+                                    }}
+                                >
+                                    Courses
+                                </p>
+                                <p
+                                    className="hover:bg-gray-500/70 p-2 text-lg rounded-lg cursor-pointer"
+                                    onClick={() => {
+                                        setSideBar(false);
+                                        (setLatestCoursesPage(false),
+                                            setMyEnrollmentsPage(true));
+                                    }}
+                                >
+                                    My Enrollments
+                                </p>
 
-                    <p>Courses</p>
+                                <p
+                                    className="hover:bg-gray-500/70 p-2 text-lg rounded-lg cursor-pointer"
+                                    onClick={() => {
+                                        setSideBar(false);
+                                        navigate("/me");
+                                    }}
+                                >
+                                    My Profile
+                                </p>
+                            </div>
+                        </div>
+                        <div className="w-full flex flex-col gap-4">
+                            <div className="border-b-2 border-gray-700 w-full" />
+                            <p className="flex gap-2 hover:bg-gray-500/70 p-2 rounded-lg text-lg">
+                                <Cog /> Settings{" "}
+                            </p>
+                            <p
+                                className="flex gap-2 hover:bg-red-500/70 p-2 rounded-lg text-lg"
+                                onClick={handleLogout}
+                            >
+                                <LogOut /> Logout{" "}
+                            </p>
+                        </div>
+                    </div>
                 </div>
             )}
             <div className="w-full bg-amber-300 p-3 rounded-2xl text-center">
@@ -155,7 +210,13 @@ export const HomePage = () => {
                                     </HoverCardContent>
                                 </HoverCard>
                             </div>
-                            <Button variant="default" className={cn("w-full")}>
+                            <Button
+                                variant="default"
+                                className={cn("w-full cursor-pointer")}
+                                onClick={() =>
+                                    navigate(`/course/enroll/${course.id}`)
+                                }
+                            >
                                 Enroll
                             </Button>
                         </div>
@@ -222,14 +283,6 @@ export const HomePage = () => {
                             ),
                     )}
             </div>
-
-            <Button
-                variant="destructive"
-                onClick={handleLogout}
-                className={cn("cursor-pointer")}
-            >
-                Logout?
-            </Button>
         </div>
     );
 };
