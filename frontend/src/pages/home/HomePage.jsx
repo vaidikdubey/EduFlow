@@ -4,7 +4,16 @@ import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useCourseStore } from "@/stores/useCourseStore";
 import { timeAgo } from "@/utils/timeAgo";
-import { Loader, Menu, X, Cog, LogOut } from "lucide-react";
+import {
+    Loader,
+    Menu,
+    X,
+    Cog,
+    LogOut,
+    User,
+    LibraryBig,
+    ClipboardCheck,
+} from "lucide-react";
 import {
     HoverCard,
     HoverCardContent,
@@ -31,6 +40,7 @@ export const HomePage = () => {
     useEffect(() => {
         getAllCourses();
         getMyEnrollments();
+        //eslint-disable-next-line
     }, []);
 
     const handleLogout = () => {
@@ -50,7 +60,10 @@ export const HomePage = () => {
     return (
         <div className="relative w-full h-full flex flex-col justify-center items-center gap-5">
             <Menu
-                className={cn(sideBar && "hidden", "absolute top-3 left-2")}
+                className={cn(
+                    sideBar && "hidden",
+                    "absolute top-3 left-2 hover:text-pink-500",
+                )}
                 onClick={() => setSideBar(true)}
             />
 
@@ -63,45 +76,51 @@ export const HomePage = () => {
                                     EduFlow
                                 </h1>
                                 <X
-                                    className="absolute top-2 right-2 hover:text-red-500"
+                                    className="absolute top-2 right-2 hover:text-red-600"
                                     onClick={() => setSideBar(false)}
                                 />
                             </div>
                             <div className="h-full w-full flex flex-col gap-4 py-2">
                                 <p
-                                    className="hover:bg-gray-500/70 p-2 text-lg rounded-lg cursor-pointer"
+                                    className="flex gap-2 hover:bg-gray-500/70 p-2 text-lg rounded-lg cursor-pointer"
                                     onClick={() => {
                                         setSideBar(false);
                                         navigate("/course");
                                     }}
                                 >
-                                    Courses
+                                    <LibraryBig /> Courses
                                 </p>
                                 <p
-                                    className="hover:bg-gray-500/70 p-2 text-lg rounded-lg cursor-pointer"
+                                    className="flex gap-2 hover:bg-gray-500/70 p-2 text-lg rounded-lg cursor-pointer"
                                     onClick={() => {
                                         setSideBar(false);
                                         (setLatestCoursesPage(false),
                                             setMyEnrollmentsPage(true));
                                     }}
                                 >
-                                    My Enrollments
+                                    <ClipboardCheck /> Enrollments
                                 </p>
 
                                 <p
-                                    className="hover:bg-gray-500/70 p-2 text-lg rounded-lg cursor-pointer"
+                                    className="flex gap-2 hover:bg-gray-500/70 p-2 text-lg rounded-lg cursor-pointer"
                                     onClick={() => {
                                         setSideBar(false);
                                         navigate("/me");
                                     }}
                                 >
-                                    My Profile
+                                    <User /> Profile
                                 </p>
                             </div>
                         </div>
                         <div className="w-full flex flex-col gap-4">
                             <div className="border-b-2 border-gray-700 w-full" />
-                            <p className="flex gap-2 hover:bg-gray-500/70 p-2 rounded-lg text-lg">
+                            <p
+                                className="flex gap-2 hover:bg-gray-500/70 p-2 rounded-lg text-lg"
+                                onClick={() => {
+                                    setSideBar(false);
+                                    navigate("/settings");
+                                }}
+                            >
                                 <Cog /> Settings{" "}
                             </p>
                             <p

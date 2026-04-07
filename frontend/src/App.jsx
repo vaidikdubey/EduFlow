@@ -28,6 +28,7 @@ import { UpdateQuizPage } from "./pages/quiz/UpdateQuizPage";
 import { CreateModulePage } from "./pages/modules/CreateModulePage";
 import { UpdateModulePage } from "./pages/modules/UpdateModulePage";
 import { ProfilePage } from "./pages/auth/ProfilePage";
+import { SettingsPage } from "./pages/home/SettingsPage";
 
 function App() {
     const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -101,6 +102,8 @@ function App() {
                     {/* Protected Routes */}
                     <Route element={<ProtectedRoute />}>
                         <Route path="/me" element={<ProfilePage />} />
+
+                        <Route path="/settings" element={<SettingsPage />} />
 
                         <Route path="/" element={<HomePage />} />
 
