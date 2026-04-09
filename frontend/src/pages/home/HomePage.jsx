@@ -68,84 +68,66 @@ export const HomePage = () => {
             />
 
             {sideBar && (
-                <div className="absolute z-20 top-0 left-0 h-full w-[70%] md:w-[30%] lg:w-[25%] 2xl:w-[10%] bg-gray-300/90 rounded-md p-3">
+                <div className="absolute z-20 top-0 left-0 h-full w-[70%] md:w-[30%] lg:w-[20%] 2xl:w-[20%] bg-gray-300/90 rounded-md p-3">
                     <div className="relative h-full w-full flex flex-col justify-between items-center">
                         <div className="w-full">
                             <div className="flex justify-between">
-                                <h1 className="text-3xl xl:text-5xl text-pink-600 cursor-none">
+                                <h1 className="text-3xl text-pink-600 cursor-none">
                                     EduFlow
                                 </h1>
                                 <X
-                                    className="absolute top-2 right-2 hover:text-red-600"
+                                    className="absolute top-2 right-2 hover:text-red-600 dark:text-black"
                                     onClick={() => setSideBar(false)}
                                 />
                             </div>
-                            <div className="h-full w-full flex flex-col gap-4 py-2">
+                            <div className="h-full w-full flex flex-col gap-4 py-2 dark:text-black">
                                 <p
-                                    className="flex gap-2 hover:bg-gray-500/70 p-2 text-lg xl:text-2xl rounded-lg cursor-pointer"
+                                    className="flex gap-2 hover:bg-gray-500/70 p-2 text-lg rounded-lg cursor-pointer"
                                     onClick={() => {
                                         setSideBar(false);
                                         navigate("/course");
                                     }}
                                 >
-                                    <LibraryBig
-                                        className="hidden xl:block"
-                                        size={30}
-                                    />{" "}
-                                    <LibraryBig className="block xl:hidden" />
-                                    Courses
+                                    <LibraryBig /> Courses
                                 </p>
                                 <p
-                                    className="flex gap-2 hover:bg-gray-500/70 p-2 text-lg xl:text-2xl rounded-lg cursor-pointer"
+                                    className="flex gap-2 hover:bg-gray-500/70 p-2 text-lg rounded-lg cursor-pointer"
                                     onClick={() => {
                                         setSideBar(false);
                                         (setLatestCoursesPage(false),
                                             setMyEnrollmentsPage(true));
                                     }}
                                 >
-                                    <ClipboardCheck
-                                        className="hidden xl:block"
-                                        size={30}
-                                    />
-                                    <ClipboardCheck className="block xl:hidden" />{" "}
-                                    Enrollments
+                                    <ClipboardCheck /> Enrollments
                                 </p>
 
                                 <p
-                                    className="flex gap-2 hover:bg-gray-500/70 p-2 text-lg xl:text-2xl rounded-lg cursor-pointer"
+                                    className="flex gap-2 hover:bg-gray-500/70 p-2 text-lg rounded-lg cursor-pointer"
                                     onClick={() => {
                                         setSideBar(false);
                                         navigate("/me");
                                     }}
                                 >
-                                    <User
-                                        className="hidden xl:block"
-                                        size={30}
-                                    />
-                                    <User className="block xl:hidden" /> Profile
+                                    <User /> Profile
                                 </p>
                             </div>
                         </div>
-                        <div className="w-full flex flex-col gap-4">
+                        <div className="w-full flex flex-col gap-4 dark:text-black">
                             <div className="border-b-2 border-gray-700 w-full" />
                             <p
-                                className="flex gap-2 hover:bg-gray-500/70 p-2 rounded-lg text-lg xl:text-2xl"
+                                className="flex gap-2 hover:bg-gray-500/70 p-2 rounded-lg text-lg"
                                 onClick={() => {
                                     setSideBar(false);
                                     navigate("/settings");
                                 }}
                             >
-                                <Cog className="xl:block hidden" size={30} />
-                                <Cog className="block xl:hidden" />{" "}
-                                Settings{" "}
+                                <Cog /> Settings{" "}
                             </p>
                             <p
-                                className="flex gap-2 hover:bg-red-500/70 p-2 rounded-lg text-lg xl:text-2xl"
+                                className="flex gap-2 hover:bg-red-500/70 p-2 rounded-lg text-lg"
                                 onClick={handleLogout}
                             >
-                                <LogOut className="xl:block hidden" size={30} />
-                                <LogOut className="block xl:hidden" />{" "}
-                                Logout{" "}
+                                <LogOut /> Logout{" "}
                             </p>
                         </div>
                     </div>
