@@ -206,3 +206,42 @@ body,
         -webkit-overflow-scrolling: touch; /*Helpful with mobile scrolling */
     }
 }
+
+@theme {
+    --animate-random-corner: random-move 25s infinite linear;
+
+    @keyframes random-move {
+        0% {
+            top: 5vh;
+            left: 5vw;
+        }
+        15% {
+            top: 60vh;
+            left: calc(100vw - 22vw);
+        }
+        30% {
+            top: 15vh;
+            left: calc(100vw - 30vw);
+        }
+        45% {
+            top: calc(100vh - 25vw);
+            left: 10vw;
+        }
+        60% {
+            top: 10vh;
+            left: calc(100vw - 25vw);
+        }
+        75% {
+            top: calc(100vh - 30vw);
+            left: 30vw;
+        }
+        90% {
+            top: 25vh;
+            left: calc(100vw - 28vw);
+        }
+        100% {
+            top: 5vh;
+            left: 5vw;
+        }
+    }
+}
