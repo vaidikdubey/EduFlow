@@ -22,11 +22,12 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { ReadMore } from "@/components/ui/ReadMore";
 import { useEnrollmentStore } from "@/stores/useEnrollmentStore";
+import { salutation } from "../../utils/salutation.js";
 
 export const HomePage = () => {
     const navigate = useNavigate();
 
-    const { logout } = useAuthStore();
+    const { authUser, logout } = useAuthStore();
 
     const { getAllCourses, isGettingAllCourses, allCourses } = useCourseStore();
 
@@ -166,8 +167,10 @@ export const HomePage = () => {
                             `(${myEnrollments?.data?.length})`}
                     </p>
                 </div>
+                <h1 className="text-4xl w-full">
+                    {salutation(authUser?.data?.name)}
+                </h1>
                 <div className="h-full w-full grid grid-cols-3 gap-5 overflow-y-auto no-scroll">
-                    <h1>{}</h1>
                     {latestCoursesPage &&
                         allCourses?.data?.map((course) => (
                             <div
