@@ -167,6 +167,7 @@ export const HomePage = () => {
                     </p>
                 </div>
                 <div className="h-full w-full grid grid-cols-3 gap-5 overflow-y-auto no-scroll">
+                    <h1>{}</h1>
                     {latestCoursesPage &&
                         allCourses?.data?.map((course) => (
                             <div
