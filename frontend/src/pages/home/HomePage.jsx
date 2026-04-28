@@ -4,16 +4,7 @@ import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useCourseStore } from "@/stores/useCourseStore";
 import { timeAgo } from "@/utils/timeAgo";
-import {
-    Loader,
-    Menu,
-    X,
-    Cog,
-    LogOut,
-    User,
-    LibraryBig,
-    ClipboardCheck,
-} from "lucide-react";
+import { Loader } from "lucide-react";
 import {
     HoverCard,
     HoverCardContent,
@@ -27,13 +18,14 @@ import { Navbar } from "./Navbar.jsx";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Sidebar } from "./Sidebar.jsx";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export const HomePage = () => {
     const navigate = useNavigate();
 
-    const { authUser, logout } = useAuthStore();
+    const { authUser } = useAuthStore();
 
     const { getAllCourses, isGettingAllCourses, allCourses } = useCourseStore();
 
@@ -42,17 +34,12 @@ export const HomePage = () => {
 
     const [latestCoursesPage, setLatestCoursesPage] = useState(true);
     const [myEnrollmentsPage, setMyEnrollmentsPage] = useState(false);
-    const [sideBar, setSideBar] = useState(false);
 
     useEffect(() => {
         getAllCourses();
         getMyEnrollments();
         //eslint-disable-next-line
     }, []);
-
-    const handleLogout = () => {
-        logout();
-    };
 
     const nameRef = useRef(null);
     const courseTabRef = useRef(null);
@@ -117,80 +104,7 @@ export const HomePage = () => {
         <div className="relative w-full h-full">
             <div className="absolute h-[20vw] w-[20vw] max-h-62.5 max-w-62.5 min-h-30 min-w-30 animate-random-corner bg-[oklch(0.8148_0.0819_225.7537/0.25)] dark:bg-[oklch(0.968_0.211_109.7692/0.2)] rounded-full blur-xl z-0"></div>
             <div className="relative w-full h-full flex flex-col justify-center items-center gap-5 bg-transparent z-10">
-                <Menu
-                    className={cn(
-                        sideBar && "hidden",
-                        "absolute top-3 left-2 hover:text-pink-500",
-                    )}
-                    onClick={() => setSideBar(true)}
-                />
-
-                {sideBar && (
-                    <div className="absolute z-20 top-0 left-0 h-full w-[70%] md:w-[30%] lg:w-[20%] 2xl:w-[20%] bg-gray-300/90 rounded-md p-3">
-                        <div className="relative h-full w-full flex flex-col justify-between items-center">
-                            <div className="w-full">
-                                <div className="flex justify-between">
-                                    <h1 className="text-3xl text-pink-600 cursor-none">
-                                        EduFlow
-                                    </h1>
-                                    <X
-                                        className="absolute top-2 right-2 hover:text-red-600 dark:text-black dark:hover:text-red-600"
-                                        onClick={() => setSideBar(false)}
-                                    />
-                                </div>
-                                <div className="h-full w-full flex flex-col gap-4 py-2 dark:text-black">
-                                    <p
-                                        className="flex gap-2 hover:bg-gray-500/70 p-2 text-lg rounded-lg cursor-pointer"
-                                        onClick={() => {
-                                            setSideBar(false);
-                                            navigate("/course");
-                                        }}
-                                    >
-                                        <LibraryBig /> Courses
-                                    </p>
-                                    <p
-                                        className="flex gap-2 hover:bg-gray-500/70 p-2 text-lg rounded-lg cursor-pointer"
-                                        onClick={() => {
-                                            setSideBar(false);
-                                            (setLatestCoursesPage(false),
-                                                setMyEnrollmentsPage(true));
-                                        }}
-                                    >
-                                        <ClipboardCheck /> Enrollments
-                                    </p>
-
-                                    <p
-                                        className="flex gap-2 hover:bg-gray-500/70 p-2 text-lg rounded-lg cursor-pointer"
-                                        onClick={() => {
-                                            setSideBar(false);
-                                            navigate("/me");
-                                        }}
-                                    >
-                                        <User /> Profile
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="w-full flex flex-col gap-4 dark:text-black">
-                                <div className="border-b-2 border-gray-700 w-full" />
-                                <p
-                                    className="flex gap-2 hover:bg-gray-500/70 p-2 rounded-lg text-lg"
-                                    onClick={() => {
-                                        setSideBar(false);
-                                        navigate("/settings");
-                                    }}
-                                >
-                                    <Cog /> Settings{" "}
-                                </p>
-                                <p
-                                    className="flex gap-2 hover:bg-red-500/70 p-2 rounded-lg text-lg"
-                                    onClick={handleLogout}
-                                >
-                                    <LogOut /> Logout{" "}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                )}
+                <Sidebar />
                 <div className="w-full p-3 rounded-2xl text-center">
                     <Navbar />
                 </div>

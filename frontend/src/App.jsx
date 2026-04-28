@@ -29,6 +29,7 @@ import { CreateModulePage } from "./pages/modules/CreateModulePage";
 import { UpdateModulePage } from "./pages/modules/UpdateModulePage";
 import { ProfilePage } from "./pages/auth/ProfilePage";
 import { SettingsPage } from "./pages/home/SettingsPage";
+import { Sidebar } from "./pages/home/Sidebar";
 
 function App() {
     const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
