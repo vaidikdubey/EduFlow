@@ -109,7 +109,7 @@ export const HomePage = () => {
                     setMyEnrollmentsPage={setMyEnrollmentsPage}
                 />
                 <div className="w-full p-3 rounded-2xl text-center">
-                    <Navbar />
+                    <Navbar allCourses={allCourses?.data ?? []} />
                 </div>
                 <div ref={courseTabRef} className="w-full flex gap-4">
                     <p

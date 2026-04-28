@@ -1,19 +1,63 @@
 import { useAuthStore } from "@/stores/useAuthStore";
-import { Bell } from "lucide-react";
+import { Bell, Search } from "lucide-react";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
-export const Navbar = () => {
+export const Navbar = ({ allCourses }) => {
     const { authUser } = useAuthStore();
 
     const [notifcationDiv, setNotificationDiv] = useState(false);
 
     const [profileDropdown, setProfileDropdown] = useState(false);
 
+    const [filteredCourses, setFilteredCourses] = useState([]);
+
+    const showSearchResult = (value) => {
+        if (value.trim() === "") {
+            setFilteredCourses([]);
+            return;
+        }
+
+        setFilteredCourses(
+            allCourses?.filter((course) => {
+                return course.title.toLowerCase().includes(value.toLowerCase());
+            }),
+        );
+    };
+
     return (
         <div className="relative flex justify-between items-center py-2 px-5 w-full max-w-[80%] mx-auto rounded-full bg-foreground/10">
             {/* Search bar */}
-            <div></div>
+            <div className="flex gap-2 justify-center items-center w-[40%] md:w-[80%]">
+                <Search />
+                <input
+                    type="text"
+                    placeholder="Search Courses"
+                    className="outline-none w-full bg-transparent"
+                    name="search"
+                    id="search"
+                    onChange={(e) => showSearchResult(e.target.value)}
+                />
+            </div>
+
+            {/* Filtered Courses */}
+            {filteredCourses && filteredCourses?.length > 0 && (
+                <div className="absolute z-20 top-15 left-15 w-[80%] backdrop-blur-lg h-[60vh] rounded-xl py-2 overflow-y-auto no-scroll">
+                    <ul>
+                        {filteredCourses?.map((course) => (
+                            <Link
+                                key={course.id}
+                                onClick={() => setFilteredCourses([])}
+                                to={`/course/get/${course.id}`}
+                            >
+                                <li className="py-2 px-3 hover:bg-muted-foreground/30 rounded-xl">
+                                    {course.title}
+                                </li>
+                            </Link>
+                        ))}
+                    </ul>
+                </div>
+            )}
 
             {/* Profile picture */}
             <div className="flex justify-center items-center gap-8">
