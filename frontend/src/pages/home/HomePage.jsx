@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/useAuthStore";
@@ -23,6 +23,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { ReadMore } from "@/components/ui/ReadMore";
 import { useEnrollmentStore } from "@/stores/useEnrollmentStore";
 import { salutation } from "../../utils/salutation.js";
+import { Navbar } from "./Navbar.jsx";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 export const HomePage = () => {
     const navigate = useNavigate();
@@ -47,6 +53,57 @@ export const HomePage = () => {
     const handleLogout = () => {
         logout();
     };
+
+    const nameRef = useRef(null);
+    const courseTabRef = useRef(null);
+    const allCoursesRef = useRef(null);
+
+    useGSAP(
+        () => {
+            if (isGettingAllCourses || isGettingMyEnrollments) return;
+
+            gsap.from(nameRef.current, {
+                x: -100,
+                opacity: 0,
+                duration: 1,
+            });
+
+            gsap.from(courseTabRef.current, {
+                y: -100,
+                opacity: 0,
+                duration: 1,
+            });
+        },
+        { dependencies: [isGettingAllCourses, isGettingMyEnrollments] },
+    );
+
+    useGSAP(
+        () => {
+            if (!allCoursesRef.current) return;
+
+            ScrollTrigger.batch(".course-card", {
+                scroller: allCoursesRef.current,
+                onEnter: (batch) => {
+                    gsap.from(batch, {
+                        y: 80,
+                        opacity: 0,
+                        duration: 0.5,
+                        stagger: 0.15,
+                    });
+                },
+                onEnterBack: (batch) => {
+                    gsap.from(batch, {
+                        y: -80,
+                        opacity: 0,
+                        duration: 0.5,
+                        stagger: 0.15,
+                    });
+                },
+                start: "top 90%",
+            });
+        },
+        { dependencies: [allCourses] },
+    );
 
     if (isGettingAllCourses || isGettingMyEnrollments) {
         return (
@@ -134,10 +191,10 @@ export const HomePage = () => {
                         </div>
                     </div>
                 )}
-                <div className="w-full bg-amber-300 p-3 rounded-2xl text-center">
-                    Navbar comes here
+                <div className="w-full p-3 rounded-2xl text-center">
+                    <Navbar />
                 </div>
-                <div className="w-full flex gap-4">
+                <div ref={courseTabRef} className="w-full flex gap-4">
                     <p
                         onClick={() => {
                             (setLatestCoursesPage(true),
@@ -167,15 +224,18 @@ export const HomePage = () => {
                             `(${myEnrollments?.data?.length})`}
                     </p>
                 </div>
-                <h1 className="text-4xl w-full">
+                <h1 ref={nameRef} className="text-4xl w-full">
                     {salutation(authUser?.data?.name)}
                 </h1>
-                <div className="h-full w-full grid grid-cols-3 gap-5 overflow-y-auto no-scroll">
+                <div
+                    ref={allCoursesRef}
+                    className="h-full w-full grid grid-cols-3 gap-5 overflow-y-auto no-scroll"
+                >
                     {latestCoursesPage &&
                         allCourses?.data?.map((course) => (
                             <div
                                 key={course.id}
-                                className="bg-linear-to-br from-cyan-100/20 to-cyan-50 dark:bg-linear-to-br dark:from-cyan-800/20 dark:to-cyan-800/20 rounded-lg p-2"
+                                className="course-card bg-linear-to-br from-cyan-100/20 to-cyan-50 dark:bg-linear-to-br dark:from-cyan-800/20 dark:to-cyan-800/20 rounded-lg p-2"
                             >
                                 <h2 className="text-xl font-bold cursor-pointer hover:underline hover:underline-offset-2 h-15">
                                     <Link to={`/course/enroll/${course.id}`}>
