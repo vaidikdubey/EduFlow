@@ -100,6 +100,7 @@ export const Sidebar = ({ setLatestCoursesPage, setMyEnrollmentsPage }) => {
                             <p
                                 className="sidebar-items flex gap-2 hover:bg-gray-500/70 p-2 text-lg rounded-lg cursor-pointer"
                                 onClick={() => {
+                                    tl.current.reverse();
                                     (setLatestCoursesPage(false),
                                         setMyEnrollmentsPage(true));
                                 }}
