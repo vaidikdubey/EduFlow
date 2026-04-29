@@ -14,10 +14,10 @@ export const EnrollmentButton = ({ courseId }) => {
     useEffect(() => {
         const verifyStatus = async () => {
             setLoading(true);
-
+            
             const status = await checkEnrollment(courseId);
 
-            setIsEnrolled(status);
+            setIsEnrolled(status || "not_enrolled");
 
             setLoading(false);
         };

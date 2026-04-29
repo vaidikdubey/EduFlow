@@ -1,8 +1,6 @@
 import { create } from "zustand";
 import { axiosInstance } from "@/lib/axios";
 import toast from "react-hot-toast";
-import { loadRazorpayScript } from "@/utils/loadRazorpay";
-import { useAuthStore } from "./useAuthStore";
 
 export const useEnrollmentStore = create((set) => ({
     isEnrolling: false,
@@ -105,9 +103,8 @@ export const useEnrollmentStore = create((set) => ({
         set({ isPaymentLoading: true });
 
         try {
-            const res = await axiosInstance.post(
+            const res = await axiosInstance.get(
                 `/enrollment/enroll/${courseId}`,
-                {},
             );
 
             set({ paymentData: res.data });
@@ -132,11 +129,15 @@ export const useEnrollmentStore = create((set) => ({
 
             set({ verifyPaymentData: res.data });
             toast.success(res.message || "Payment verified🎉");
+
+            return res.data;
         } catch (error) {
             console.error("Error verifying payment", error);
             toast.error(
                 error.response.data.message || "Error verifying payment",
             );
+
+            return null
         } finally {
             set({ isVerifyingPayment: false });
         }

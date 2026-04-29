@@ -13,6 +13,8 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization", "Content-Disposition"],
   }),
 );
+//Webhook middleware
+app.use("/api/v1/webhook", express.raw({ type: "application/json" }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -25,6 +27,7 @@ import lessonRouter from "./routes/lessons.routes.js";
 import enrollmentRouter from "./routes/enrollments.routes.js";
 import quizRouter from "./routes/quizzes.routes.js";
 import healthCheckRouter from "./routes/healthcheck.routes.js";
+import webhookRouter from "./routes/webhook.routes.js";
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/course", courseRouter);
@@ -33,6 +36,9 @@ app.use("/api/v1/lesson", lessonRouter);
 app.use("/api/v1/enrollment", enrollmentRouter);
 app.use("/api/v1/quiz", quizRouter);
 app.use("/api/v1/healthcheck", healthCheckRouter);
+
+//Webhook router
+app.use("/api/v1/webhook", webhookRouter);
 
 // Any error thrown in routes above will end up here
 app.use(errorHandler);

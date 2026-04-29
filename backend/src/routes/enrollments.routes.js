@@ -15,8 +15,9 @@ import {
 
 const router = Router();
 
-router.route("/enroll/:courseId").post(isLoggedIn, enrollInCourse);
+router.route("/enroll/:courseId").get(isLoggedIn, enrollInCourse);
 
+//Razorpay webhook for payment verification
 router.route("/enroll/verify").post(isLoggedIn, verifyPayment);
 
 router.route("/enrolled/:courseId").get(isLoggedIn, checkEnrollmentStatus);

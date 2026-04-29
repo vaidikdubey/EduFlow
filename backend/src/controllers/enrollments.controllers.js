@@ -3,17 +3,13 @@ import { asyncHandler } from "../utils/async-handler.js";
 import { ApiError } from "../utils/api-error.js";
 import { ApiResponse } from "../utils/api-response.js";
 import crypto from "crypto";
-import Razorpay from "razorpay";
 import PDFDocument from "pdfkit";
 import QRCode from "qrcode";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
+import { generate } from "short-uuid";
+import { razorpay } from "../utils/razorpay-credentials.js";
 
 const enrollInCourse = asyncHandler(async (req, res) => {
   const { courseId } = req.params;
@@ -29,7 +25,15 @@ const enrollInCourse = asyncHandler(async (req, res) => {
   });
 
   if (existingEnrollment)
-    throw new ApiError(409, "You are already enrolled in this course");
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          { message: "You are already enrolled" },
+          "You are already enrolled in this course",
+        ),
+      );
 
   const existingCourse = await db.course.findUnique({
     where: {
@@ -76,27 +80,18 @@ const enrollInCourse = asyncHandler(async (req, res) => {
     )
       throw new ApiError(400, "Invalid course price");
 
+    const receipt = generate();
+
     const options = {
       amount: Math.round(existingCourse.price * 100),
       currency: "INR",
-      receipt: `rcpt_${req.user.id.toString().slice(-6)}_${Math.floor(Math.random() * 10000)}`,
-      payment_capture: 1, //Auto capture payment once authorized. 1 for yes, 0 for no
+      receipt,
     };
 
     const razorpayOrder = await razorpay.orders.create(options);
 
-    const newEnrollment = await db.enrollment.upsert({
-      where: {
-        userId_courseId: {
-          userId,
-          courseId,
-        },
-      },
-      update: {
-        paymentId: razorpayOrder.id,
-        paymentStatus: "pending",
-      },
-      create: {
+    const newEnrollment = await db.enrollment.create({
+      data: {
         userId,
         courseId,
         paymentStatus: "pending",
@@ -152,15 +147,32 @@ const verifyPayment = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid payment signature");
   }
 
+  const paymentId = razorpay_order_id;
+
   // 2. Find and Update the enrollment using the order_id
   // We don't need 'notes' here because we saved the orderId in DB during 'enroll'
+  const enrollment = await db.enrollment.findFirst({
+    where: {
+      paymentId,
+    },
+  });
+
+  if (!enrollment) throw new ApiError(404, "Enrollment not found");
+
+  if (enrollment.paymentStatus === "captured") {
+    return res
+      .status(200)
+      .json(new ApiResponse(200, enrollment, "Payment already verified"));
+  }
+
   const updatedEnrollment = await db.enrollment.update({
     where: {
-      paymentId: razorpay_order_id,
+      id: enrollment.id,
     },
     data: {
       paymentStatus: "captured",
       paidAt: new Date(),
+      paymentId,
     },
   });
 
