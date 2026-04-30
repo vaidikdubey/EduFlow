@@ -30,6 +30,7 @@ import { UpdateModulePage } from "./pages/modules/UpdateModulePage";
 import { ProfilePage } from "./pages/auth/ProfilePage";
 import { SettingsPage } from "./pages/home/SettingsPage";
 import { Sidebar } from "./pages/home/Sidebar";
+import { EditProfilePage } from "./pages/auth/EditProfilePage";
 
 function App() {
     const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -103,6 +104,8 @@ function App() {
                     {/* Protected Routes */}
                     <Route element={<ProtectedRoute />}>
                         <Route path="/me" element={<ProfilePage />} />
+
+                        <Route path="/me/edit" element={<EditProfilePage />} />
 
                         <Route path="/settings" element={<SettingsPage />} />
 

@@ -228,8 +228,6 @@ const checkUserEnrolled = asyncHandler(async (req, res) => {
     },
   });
 
-  console.log("Enrollment: ", enrollment);
-
   if (!enrollment)
     return res
       .status(200)

@@ -91,23 +91,23 @@ export const Navbar = ({ allCourses }) => {
                         />
                     )}
                     {profileDropdown && (
-                        <div className="absolute top-15 right-5 border-2 flex flex-col justify-between items-start w-max h-max gap-3 rounded-xl bg-foreground text-background p-2">
+                        <div className="absolute top-15 right-5 border-2 flex flex-col justify-between items-start w-max h-max gap-3 rounded-xl backdrop-blur-2xl p-2 z-50">
                             <Link
-                                className="w-full rounded-xl p-2 hover:bg-background/20"
-                                to={"/view-profile"}
+                                className="w-full rounded-xl p-2 hover:bg-foreground/10"
+                                to={"/me"}
                             >
                                 View Profile
                             </Link>
                             <div className="border w-full dark:border-black border-gray-200"></div>
                             <Link
-                                className="w-full rounded-xl p-2 hover:bg-background/20"
-                                to={"/edit-profile"}
+                                className="w-full rounded-xl p-2 hover:bg-foreground/10"
+                                to={"/me/edit"}
                             >
                                 Edit Profile
                             </Link>
                             <div className="border w-full dark:border-black border-gray-200"></div>
                             <Link
-                                className="w-full rounded-xl p-2 hover:bg-background/20"
+                                className="w-full rounded-xl p-2 hover:bg-foreground/10"
                                 to={"/change-password"}
                             >
                                 Change Password
