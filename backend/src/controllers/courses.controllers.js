@@ -213,19 +213,29 @@ const checkUserEnrolled = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const userId = req.user.id;
 
-  const enrollment = await db.enrollment.findFirst({
+  const enrollment = await db.enrollment.findUnique({
     where: {
-      userId,
-      courseId: id,
+      userId_courseId: {
+        userId,
+        courseId: id,
+      },
     },
     select: {
       id: true,
       enrolledAt: true,
       completed: true,
+      paymentStatus: true,
     },
   });
 
+  console.log("Enrollment: ", enrollment);
+
   if (!enrollment)
+    return res
+      .status(200)
+      .json(new ApiResponse(200, { status: false }, "Enrollment fetched"));
+
+  if (enrollment.paymentStatus && enrollment.paymentStatus !== "captured")
     return res
       .status(200)
       .json(new ApiResponse(200, { status: false }, "Enrollment fetched"));

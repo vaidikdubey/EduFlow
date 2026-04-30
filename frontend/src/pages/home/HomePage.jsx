@@ -10,7 +10,7 @@ import {
     HoverCardContent,
     HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ReadMore } from "@/components/ui/ReadMore";
 import { useEnrollmentStore } from "@/stores/useEnrollmentStore";
 import { salutation } from "../../utils/salutation.js";
@@ -19,12 +19,11 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Sidebar } from "./Sidebar.jsx";
+import { EnrollmentButton } from "../courses/All Courses Page/EnrollmentButton.jsx";
 
 gsap.registerPlugin(ScrollTrigger);
 
 export const HomePage = () => {
-    const navigate = useNavigate();
-
     const { authUser } = useAuthStore();
 
     const { getAllCourses, isGettingAllCourses, allCourses } = useCourseStore();
@@ -45,10 +44,10 @@ export const HomePage = () => {
     const courseTabRef = useRef(null);
     const allCoursesRef = useRef(null);
 
-    useGSAP(
-        () => {
-            if (isGettingAllCourses || isGettingMyEnrollments) return;
+    useGSAP(() => {
+        if (isGettingAllCourses || isGettingMyEnrollments) return;
 
+        const ctx = gsap.context(() => {
             gsap.from(nameRef.current, {
                 x: -100,
                 opacity: 0,
@@ -60,37 +59,53 @@ export const HomePage = () => {
                 opacity: 0,
                 duration: 1,
             });
-        },
-        { dependencies: [isGettingAllCourses, isGettingMyEnrollments] },
-    );
+        });
 
-    useGSAP(
-        () => {
-            if (!allCoursesRef.current) return;
+        return () => ctx.revert();
+    }, [isGettingAllCourses, isGettingMyEnrollments]);
 
+    useGSAP(() => {
+        if (!allCoursesRef.current) return;
+
+        const ctx = gsap.context(() => {
             ScrollTrigger.batch(".course-card", {
                 scroller: allCoursesRef.current,
                 onEnter: (batch) => {
-                    gsap.from(batch, {
-                        y: 80,
-                        opacity: 0,
+                    gsap.set(batch, { y: 80, opacity: 0 });
+                    gsap.to(batch, {
+                        y: 0,
+                        opacity: 1,
                         duration: 0.5,
                         stagger: 0.15,
+                        overwrite: true,
                     });
                 },
                 onEnterBack: (batch) => {
-                    gsap.from(batch, {
-                        y: -80,
-                        opacity: 0,
+                    gsap.set(batch, { y: -80, opacity: 0 }); //Reset to animate back
+                    gsap.to(batch, {
+                        y: 0,
+                        opacity: 1,
                         duration: 0.5,
                         stagger: 0.15,
+                        overwrite: true,
                     });
                 },
+                //Leave and leave back helps repeat the animation with every scroll
+                onLeave: (batch) => {
+                    gsap.set(batch, { opacity: 0, y: -80 });
+                },
+                onLeaveBack: (batch) => {
+                    gsap.set(batch, { opacity: 0, y: 80 });
+                },
                 start: "top 90%",
+                end: "bottom 5%",
             });
-        },
-        { dependencies: [allCourses] },
-    );
+
+            ScrollTrigger.refresh();
+        });
+
+        return () => ctx.revert();
+    }, [allCourses]);
 
     if (isGettingAllCourses || isGettingMyEnrollments) {
         return (
@@ -102,8 +117,8 @@ export const HomePage = () => {
 
     return (
         <div className="relative w-full h-full">
-            <div className="absolute h-[20vw] w-[20vw] max-h-62.5 max-w-62.5 min-h-30 min-w-30 animate-random-corner bg-[oklch(0.8148_0.0819_225.7537/0.25)] dark:bg-[oklch(0.968_0.211_109.7692/0.2)] rounded-full blur-xl z-0"></div>
-            <div className="relative w-full h-full flex flex-col justify-center items-center gap-5 bg-transparent z-10">
+            <div className="absolute h-[20vw] w-[20vw] max-h-62.5 max-w-62.5 min-h-30 min-w-30 animate-random-corner bg-[oklch(0.8148_0.0819_225.7537/0.25)] dark:bg-[oklch(0.968_0.211_109.7692/0.15)] rounded-full blur-xl z-0"></div>
+            <div className="relative w-full h-full flex flex-col justify-center items-center gap-5 bg-transparent z-20">
                 <Sidebar
                     setLatestCoursesPage={setLatestCoursesPage}
                     setMyEnrollmentsPage={setMyEnrollmentsPage}
@@ -141,7 +156,7 @@ export const HomePage = () => {
                             `(${myEnrollments?.data?.length})`}
                     </p>
                 </div>
-                <h1 ref={nameRef} className="text-4xl w-full">
+                <h1 ref={nameRef} className="text-4xl w-full opacity-0">
                     {salutation(authUser?.data?.name)}
                 </h1>
                 <div
@@ -152,7 +167,7 @@ export const HomePage = () => {
                         allCourses?.data?.map((course) => (
                             <div
                                 key={course.id}
-                                className="course-card bg-linear-to-br from-cyan-100/20 to-cyan-50 dark:bg-linear-to-br dark:from-cyan-800/20 dark:to-cyan-800/20 rounded-lg p-2"
+                                className="course-card bg-linear-to-br from-cyan-100/20 to-cyan-50 dark:bg-linear-to-br dark:from-cyan-800/20 dark:to-cyan-800/20 rounded-lg p-2 opacity-0 -translate-y-5"
                             >
                                 <h2 className="text-xl font-bold cursor-pointer hover:underline hover:underline-offset-2 h-15">
                                     <Link to={`/course/enroll/${course.id}`}>
@@ -204,7 +219,7 @@ export const HomePage = () => {
                                         <HoverCardContent className="flex gap-2 h-fit w-fit">
                                             {course.instructors.map(
                                                 (ins, idx) => (
-                                                    <span>
+                                                    <span key={ins.id}>
                                                         {ins.name}{" "}
                                                         {idx !==
                                                             course.instructors
@@ -216,15 +231,7 @@ export const HomePage = () => {
                                         </HoverCardContent>
                                     </HoverCard>
                                 </div>
-                                <Button
-                                    variant="default"
-                                    className={cn("w-full cursor-pointer")}
-                                    onClick={() =>
-                                        navigate(`/course/enroll/${course.id}`)
-                                    }
-                                >
-                                    Enroll
-                                </Button>
+                                <EnrollmentButton courseId={course.id} />
                             </div>
                         ))}
                     {myEnrollmentsPage &&

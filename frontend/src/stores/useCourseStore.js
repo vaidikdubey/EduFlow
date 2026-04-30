@@ -122,7 +122,7 @@ export const useCourseStore = create((set) => ({
         set({ isCheckingEnrollment: true });
 
         try {
-            const res = await axiosInstance.get(`/course/enrolled/${+id}`);
+            const res = await axiosInstance.get(`/course/enrolled/${id}`);
 
             set({ enrollment: res.data });
 

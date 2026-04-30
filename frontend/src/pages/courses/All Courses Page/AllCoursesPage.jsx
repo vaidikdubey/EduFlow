@@ -7,7 +7,6 @@ import {
     XCircle,
     ArrowLeft,
     Plus,
-    Edit,
 } from "lucide-react";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { Input } from "@/components/ui/input";

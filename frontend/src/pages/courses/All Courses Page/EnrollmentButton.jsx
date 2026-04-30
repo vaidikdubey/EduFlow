@@ -17,7 +17,7 @@ export const EnrollmentButton = ({ courseId }) => {
             
             const status = await checkEnrollment(courseId);
 
-            setIsEnrolled(status || "not_enrolled");
+            setIsEnrolled(status);
 
             setLoading(false);
         };
