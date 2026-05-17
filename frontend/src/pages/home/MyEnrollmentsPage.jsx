@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { HoverInfo } from "@/components/ui/hover-info";
 import { ReadMore } from "@/components/ui/ReadMore";
 import { cn } from "@/lib/utils";
 import { useEnrollmentStore } from "@/stores/useEnrollmentStore";
@@ -28,9 +29,12 @@ export const MyEnrollmentsPage = () => {
 
     return (
         <div className="relative w-full h-full flex flex-col gap-10">
-            <ArrowLeft
+            <HoverInfo
+                children={<ArrowLeft
                 onClick={() => navigate("/")}
                 className="absolute top-3 left-3 cursor-pointer"
+                />}
+            content={"Navigate to home page"}
             />
             <h1 className="text-center text-3xl font-bold underline underline-offset-2">
                 My Enrollments

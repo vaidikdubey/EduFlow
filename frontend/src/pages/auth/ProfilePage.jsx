@@ -38,6 +38,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
+import { HoverInfo } from "@/components/ui/hover-info";
 
 export const ProfilePage = () => {
     const { authUser, deleteUser, isDeletingUser } = useAuthStore();
@@ -110,19 +111,28 @@ export const ProfilePage = () => {
                             <div className="flex justify-center items-center gap-2">
                                 <span className="font-semibold">Email:</span>
                                 {authUser?.data?.email}
-                                {authUser?.data?.isVerified ? (
-                                    <CheckCircle2
-                                        size={"15px"}
-                                        className="text-emerald-400"
-                                    />
-                                ) : (
-                                    <Link to={"/reverify"}>
-                                        <CircleX
-                                            size={"15px"}
-                                            className="text-red-500"
-                                        />
-                                    </Link>
-                                )}
+                                <HoverInfo
+                                    children={
+                                        authUser?.data?.isVerified ? (
+                                            <CheckCircle2
+                                                size={"15px"}
+                                                className="text-emerald-400"
+                                            />
+                                        ) : (
+                                            <Link to={"/reverify"}>
+                                                <CircleX
+                                                    size={"15px"}
+                                                    className="text-red-500"
+                                                />
+                                            </Link>
+                                        )
+                                    }
+                                    content={
+                                        authUser?.data?.isVerified
+                                            ? "Email Verified"
+                                            : "Email not verified"
+                                    }
+                                />
                             </div>
                         </Label>
 
