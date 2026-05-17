@@ -120,7 +120,7 @@ export const HomePage = () => {
                 <div className="w-full p-3 rounded-2xl text-center">
                     <Navbar allCourses={allCourses?.data ?? []} />
                 </div>
-                <div ref={courseTabRef} className="w-full flex gap-4">
+                <div ref={courseTabRef} className="w-full">
                     <p
                         className={cn(
                             "cursor-pointer font-bold underline underline-offset-2 text-pink-500",
@@ -129,7 +129,7 @@ export const HomePage = () => {
                         All Courses
                     </p>
                 </div>
-                <h1 ref={nameRef} className="text-4xl w-full opacity-0">
+                <h1 ref={nameRef} className="text-4xl w-full">
                     {salutation(authUser?.data?.name)}
                 </h1>
                 <div
