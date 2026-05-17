@@ -14,7 +14,7 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 
-export const Sidebar = ({ setLatestCoursesPage, setMyEnrollmentsPage }) => {
+export const Sidebar = () => {
     const navigate = useNavigate();
     const { logout } = useAuthStore();
 
@@ -101,8 +101,7 @@ export const Sidebar = ({ setLatestCoursesPage, setMyEnrollmentsPage }) => {
                                 className="sidebar-items flex gap-2 hover:bg-gray-500/70 p-2 text-lg rounded-lg cursor-pointer"
                                 onClick={() => {
                                     tl.current.reverse();
-                                    (setLatestCoursesPage(false),
-                                        setMyEnrollmentsPage(true));
+                                    navigate("/enrollments");
                                 }}
                             >
                                 <ClipboardCheck /> Enrollments
