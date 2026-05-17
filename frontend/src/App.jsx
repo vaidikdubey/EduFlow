@@ -29,8 +29,8 @@ import { CreateModulePage } from "./pages/modules/CreateModulePage";
 import { UpdateModulePage } from "./pages/modules/UpdateModulePage";
 import { ProfilePage } from "./pages/auth/ProfilePage";
 import { SettingsPage } from "./pages/home/SettingsPage";
-import { Sidebar } from "./pages/home/Sidebar";
 import { EditProfilePage } from "./pages/auth/EditProfilePage";
+import { MyEnrollmentsPage } from "./pages/home/MyEnrollmentsPage";
 
 function App() {
     const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -186,6 +186,11 @@ function App() {
                         <Route
                             path="/module/update/:id"
                             element={<UpdateModulePage />}
+                        />
+
+                        <Route
+                            path="/myEnrollments"
+                            element={<MyEnrollmentsPage />}
                         />
                     </Route>
                 </Route>
