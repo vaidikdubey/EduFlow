@@ -42,7 +42,7 @@ export const MyEnrollmentsPage = () => {
                 My Enrollments
             </h1>
             <div className="h-full w-full grid grid-cols-3 gap-5 overflow-y-auto no-scroll">
-                {myEnrollments?.data?.length > 120 ? (
+                {myEnrollments?.data?.length > 0 ? (
                     myEnrollments?.data?.map((enr) => (
                         <div
                             key={enr.courseId}
