@@ -41,7 +41,7 @@ import { Input } from "@/components/ui/input";
 import { HoverInfo } from "@/components/ui/hover-info";
 
 export const ProfilePage = () => {
-    const { authUser, deleteUser, isDeletingUser } = useAuthStore();
+    const { authUser, deleteUser, isDeletingUser, resendVerificationEmail } = useAuthStore();
 
     const [password, setPassword] = useState("");
 
@@ -119,12 +119,11 @@ export const ProfilePage = () => {
                                                 className="text-emerald-400"
                                             />
                                         ) : (
-                                            <Link to={"/reverify"}>
                                                 <CircleX
                                                     size={"15px"}
-                                                    className="text-red-500"
+                                                    className="text-red-500 cursor-pointer"
+                                                    onClick={() => resendVerificationEmail()}
                                                 />
-                                            </Link>
                                         )
                                     }
                                     content={

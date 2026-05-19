@@ -179,4 +179,15 @@ export const useAuthStore = create((set) => ({
             set({ isDeletingUser: false });
         }
     },
+
+    resendVerificationEmail: async () => {
+        try {
+            await axiosInstance.get("/auth/resend-verification");
+
+            toast.success("Verification email sent");
+        } catch (error) {
+            console.error("Error sending email: ", error);
+            toast.error(error.response.data.message || "Error sending email");
+        }
+    },
 }));
