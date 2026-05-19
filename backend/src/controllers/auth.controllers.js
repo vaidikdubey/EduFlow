@@ -151,7 +151,7 @@ const verifyUser = asyncHandler(async (req, res) => {
 
   const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
-  let user = await db.user.findUnique({
+  let user = await db.user.findFirst({
     where: {
       verificationToken: hashedToken,
       verificationExpiry: {
@@ -159,6 +159,8 @@ const verifyUser = asyncHandler(async (req, res) => {
       },
     },
   });
+
+  
 
   if (!user) throw new ApiError(404, "Invalid token");
 

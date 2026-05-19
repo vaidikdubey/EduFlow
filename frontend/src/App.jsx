@@ -31,6 +31,7 @@ import { ProfilePage } from "./pages/auth/ProfilePage";
 import { SettingsPage } from "./pages/home/SettingsPage";
 import { EditProfilePage } from "./pages/auth/EditProfilePage";
 import { MyEnrollmentsPage } from "./pages/home/MyEnrollmentsPage";
+import { ChangePasswordPage } from "./pages/auth/ChangePasswordPage";
 
 function App() {
     const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -108,6 +109,11 @@ function App() {
                         <Route path="/me/edit" element={<EditProfilePage />} />
 
                         <Route path="/settings" element={<SettingsPage />} />
+
+                        <Route
+                            path="/change-password"
+                            element={<ChangePasswordPage />}
+                        />
 
                         <Route path="/" element={<HomePage />} />
 
