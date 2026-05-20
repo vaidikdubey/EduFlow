@@ -7,6 +7,7 @@ import {
     HelpCircle,
     Loader,
     Users,
+    Trash2,
 } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ReadMore } from "@/components/ui/ReadMore";
@@ -31,7 +32,13 @@ export const CourseHomePage = () => {
         courseProgress,
     } = useCourseStore();
 
-    const { isGettingAllModules, allModules, getAllModules } = useModuleStore();
+    const {
+        isGettingAllModules,
+        allModules,
+        getAllModules,
+        deleteModule,
+        isDeletingModule,
+    } = useModuleStore();
 
     const {
         markCourseCompleted,
@@ -204,6 +211,15 @@ export const CourseHomePage = () => {
                                 })()}
                             </div>
                             <div className="col-span-2 flex justify-end">
+                                <Button
+                                    variant="outlineDelete"
+                                    disabled={isDeletingModule}
+                                    onClick={() => deleteModule(module.id)}
+                                    className={cn("cursor-pointer")}
+                                >
+                                    <Trash2 />
+                                </Button>
+
                                 <Button variant="icon" asChild>
                                     <Link to={`/module/get/${module.id}`}>
                                         <ArrowRight />
