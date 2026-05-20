@@ -405,8 +405,10 @@ const cancelEnrollment = asyncHandler(async (req, res) => {
 
   const enrollment = await db.enrollment.findUnique({
     where: {
-      userId,
-      courseId,
+      userId_courseId: {
+        userId,
+        courseId,
+      },
     },
     select: {
       id: true,
@@ -440,8 +442,10 @@ const cancelEnrollment = asyncHandler(async (req, res) => {
 
   const deletedEnrollment = await db.enrollment.delete({
     where: {
-      userId,
-      courseId,
+      userId_courseId: {
+        userId,
+        courseId,
+      },
     },
     select: {
       id: true,
