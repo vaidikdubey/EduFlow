@@ -18,6 +18,8 @@ export const useCourseStore = create((set) => ({
     enrollmentStatus: false,
     isGettingProgres: false,
     courseProgress: null,
+    isDeletingCourse: false,
+    deletedCourse: null,
 
     createCourse: async (data) => {
         set({ isCreatingCourse: true });
@@ -155,6 +157,27 @@ export const useCourseStore = create((set) => ({
             );
         } finally {
             set({ isGettingProgres: false });
+        }
+    },
+
+    deleteCourse: async (id) => {
+        set({ isDeletingCourse: true });
+
+        try {
+            const res = await axiosInstance.delete(
+                `/course/instructor/delete/${id}`,
+            );
+
+            set({ deletedCourse: res.data });
+
+            toast.success(res.message || "Course deleted");
+
+            return true;
+        } catch (error) {
+            console.error("Error deleting course", error);
+            toast.error(error.response.data.message || "Error deleting course");
+        } finally {
+            set({ isDeletingCourse: false });
         }
     },
 }));
