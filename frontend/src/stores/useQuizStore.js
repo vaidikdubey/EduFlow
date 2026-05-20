@@ -15,6 +15,8 @@ export const useQuizStore = create((set) => ({
     createdQuiz: null,
     isUpdatingQuiz: false,
     updatedQuiz: null,
+    isDeletingQuiz: false,
+    deletedQuiz: null,
 
     getAllQuizForModule: async (id) => {
         set({ isGettingQuizForModule: true });
@@ -130,6 +132,25 @@ export const useQuizStore = create((set) => ({
             toast.error(error.response.data.message || "Error updating quiz");
         } finally {
             set({ isUpdatingQuiz: false });
+        }
+    },
+
+    deleteQuiz: async (quizId) => {
+        set({ isDeletingQuiz: true });
+
+        try {
+            const res = await axiosInstance.delete(`/quiz/delete/${quizId}`);
+
+            set({ deletedQuiz: res.data });
+
+            toast.success(res.message || "Quiz deleted");
+
+            return true;
+        } catch (error) {
+            console.error("Error deleting quiz", error);
+            toast.error(error.response.data.message || "Error deleting quiz");
+        } finally {
+            set({ isDeletingQuiz: false });
         }
     },
 }));
