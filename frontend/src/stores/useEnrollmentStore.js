@@ -10,6 +10,7 @@ export const useEnrollmentStore = create((set) => ({
     isCheckingCompletion: false,
     courseCompletion: null,
     isGeneratingCertificate: false,
+    certificateData: null,
     isGettingMyEnrollments: false,
     myEnrollments: [],
     isCreatingOrder: false,
@@ -199,7 +200,9 @@ export const useEnrollmentStore = create((set) => ({
         }
     },
 
-    generateCertificate: async () => {},
+    generateCertificate: async (enrollmentId) => {
+        set({ isGeneratingCertificate: true });
+    },
 
     getMyEnrollments: async () => {
         set({ isGettingMyEnrollments: true });
