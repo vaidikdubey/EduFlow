@@ -74,8 +74,8 @@ export const isLoggedIn = asyncHandler(async (req, res, next) => {
       if (!user || refreshToken != user.refreshToken)
         throw new ApiError(401, "Unauthorized");
 
-      const newAccessToken = user.generateAccessToken({ id: user.id });
-      const newRefreshToken = user.generateRefreshToken({
+      const newAccessToken = generateAccessToken({ id: user.id });
+      const newRefreshToken = generateRefreshToken({
         id: user.id,
         role: user.role,
       });
@@ -113,9 +113,13 @@ export const isLoggedIn = asyncHandler(async (req, res, next) => {
 });
 
 export const checkAdmin = asyncHandler(async (req, res, next) => {
-  const user = req.user
+  const user = req.user;
 
-  if (!user || user.role === "STUDENT") throw new ApiError(403, "Access denied - You don't have access to this resource");
+  if (!user || user.role === "STUDENT")
+    throw new ApiError(
+      403,
+      "Access denied - You don't have access to this resource",
+    );
 
   return next();
-})
+});
