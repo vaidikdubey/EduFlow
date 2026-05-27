@@ -32,9 +32,7 @@ router
 
 router.route("/cancel/:courseId").delete(isLoggedIn, cancelEnrollment);
 
-router
-  .route("/certificate/:enrollmentId")
-  .get(isLoggedIn, getCourseCertificate);
+router.route("/certificate/:courseId").get(isLoggedIn, getCourseCertificate);
 
 router.route("/verify/:certificateId").get(verifyCertificate);
 

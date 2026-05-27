@@ -473,11 +473,16 @@ const cancelEnrollment = asyncHandler(async (req, res) => {
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const getCourseCertificate = asyncHandler(async (req, res) => {
-  const { enrollmentId } = req.params;
+  const { courseId } = req.params;
   const userId = req.user.id;
 
   const enrollment = await db.enrollment.findUnique({
-    where: { id: enrollmentId },
+    where: {
+      userId_courseId: {
+        userId,
+        courseId,
+      },
+    },
     include: {
       user: { select: { name: true } },
       course: { select: { title: true } },
