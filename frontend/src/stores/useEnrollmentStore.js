@@ -138,7 +138,7 @@ export const useEnrollmentStore = create((set) => ({
                 error.response.data.message || "Error verifying payment",
             );
 
-            return null
+            return null;
         } finally {
             set({ isVerifyingPayment: false });
         }
@@ -202,6 +202,36 @@ export const useEnrollmentStore = create((set) => ({
 
     generateCertificate: async (enrollmentId) => {
         set({ isGeneratingCertificate: true });
+
+        try {
+            const response = await axiosInstance.get(
+                `/enrollment/certificate/${enrollmentId}`,
+                {
+                    responseType: "blob",
+                },
+            );
+
+            // Create blob URL and trigger download
+            const url = window.URL.createObjectURL(
+                new Blob([response.data], { type: "application/pdf" }),
+            );
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", `Certificate_${enrollmentId}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode.removeChild(link);
+            window.URL.revokeObjectURL(url);
+
+            toast.success("Certificate downloaded successfully!");
+        } catch (error) {
+            console.error("Error generating certificate", error);
+            toast.error(
+                error.response.data.message || "Error generating certificate",
+            );
+        } finally {
+            set({ isGeneratingCertificate: false });
+        }
     },
 
     getMyEnrollments: async () => {
