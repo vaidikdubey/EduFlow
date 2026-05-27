@@ -18,6 +18,7 @@ export const useEnrollmentStore = create((set) => ({
     isVerifyingPayment: false,
     verifyPaymentData: null,
     isPaymentLoading: false,
+    enrollmentId: null,
 
     // enrollInCourse: async (courseId, navigate) => {
     //     set({ isEnrolling: true });

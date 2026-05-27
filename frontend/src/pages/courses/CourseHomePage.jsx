@@ -48,6 +48,8 @@ export const CourseHomePage = () => {
         checkCourseCompletion,
         isCheckingCompletion,
         courseCompletion,
+        generateCertificate,
+        isGeneratingCertificate
     } = useEnrollmentStore();
 
     useEffect(() => {
@@ -71,7 +73,9 @@ export const CourseHomePage = () => {
         setTimeout(navigate("/course"), 5 * 1000);
     };
 
-    const handleGenerateCertificate = () => {};
+    const handleGenerateCertificate = (enrollmentId) => {
+        generateCertificate(enrollmentId)
+    };
 
     if (
         isGettingCourse ||
@@ -251,9 +255,9 @@ export const CourseHomePage = () => {
                 </Button>
                 <Button
                     variant="outline"
-                    disabled={!courseCompletion?.data?.completionStatus}
+                    disabled={!courseCompletion?.data?.completionStatus || isGeneratingCertificate}
                     className={cn("cursor-pointer")}
-                    onClick={handleGenerateCertificate}
+                    onClick={() => handleGenerateCertificate()}
                 >
                     Generate Certificate
                 </Button>

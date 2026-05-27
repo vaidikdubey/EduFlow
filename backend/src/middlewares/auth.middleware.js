@@ -20,7 +20,18 @@ export const isLoggedIn = asyncHandler(async (req, res, next) => {
 
   const { accessToken, refreshToken } = req.cookies;
 
-  if (!accessToken && !refreshToken) throw new ApiError(401, "Unauthorized");
+  const clearCookieOptions = {
+    ...cookieOptions,
+    maxAge: new Date(0),
+  };
+
+  if (!accessToken && !refreshToken) {
+    //Clear cookies (to logout user)
+    res.clearCookie("accessToken", clearCookieOptions);
+    res.clearCookie("refreshToken", clearCookieOptions);
+
+    throw new ApiError(401, "Unauthorized");
+  }
 
   if (accessToken) {
     try {
@@ -108,11 +119,6 @@ export const isLoggedIn = asyncHandler(async (req, res, next) => {
       return next();
     } catch (error) {
       //Clear cookies (to logout user)
-      const clearCookieOptions = {
-        ...cookieOptions,
-        maxAge: new Date(0),
-      };
-
       res.clearCookie("accessToken", clearCookieOptions);
       res.clearCookie("refreshToken", clearCookieOptions);
 
