@@ -107,9 +107,23 @@ export const isLoggedIn = asyncHandler(async (req, res, next) => {
 
       return next();
     } catch (error) {
+      //Clear cookies (to logout user)
+      const clearCookieOptions = {
+        ...cookieOptions,
+        maxAge: new Date(0),
+      };
+
+      res.clearCookie("accessToken", clearCookieOptions);
+      res.clearCookie("refreshToken", clearCookieOptions);
+
+      //Also throw error
       throw new ApiError(401, "Unauthorized");
     }
   }
+
+  // If we reach here (had access token but no refresh token and access failed)
+  res.clearCookie("accessToken");
+  throw new ApiError(401, "Unauthorized");
 });
 
 export const checkAdmin = asyncHandler(async (req, res, next) => {
