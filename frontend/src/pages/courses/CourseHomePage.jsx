@@ -73,8 +73,8 @@ export const CourseHomePage = () => {
         setTimeout(navigate("/course"), 5 * 1000);
     };
 
-    const handleGenerateCertificate = (enrollmentId) => {
-        generateCertificate(enrollmentId)
+    const handleGenerateCertificate = () => {
+        generateCertificate(id);
     };
 
     if (
@@ -257,7 +257,7 @@ export const CourseHomePage = () => {
                     variant="outline"
                     disabled={!courseCompletion?.data?.completionStatus || isGeneratingCertificate}
                     className={cn("cursor-pointer")}
-                    onClick={() => handleGenerateCertificate()}
+                    onClick={handleGenerateCertificate}
                 >
                     Generate Certificate
                 </Button>

@@ -18,7 +18,6 @@ export const useEnrollmentStore = create((set) => ({
     isVerifyingPayment: false,
     verifyPaymentData: null,
     isPaymentLoading: false,
-    enrollmentId: null,
 
     // enrollInCourse: async (courseId, navigate) => {
     //     set({ isEnrolling: true });
@@ -201,12 +200,12 @@ export const useEnrollmentStore = create((set) => ({
         }
     },
 
-    generateCertificate: async (enrollmentId) => {
+    generateCertificate: async (courseId) => {
         set({ isGeneratingCertificate: true });
 
         try {
             const response = await axiosInstance.get(
-                `/enrollment/certificate/${enrollmentId}`,
+                `/enrollment/certificate/${courseId}`,
                 {
                     responseType: "blob",
                 },
@@ -218,7 +217,7 @@ export const useEnrollmentStore = create((set) => ({
             );
             const link = document.createElement("a");
             link.href = url;
-            link.setAttribute("download", `Certificate_${enrollmentId}.pdf`);
+            link.setAttribute("download", `Certificate_${courseId.split("-")[0]}.pdf`);
             document.body.appendChild(link);
             link.click();
             link.parentNode.removeChild(link);
