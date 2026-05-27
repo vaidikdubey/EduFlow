@@ -217,7 +217,10 @@ export const useEnrollmentStore = create((set) => ({
             );
             const link = document.createElement("a");
             link.href = url;
-            link.setAttribute("download", `Certificate_${courseId.split("-")[0]}.pdf`);
+            link.setAttribute(
+                "download",
+                `Certificate_${courseId.split("-")[0]}.pdf`,
+            );
             document.body.appendChild(link);
             link.click();
             link.parentNode.removeChild(link);
@@ -225,10 +228,30 @@ export const useEnrollmentStore = create((set) => ({
 
             toast.success("Certificate downloaded successfully!");
         } catch (error) {
-            console.error("Error generating certificate", error);
-            toast.error(
-                error.response.data.message || "Error generating certificate",
-            );
+            console.error("Error generating certificate", error.response);
+
+            let errorMessage = "Error generating certificate";
+
+            // 1. Check if the error data is a Blob (which happens due to responseType: 'blob')
+            if (error.response?.data instanceof Blob) {
+                try {
+                    // 2. Parse the blob binary text back into a string
+                    const errorText = await error.response.data.text();
+
+                    // 3. Try to parse it as JSON to get the error message
+                    const errorJson = JSON.parse(errorText);
+                    errorMessage = errorJson.message || errorMessage;
+                } catch (parseError) {
+                    // 4. Fallback if the backend sends plain text instead of JSON
+                    const errorText = await error.response.data.text();
+                    if (errorText) errorMessage = errorText;
+                }
+            } else if (error.response?.data?.message) {
+                // Standard fallback if responseType wasn't a blob
+                errorMessage = error.response.data.message;
+            }
+
+            toast.error(errorMessage);
         } finally {
             set({ isGeneratingCertificate: false });
         }

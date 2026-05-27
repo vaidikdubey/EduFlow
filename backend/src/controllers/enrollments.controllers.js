@@ -483,39 +483,39 @@ const getCourseCertificate = asyncHandler(async (req, res) => {
         courseId,
       },
     },
-    include: {
-      user: { select: { name: true } },
+    select: {
+      id: true,
+      completed: true,
+      completedAt: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
       course: { select: { title: true } },
     },
   });
 
-  if (!enrollment || enrollment.userId !== userId) {
+  if (!enrollment || enrollment.user.id !== userId) {
     throw new ApiError(403, "Unauthorized access to this enrollment");
   }
 
   if (!enrollment.completed) {
-    return res
-      .status(200)
-      .json(
-        new ApiResponse(
-          200,
-          { success: false },
-          "Course must be completed to generate certificate",
-        ),
-      );
+    throw new ApiError(403, "Course must be completed to generate certificate");
   }
 
   let certificate = await db.certificate.findUnique({
-    where: { enrollmentId },
+    where: { enrollmentId: enrollment.id },
   });
 
   if (!certificate) {
-    const certificateId = `CERT-${enrollmentId.slice(0, 8).toUpperCase()}-${new Date().toISOString().slice(0, 10).replace(/-/g, "")}`;
+    const certificateId = `CERT-${enrollment.id.slice(0, 8).toUpperCase()}-${new Date().toISOString().slice(0, 10).replace(/-/g, "")}`;
 
     certificate = await db.certificate.create({
       data: {
-        enrollmentId,
-        courseId: enrollment.courseId,
+        enrollmentId: enrollment.id,
+        courseId: courseId,
         certificateId,
       },
     });
