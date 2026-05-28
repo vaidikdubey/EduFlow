@@ -20,6 +20,8 @@ export const useCourseStore = create((set) => ({
     courseProgress: null,
     isDeletingCourse: false,
     deletedCourse: null,
+    isGettingDrafts: false,
+    draftCourses: null,
 
     createCourse: async (data) => {
         set({ isCreatingCourse: true });
@@ -178,6 +180,25 @@ export const useCourseStore = create((set) => ({
             toast.error(error.response.data.message || "Error deleting course");
         } finally {
             set({ isDeletingCourse: false });
+        }
+    },
+
+    getAllDrafts: async () => {
+        set({ isGettingDrafts: true });
+
+        try {
+            const res = await axiosInstance.get("/course/instructor/getDrafts");
+
+            set({ draftCourses: res.data });
+
+            toast.success(res.data.message || "Draft courses fetched");
+        } catch (error) {
+            console.error("Error fetching draft courses: ", error);
+            toast.error(
+                error.response.data.message || "Error fetching draft courses",
+            );
+        } finally {
+            set({ isGettingDrafts: false });
         }
     },
 }));

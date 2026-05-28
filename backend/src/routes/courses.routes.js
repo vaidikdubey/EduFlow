@@ -1,6 +1,19 @@
 import { Router } from "express";
 import { isLoggedIn, checkAdmin } from "../middlewares/auth.middleware.js";
-import { checkUserEnrolled, createCourse, deleteCourse, getAllCourseEnrollments, getAllCourses, getAllInstructors, getAllPublishedCourses, getCourseById, getCourseProgress, publishCourse, updateCourse } from "../controllers/courses.controllers.js";
+import {
+  checkUserEnrolled,
+  createCourse,
+  deleteCourse,
+  getAllCourseEnrollments,
+  getAllCourses,
+  getAllDraftCourses,
+  getAllInstructors,
+  getAllPublishedCourses,
+  getCourseById,
+  getCourseProgress,
+  publishCourse,
+  updateCourse,
+} from "../controllers/courses.controllers.js";
 
 const router = Router();
 
@@ -15,6 +28,10 @@ router.route("/enrolled/:id").get(isLoggedIn, checkUserEnrolled);
 
 //For instructors and admins
 router.route("/instructor/getAll").get(isLoggedIn, checkAdmin, getAllCourses);
+
+router
+  .route("/instructor/getDrafts")
+  .get(isLoggedIn, checkAdmin, getAllDraftCourses);
 
 router.route("/instructor/create").post(isLoggedIn, checkAdmin, createCourse);
 

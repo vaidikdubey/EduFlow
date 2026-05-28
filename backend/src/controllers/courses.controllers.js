@@ -290,6 +290,55 @@ const getAllCourses = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, courses, "All created courses fetched"));
 });
 
+const getAllDraftCourses = asyncHandler(async (req, res) => {
+  const id = req.user.id;
+
+  const courses = await db.course.findMany({
+    where: { createdById: id },
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      type: true,
+      price: true,
+      isPublished: true,
+      createdAt: true,
+      updatedAt: true,
+      _count: {
+        select: {
+          modules: true,
+          enrollments: true,
+          quizzes: true,
+        },
+      },
+      instructors: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  const drafts = courses.filter((course) => course.isPublished === false);
+
+  if (drafts.length === 0)
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          { message: "No draft courses" },
+          "No draft courses",
+        ),
+      );
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, drafts, "All draft courses fetched"));
+});
+
 const createCourse = asyncHandler(async (req, res) => {
   const { title, description, type, price, instructorIds } = req.body;
   const userId = req.user.id;
@@ -592,6 +641,7 @@ export {
   getCourseProgress,
   checkUserEnrolled,
   getAllCourses,
+  getAllDraftCourses,
   createCourse,
   updateCourse,
   deleteCourse,
