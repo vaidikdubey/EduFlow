@@ -7,6 +7,7 @@ import {
     User,
     LibraryBig,
     ClipboardCheck,
+    FileText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
@@ -14,7 +15,7 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 
-export const Sidebar = () => {
+export const Sidebar = ({ userRole = "STUDENT" }) => {
     const navigate = useNavigate();
     const { logout } = useAuthStore();
 
@@ -62,7 +63,7 @@ export const Sidebar = () => {
                 opacity: 0,
                 duration: 0.2,
             });
-    });
+    }, [userRole]);
 
     return (
         <>
@@ -115,6 +116,17 @@ export const Sidebar = () => {
                             >
                                 <User /> Profile
                             </p>
+
+                            {userRole !== "STUDENT" && (
+                                <p
+                                    className="sidebar-items flex gap-2 hover:bg-gray-500/70 p-2 text-lg rounded-lg cursor-pointer"
+                                    onClick={() => {
+                                        navigate("/course/draft");
+                                    }}
+                                >
+                                    <FileText /> Drafts
+                                </p>
+                            )}
                         </div>
                     </div>
                     <div className="w-full flex flex-col gap-4 dark:text-black">

@@ -116,7 +116,7 @@ export const HomePage = () => {
         <div className="relative w-full h-full">
             <div className="absolute h-[20vw] w-[20vw] max-h-62.5 max-w-62.5 min-h-30 min-w-30 animate-random-corner bg-[oklch(0.8148_0.0819_225.7537/0.25)] dark:bg-[oklch(0.968_0.211_109.7692/0.15)] rounded-full blur-xl z-0"></div>
             <div className="relative w-full h-full flex flex-col justify-center items-center gap-5 bg-transparent z-20">
-                <Sidebar />
+                <Sidebar userRole={authUser?.data?.role} />
                 <div className="w-full p-3 rounded-2xl text-center">
                     <Navbar allCourses={allCourses?.data ?? []} />
                 </div>
