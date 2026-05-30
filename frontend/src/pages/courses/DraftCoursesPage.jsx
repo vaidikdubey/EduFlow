@@ -11,7 +11,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { timeAgo } from "@/utils/timeAgo";
-import { EnrollmentButton } from "./All Courses Page/EnrollmentButton";
+import { Button } from "@/components/ui/button";
 
 const DraftCoursesPage = () => {
     const { getAllDrafts, isGettingDrafts, draftCourses } = useCourseStore();
@@ -91,7 +91,9 @@ const DraftCoursesPage = () => {
                                     </div>
                                 </CardContent>
                                 <CardFooter className="flex-col gap-2">
-                                    <EnrollmentButton courseId={course.id} />
+                                    <Button>
+                                        Publish
+                                    </Button>
                                 </CardFooter>
                             </Card>
                         );
