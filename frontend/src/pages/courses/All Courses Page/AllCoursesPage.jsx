@@ -23,9 +23,16 @@ import {
 } from "@/components/ui/card";
 import { timeAgo } from "@/utils/timeAgo";
 import { EnrollmentButton } from "./EnrollmentButton";
+import { toast } from "react-hot-toast";
 
 export const AllCoursesPage = () => {
-    const { isGettingAllCourses, allCourses, getAllCourses } = useCourseStore();
+    const {
+        isGettingAllCourses,
+        allCourses,
+        getAllCourses,
+        publishCourse,
+        isPublishingCourse,
+    } = useCourseStore();
 
     const { authUser } = useAuthStore();
 
@@ -54,6 +61,15 @@ export const AllCoursesPage = () => {
     const clearSearch = () => {
         setSearchCourse("");
         setFinalState("");
+    };
+
+    const handleCourseUnpublish = (id, userId) => {
+        if (userId === authUser?.data?.id)
+            publishCourse(id, { isPublished: false });
+        else {
+            toast.error("Unauthorized! You cannot unpublish this course");
+            return;
+        }
     };
 
     if (isGettingAllCourses) {
@@ -235,6 +251,23 @@ export const AllCoursesPage = () => {
                                 </CardContent>
                                 <CardFooter className="flex-col gap-2">
                                     <EnrollmentButton courseId={course.id} />
+                                    {authUser?.data?.role !== "STUDENT" && (
+                                        <Button
+                                            variant="outlineDelete"
+                                            className={cn(
+                                                "w-full cursor-pointer",
+                                            )}
+                                            onClick={() =>
+                                                handleCourseUnpublish(
+                                                    course.id,
+                                                    course?.createdBy?.id,
+                                                )
+                                            }
+                                            disabled={isPublishingCourse}
+                                        >
+                                            Unpublish
+                                        </Button>
+                                    )}
                                 </CardFooter>
                             </Card>
                         );

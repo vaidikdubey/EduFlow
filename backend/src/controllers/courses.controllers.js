@@ -551,7 +551,8 @@ const publishCourse = asyncHandler(async (req, res) => {
   const userId = req.user.id;
   const { isPublished } = req.body;
 
-  if (!isPublished) throw new ApiError(400, "Publish status is required");
+  if (isPublished === null || isPublished === undefined)
+    throw new ApiError(400, "Publish status is required");
 
   if (typeof isPublished !== "boolean")
     throw new ApiError(400, "Publish status should be boolean");
