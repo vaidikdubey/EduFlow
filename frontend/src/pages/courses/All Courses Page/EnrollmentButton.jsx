@@ -39,7 +39,7 @@ export const EnrollmentButton = ({ courseId }) => {
     return isEnrolled ? (
         <Button
             asChild
-            variant="outline"
+            variant="secondary"
             className={cn("w-full cursor-pointer")}
         >
             <Link to={`/course/get/${courseId}`}>View Course</Link>

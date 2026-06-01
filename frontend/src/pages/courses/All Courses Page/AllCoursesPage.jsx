@@ -32,6 +32,8 @@ export const AllCoursesPage = () => {
         getAllCourses,
         publishCourse,
         isPublishingCourse,
+        deleteCourse,
+        isDeletingCourse,
     } = useCourseStore();
 
     const { authUser } = useAuthStore();
@@ -70,6 +72,10 @@ export const AllCoursesPage = () => {
             toast.error("Unauthorized! You cannot unpublish this course");
             return;
         }
+    };
+
+    const handleCourseDelete = (id) => {
+        deleteCourse(id);
     };
 
     if (isGettingAllCourses) {
@@ -251,22 +257,34 @@ export const AllCoursesPage = () => {
                                 </CardContent>
                                 <CardFooter className="flex-col gap-2">
                                     <EnrollmentButton courseId={course.id} />
-                                    {authUser?.data?.role !== "STUDENT" && (
-                                        <Button
-                                            variant="outlineDelete"
-                                            className={cn(
-                                                "w-full cursor-pointer",
-                                            )}
-                                            onClick={() =>
-                                                handleCourseUnpublish(
-                                                    course.id,
-                                                    course?.createdBy?.id,
-                                                )
-                                            }
-                                            disabled={isPublishingCourse}
-                                        >
-                                            Unpublish
-                                        </Button>
+                                    {userRole !== "STUDENT" && (
+                                        <div className="w-full flex justify-between items-center gap-3">
+                                            <Button
+                                                variant="outline"
+                                                className={cn("flex-1 cursor-pointer")}
+                                                onClick={() =>
+                                                    handleCourseUnpublish(
+                                                        course.id,
+                                                        course?.createdBy?.id,
+                                                    )
+                                                }
+                                                disabled={isPublishingCourse}
+                                            >
+                                                Unpublish
+                                            </Button>
+                                            <Button
+                                                variant="outlineDelete"
+                                                className={cn("cursor-pointer")}
+                                                onClick={() =>
+                                                    handleCourseDelete(
+                                                        course.id,
+                                                    )
+                                                }
+                                                disabled={isDeletingCourse}
+                                            >
+                                                Delete
+                                            </Button>
+                                        </div>
                                     )}
                                 </CardFooter>
                             </Card>

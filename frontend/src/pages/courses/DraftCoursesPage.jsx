@@ -25,6 +25,8 @@ const DraftCoursesPage = () => {
         draftCourses,
         publishCourse,
         isPublishingCourse,
+        deleteCourse,
+        isDeletingCourse,
     } = useCourseStore();
 
     useEffect(() => {
@@ -33,6 +35,10 @@ const DraftCoursesPage = () => {
 
     const handleCoursePublish = (id) => {
         publishCourse(id, { isPublished: true });
+    };
+
+    const handleCourseDelete = (id) => {
+        deleteCourse(id);
     };
 
     if (isGettingDrafts) {
@@ -139,9 +145,19 @@ const DraftCoursesPage = () => {
                                             handleCoursePublish(course.id)
                                         }
                                         disabled={isPublishingCourse}
-                                        className={cn("w-full")}
+                                        className={cn("w-full cursor-pointer")}
                                     >
                                         Publish
+                                    </Button>
+                                    <Button
+                                        variant="outlineDelete"
+                                        onClick={() =>
+                                            handleCourseDelete(course.id)
+                                        }
+                                        disabled={isDeletingCourse}
+                                        className={cn("w-full cursor-pointer")}
+                                    >
+                                        Delete
                                     </Button>
                                 </CardFooter>
                             </Card>
