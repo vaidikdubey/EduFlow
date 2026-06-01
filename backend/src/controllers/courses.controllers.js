@@ -302,6 +302,12 @@ const getAllDraftCourses = asyncHandler(async (req, res) => {
       type: true,
       price: true,
       isPublished: true,
+      createdBy: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
       createdAt: true,
       updatedAt: true,
       _count: {
