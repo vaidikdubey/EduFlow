@@ -14,13 +14,24 @@ import { timeAgo } from "@/utils/timeAgo";
 import { Button } from "@/components/ui/button";
 
 const DraftCoursesPage = () => {
-    const { getAllDrafts, isGettingDrafts, draftCourses } = useCourseStore();
+    const {
+        getAllDrafts,
+        isGettingDrafts,
+        draftCourses,
+        publishCourse,
+        isPublishingCourse,
+        publishedCourse,
+    } = useCourseStore();
 
     useEffect(() => {
         getAllDrafts();
     }, []);
 
     console.log("Data: ", draftCourses?.data);
+
+    const handleCoursePublish = (id) => {
+        publishCourse(id);
+    };
 
     if (isGettingDrafts) {
         return (
@@ -91,7 +102,12 @@ const DraftCoursesPage = () => {
                                     </div>
                                 </CardContent>
                                 <CardFooter className="flex-col gap-2">
-                                    <Button>
+                                    <Button
+                                        onClick={() =>
+                                            handleCoursePublish(course.id)
+                                        }
+                                        disable={isPublishingCourse}
+                                    >
                                         Publish
                                     </Button>
                                 </CardFooter>

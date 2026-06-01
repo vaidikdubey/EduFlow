@@ -22,6 +22,8 @@ export const useCourseStore = create((set) => ({
     deletedCourse: null,
     isGettingDrafts: false,
     draftCourses: null,
+    isPublishingCourse: false,
+    publishedCourse: null,
 
     createCourse: async (data) => {
         set({ isCreatingCourse: true });
@@ -199,6 +201,28 @@ export const useCourseStore = create((set) => ({
             );
         } finally {
             set({ isGettingDrafts: false });
+        }
+    },
+
+    publishCourse: async (id, data) => {
+        set({ isPublishingCourse: true });
+
+        try {
+            const res = await axiosInstance.patch(
+                `/course/instructor/publish/${id}`,
+                data,
+            );
+
+            set({ publishedCourse: res.data });
+
+            toast.success(res.data.message || "Course publish status updated");
+        } catch (error) {
+            console.error("Error updating course status: ", error);
+            toast.error(
+                error.response.data.message || "Error updating course status",
+            );
+        } finally {
+            set({ isPublishingCourse: false });
         }
     },
 }));
