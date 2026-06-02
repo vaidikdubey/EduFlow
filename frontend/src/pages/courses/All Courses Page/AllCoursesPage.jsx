@@ -180,7 +180,7 @@ export const AllCoursesPage = () => {
                                             key={course.id}
                                             to={`/course/enroll/${course.id}`}
                                             className={cn(
-                                                "block px-4 py-2 text-sm hover:bg-accent hover:text-accent-foreground rounded-sm",
+                                                "block px-4 py-2 text-sm hover:bg-accent hover:text-accent-foreground rounded-sm cursor-pointer",
                                             )}
                                         >
                                             {course.title}
@@ -208,7 +208,11 @@ export const AllCoursesPage = () => {
                                             "text-2xl cursor-pointer hover:underline hover:text-foreground/80 line-clamp-3 md:line-clamp-2 min-h-10 lg:min-h-15",
                                         )}
                                     >
-                                        {course.title}
+                                        <Link
+                                            to={`/course/enroll/${course.id}`}
+                                        >
+                                            {course.title}
+                                        </Link>
                                     </CardTitle>
                                     <CardDescription
                                         className={cn("min-h-10 line-clamp-2")}
@@ -261,7 +265,9 @@ export const AllCoursesPage = () => {
                                         <div className="w-full flex justify-between items-center gap-3">
                                             <Button
                                                 variant="outline"
-                                                className={cn("flex-1 cursor-pointer")}
+                                                className={cn(
+                                                    "flex-1 cursor-pointer",
+                                                )}
                                                 onClick={() =>
                                                     handleCourseUnpublish(
                                                         course.id,
