@@ -18,6 +18,8 @@ export const useEnrollmentStore = create((set) => ({
     isVerifyingPayment: false,
     verifyPaymentData: null,
     isPaymentLoading: false,
+    isGettingAllEnrollments: false,
+    allEnrollments: null,
 
     // enrollInCourse: async (courseId, navigate) => {
     //     set({ isEnrolling: true });
@@ -271,6 +273,27 @@ export const useEnrollmentStore = create((set) => ({
             );
         } finally {
             set({ isGettingMyEnrollments: false });
+        }
+    },
+
+    getAllEnrollments: async (id) => {
+        set({ isGettingAllEnrollments: true });
+
+        try {
+            const res = await axiosInstance.get(
+                `/enrollment/getAllEnrollments/${id}`,
+            );
+
+            set({ allEnrollments: res.data });
+
+            toast.success(res.message || "All enrollments fetched");
+        } catch (error) {
+            console.error("Error fetching all enrollments", error);
+            toast.error(
+                error.response.data.message || "Error fetching all enrollments",
+            );
+        } finally {
+            set({ isGettingAllEnrollments: false });
         }
     },
 }));
