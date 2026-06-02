@@ -33,6 +33,7 @@ import { EditProfilePage } from "./pages/auth/EditProfilePage";
 import { MyEnrollmentsPage } from "./pages/home/MyEnrollmentsPage";
 import { ChangePasswordPage } from "./pages/auth/ChangePasswordPage";
 import DraftCoursesPage from "./pages/courses/DraftCoursesPage";
+import { AllEnrollmentsForCoursePage } from "./pages/courses/AllEnrollmentsForCoursePage";
 
 function App() {
     const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -138,6 +139,11 @@ function App() {
                         <Route
                             path="/course/draft"
                             element={<DraftCoursesPage />}
+                        />
+
+                        <Route
+                            path="/course/allEnrollments/:id"
+                            element={<AllEnrollmentsForCoursePage />}
                         />
 
                         <Route

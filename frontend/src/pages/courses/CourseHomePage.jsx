@@ -17,11 +17,16 @@ import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { cn } from "@/lib/utils";
 import { useEnrollmentStore } from "@/stores/useEnrollmentStore";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 export const CourseHomePage = () => {
     const { id } = useParams();
 
     const navigate = useNavigate();
+
+    const { authUser } = useAuthStore();
+
+    const userRole = authUser?.data?.role;
 
     const {
         getCourseById,
@@ -49,7 +54,7 @@ export const CourseHomePage = () => {
         isCheckingCompletion,
         courseCompletion,
         generateCertificate,
-        isGeneratingCertificate
+        isGeneratingCertificate,
     } = useEnrollmentStore();
 
     useEffect(() => {
@@ -154,13 +159,28 @@ export const CourseHomePage = () => {
                             </span>
                             {fetchedCourse?.data?._count?.modules}
                         </p>
-                        <p className="flex md:gap-2 text-xs md:text-base">
-                            <span className="flex gap-2">
-                                <Users className="hidden md:block" />{" "}
-                                Enrollments:{" "}
-                            </span>
-                            {fetchedCourse?.data?._count?.enrollments}
-                        </p>
+                        {userRole === "STUDENT" ? (
+                            <p className="flex md:gap-2 text-xs md:text-base">
+                                <span className="flex gap-2">
+                                    <Users className="hidden md:block" />{" "}
+                                    Enrollments:{" "}
+                                </span>
+                                {fetchedCourse?.data?._count?.enrollments}
+                            </p>
+                        ) : (
+                            <Link
+                                to={`/course/allEnrollments/${id}`}
+                                className="hover:underline hover:underline-offset-4"
+                            >
+                                <p className="flex md:gap-2 text-xs md:text-base">
+                                    <span className="flex gap-2">
+                                        <Users className="hidden md:block" />{" "}
+                                        Enrollments:{" "}
+                                    </span>
+                                    {fetchedCourse?.data?._count?.enrollments}
+                                </p>
+                            </Link>
+                        )}
                         <p className="flex md:gap-2 text-xs md:text-base">
                             <span className="flex gap-2">
                                 <HelpCircle className="hidden md:block" />{" "}
@@ -255,7 +275,10 @@ export const CourseHomePage = () => {
                 </Button>
                 <Button
                     variant="outline"
-                    disabled={!courseCompletion?.data?.completionStatus || isGeneratingCertificate}
+                    disabled={
+                        !courseCompletion?.data?.completionStatus ||
+                        isGeneratingCertificate
+                    }
                     className={cn("cursor-pointer")}
                     onClick={handleGenerateCertificate}
                 >
