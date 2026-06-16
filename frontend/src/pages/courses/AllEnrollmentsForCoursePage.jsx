@@ -13,8 +13,6 @@ export const AllEnrollmentsForCoursePage = () => {
         getAllEnrollments(id);
     }, [id]);
 
-    console.log(allEnrollments?.data);
-
     if (isGettingAllEnrollments) {
         <div className="h-full flex items-center justify-center">
             <Loader className="animate-spin text-foreground" />
@@ -42,7 +40,7 @@ export const AllEnrollmentsForCoursePage = () => {
                                 key={student?.user?.id}
                                 className="px-4 py-2 border-2 m-4 rounded-xl"
                             >
-                                <p className="flex justify-between items-center">
+                                <p className="flex flex-col md:flex-row justify-between items-start md:items-center">
                                     <span className="text-lg">
                                         Student:{" "}
                                         <span className="font-bold">
@@ -58,7 +56,7 @@ export const AllEnrollmentsForCoursePage = () => {
                                         }
                                     </span>
                                 </p>
-                                <p className="flex justify-between items-center">
+                                <p className="flex flex-col md:flex-row justify-between items-start md:items-center">
                                     <span>
                                         Completed:{" "}
                                         {student?.completed ? (
