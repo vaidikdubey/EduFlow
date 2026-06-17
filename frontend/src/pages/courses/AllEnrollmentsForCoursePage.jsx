@@ -1,9 +1,11 @@
 import { useEnrollmentStore } from "@/stores/useEnrollmentStore";
-import { Loader } from "lucide-react";
+import { ArrowLeft, Loader } from "lucide-react";
 import React, { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 export const AllEnrollmentsForCoursePage = () => {
+    const navigate = useNavigate();
+
     const { id } = useParams();
 
     const { getAllEnrollments, isGettingAllEnrollments, allEnrollments } =
@@ -20,7 +22,10 @@ export const AllEnrollmentsForCoursePage = () => {
     }
 
     return (
-        <div className="h-full w-full flex flex-col gap-2">
+        <div className="relative h-full w-full flex flex-col gap-2">
+            <ArrowLeft
+                onClick={() => navigate("/")}
+                className="hidden md:block absolute cursor-pointer" />
             <h1 className="text-center text-4xl">
                 {allEnrollments?.data?.course?.title}
             </h1>
@@ -29,7 +34,7 @@ export const AllEnrollmentsForCoursePage = () => {
                     Total Enrollments:{" "}
                     {allEnrollments?.data?.course?.totalEnrollments}
                 </p>
-                <p>Price: ₹{allEnrollments?.data?.course?.price}</p>
+                <p>Price: {allEnrollments?.data?.course?.price > 0 ? `₹${allEnrollments?.data?.course?.price}` : "Free"}</p>
             </div>
 
             <div className="flex-1 border-2 rounded-lg mt-2">
