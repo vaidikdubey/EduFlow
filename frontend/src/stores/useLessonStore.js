@@ -12,6 +12,8 @@ export const useLessonStore = create((set) => ({
     createdLesson: null,
     isUpdatingLesson: false,
     updatedLesson: null,
+    isDeletingLesson: false,
+    deletedLesson: null,
 
     getAllLessons: async (moduleId) => {
         set({ isGettingAllLessons: true });
@@ -105,6 +107,27 @@ export const useLessonStore = create((set) => ({
             return false;
         } finally {
             set({ isUpdatingLesson: false });
+        }
+    },
+
+    deleteLesson: async (id) => {
+        set({ isDeletingLesson: true });
+
+        try {
+            const res = await axiosInstance.delete(`/lesson/delete/${id}`);
+
+            set({ deletedLesson: res.data });
+
+            toast.success(res.message || "Lesson deleted");
+
+            return true;
+        } catch (error) {
+            console.error("Error deleting lesson", error);
+            toast.error(error.response.data.message || "Error deleting lesson");
+
+            return false;
+        } finally {
+            set({ isDeletingLesson: false });
         }
     },
 }));
