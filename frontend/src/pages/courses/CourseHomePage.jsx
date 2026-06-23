@@ -235,14 +235,16 @@ export const CourseHomePage = () => {
                                 })()}
                             </div>
                             <div className="col-span-2 flex justify-end">
-                                <Button
-                                    variant="outlineDelete"
-                                    disabled={isDeletingModule}
-                                    onClick={() => deleteModule(module.id)}
-                                    className={cn("cursor-pointer")}
-                                >
-                                    <Trash2 />
-                                </Button>
+                                {authUser?.data?.role !== "STUDENT" && (
+                                    <Button
+                                        variant="outlineDelete"
+                                        disabled={isDeletingModule}
+                                        onClick={() => deleteModule(module.id)}
+                                        className={cn("cursor-pointer")}
+                                    >
+                                        <Trash2 />
+                                    </Button>
+                                )}
 
                                 <Button variant="icon" asChild>
                                     <Link to={`/module/get/${module.id}`}>

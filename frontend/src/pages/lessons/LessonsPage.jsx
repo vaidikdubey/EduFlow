@@ -1,13 +1,17 @@
 import React, { useEffect } from "react";
 import { useLessonStore } from "@/stores/useLessonStore";
-import { ArrowLeft, Loader } from "lucide-react";
+import { ArrowLeft, Loader, Trash2 } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useQuizStore } from "@/stores/useQuizStore";
 import { useModuleStore } from "@/stores/useModuleStore";
+import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 export const LessonsPage = () => {
     const { id } = useParams();
+
+    const { authUser } = useAuthStore();
 
     const {
         getAllLessons,
@@ -101,25 +105,35 @@ export const LessonsPage = () => {
                                     </p>
                                 )}
                             </div>
-                            {!moduleById?.data?.lessons?.filter(
-                                (les) => les.id === lesson.id,
-                            )[0]?.progress[0]?.completed ? (
-                                <Button
-                                    variant="success"
-                                    onClick={() =>
-                                        markLessonComplete(lesson.id)
-                                    }
-                                    disabled={isMarkingComplete}
-                                >
-                                    {isMarkingComplete
-                                        ? "Please wait..."
-                                        : "Mark Completed"}
-                                </Button>
-                            ) : (
-                                <Button variant="default" disabled={true}>
-                                    Completed
-                                </Button>
-                            )}
+                            <div className="flex justify-center items-center gap-5">
+                                {!moduleById?.data?.lessons?.filter(
+                                    (les) => les.id === lesson.id,
+                                )[0]?.progress[0]?.completed ? (
+                                    <Button
+                                        variant="success"
+                                        onClick={() =>
+                                            markLessonComplete(lesson.id)
+                                        }
+                                        disabled={isMarkingComplete}
+                                    >
+                                        {isMarkingComplete
+                                            ? "Please wait..."
+                                            : "Mark Completed"}
+                                    </Button>
+                                ) : (
+                                    <Button variant="default" disabled={true}>
+                                        Completed
+                                    </Button>
+                                )}
+                                {authUser?.data?.role !== "STUDENT" && (
+                                    <Button
+                                        variant="outlineDelete"
+                                        className={cn("cursor-pointer")}
+                                    >
+                                        <Trash2 />
+                                    </Button>
+                                )}
+                            </div>
                         </div>
                     );
                 })}
