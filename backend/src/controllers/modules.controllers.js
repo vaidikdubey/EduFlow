@@ -320,6 +320,23 @@ const deleteModule = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const userId = req.user.id;
 
+  const existingModule = await db.module.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      course: {
+        select: {
+          createdById: true,
+        },
+      },
+    },
+  });
+
+  if (!existingModule) throw new ApiError(404, "Module not found");
+
+  if (existingModule.course.createdById !== userId)
+    throw new ApiError(403, "You are not authorized to delete this module");
+
   const deletedModule = await db.module.delete({
     where: {
       id,

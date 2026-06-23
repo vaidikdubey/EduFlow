@@ -669,6 +669,28 @@ const deleteLesson = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const userId = req.user.id;
 
+  const createdBy = await db.lesson.findUnique({
+    where: {
+      id,
+    },
+    select: {
+      module: {
+        select: {
+          course: {
+            select: {
+              createdById: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!createdBy) throw new ApiError(404, "Lesson not found");
+
+  if (createdBy.module.course.createdById !== userId)
+    throw new ApiError(403, "You are not authorized to delete this lesson");
+
   const deletedLesson = await db.lesson.delete({
     where: {
       id,
