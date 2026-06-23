@@ -129,6 +129,7 @@ export const LessonsPage = () => {
                                     <Button
                                         variant="outlineDelete"
                                         className={cn("cursor-pointer")}
+                                        onClick={() => handleLessonDelete()}
                                     >
                                         <Trash2 />
                                     </Button>
@@ -174,6 +175,15 @@ export const LessonsPage = () => {
                                         View Attempts
                                     </Link>
                                 </Button>
+                                {authUser?.data?.role !== "STUDENT" && (
+                                    <Button
+                                        variant="outlineDelete"
+                                        className={cn("cursor-pointer")}
+                                        onClick={() => handleQuizDelete()}
+                                    >
+                                        <Trash2 />
+                                    </Button>
+                                )}
                             </div>
                         </div>
                     );
