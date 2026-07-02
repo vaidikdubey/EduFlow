@@ -30,20 +30,21 @@ class ErrorBoundary extends React.Component {
             return (
                 <>
                     <CustomCursor text={"🐞"} />
-                    <div className="h-full w-full flex flex-col justify-center items-center gap-3 cursor-none">
-                        <h2 className="text-4xl font-semibold">
+                    <div className="h-full w-full flex flex-col justify-center items-center gap-3 cursor-none px-5">
+                        <h2 className="text-2xl text-center md:text-4xl font-semibold">
                             Well... that's not supposed to happen!
                         </h2>
-                        <p className="text-lg">
-                            A tiny bug sneaked in where it wasn't invited. We're
-                            on it.
+                        <p className="text-sm text-center md:text-lg">
+                            A tiny bug sneaked in where it wasn't invited.{" "}
+                            <br />
+                            We're on it.
                         </p>
 
                         <Button
                             variant="outline"
                             onClick={() => window.location.reload()}
                             className={cn(
-                                "h-15 w-40 my-5 text-xl font-semibold cursor-none",
+                                "h-10 w-32 md:h-15 md:w-40 my-5 text-md md:text-xl font-semibold cursor-none",
                             )}
                         >
                             Reload Page
