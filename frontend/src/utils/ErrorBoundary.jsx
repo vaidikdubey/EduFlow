@@ -26,11 +26,17 @@ class ErrorBoundary extends React.Component {
     }
 
     render() {
+        const isDark = localStorage.getItem("theme") === "dark";
+
         if (this.state.hasError) {
             return (
                 <>
                     <CustomCursor text={"🐞"} />
-                    <div className="h-full w-full flex flex-col justify-center items-center gap-3 cursor-none px-5">
+                    <div className={cn("h-full w-full flex flex-col justify-center items-center gap-3 cursor-none px-5",
+                        isDark
+                            ? "bg-zinc-950 text-zinc-100"
+                            : "bg-white text-zinc-900"
+                    )}>
                         <h2 className="text-2xl text-center md:text-4xl font-semibold">
                             Well... that's not supposed to happen!
                         </h2>
