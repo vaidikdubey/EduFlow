@@ -25,14 +25,13 @@ class ErrorBoundary extends React.Component {
     render() {
         if (this.state.hasError) {
             return (
-                <div
-                    style={{
-                        padding: "2rem",
-                        textAlign: "center",
-                    }}
-                >
-                    <h1>Something went wrong.</h1>
-                    <p>Please refresh the page.</p>
+                <div className="error-page">
+                    <h2>Oops!</h2>
+                    <p>Something unexpected happened.</p>
+
+                    <button onClick={() => window.location.reload()}>
+                        Reload Page
+                    </button>
                 </div>
             );
         }
