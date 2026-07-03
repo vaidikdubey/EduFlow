@@ -178,7 +178,7 @@ function App() {
                         />
 
                         <Route
-                            path="/quiz/allQuizzes/:id"
+                            path="/quiz/allQuizzes/:courseId"
                             element={<AllQuizzesPage />}
                         />
 

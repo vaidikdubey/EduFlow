@@ -52,7 +52,7 @@ export const useQuizStore = create((set) => ({
                 error.response.data.message || "Error fetching quizzes",
             );
         } finally {
-            set({ isGettingQuizForModule: false });
+            set({ isGettingQuizForCourse: false });
         }
     },
 

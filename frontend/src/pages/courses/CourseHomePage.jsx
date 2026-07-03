@@ -181,7 +181,10 @@ export const CourseHomePage = () => {
                                 </p>
                             </Link>
                         )}
-                        {userRole === "STUDENT" ? (
+                        <Link
+                            to={`/quiz/allQuizzes/${id}`}
+                            className="hover:underline hover:underline-offset-4"
+                        >
                             <p className="flex md:gap-2 text-xs md:text-base">
                                 <span className="flex gap-2">
                                     <HelpCircle className="hidden md:block" />{" "}
@@ -189,20 +192,7 @@ export const CourseHomePage = () => {
                                 </span>
                                 {fetchedCourse?.data?._count?.quizzes}
                             </p>
-                        ) : (
-                            <Link
-                                to={`/quiz/allQuizzes/${id}`}
-                                className="hover:underline hover:underline-offset-4"
-                            >
-                                <p className="flex md:gap-2 text-xs md:text-base">
-                                    <span className="flex gap-2">
-                                        <HelpCircle className="hidden md:block" />{" "}
-                                        Quizzes:{" "}
-                                    </span>
-                                    {fetchedCourse?.data?._count?.quizzes}
-                                </p>
-                            </Link>
-                        )}
+                        </Link>
                     </div>
                 </div>
             </div>
