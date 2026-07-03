@@ -23,13 +23,22 @@ export const LessonsPage = () => {
         isDeletingLesson,
     } = useLessonStore();
 
-    const { isGettingQuizForModule, allQuizForModule, getAllQuizForModule } =
-        useQuizStore();
+    const {
+        isGettingQuizForModule,
+        allQuizForModule,
+        getAllQuizForModule,
+        deleteQuiz,
+        isDeletingQuiz,
+    } = useQuizStore();
 
     const { getModuleById, isGettingModule, moduleById } = useModuleStore();
 
-    const handleLessonDelete = (id) => {
-        deleteLesson(id);
+    const handleLessonDelete = (lessonId) => {
+        deleteLesson(lessonId);
+    };
+
+    const handleQuizDelete = (quizId) => {
+        deleteQuiz(quizId);
     };
 
     useEffect(() => {
@@ -188,7 +197,10 @@ export const LessonsPage = () => {
                                     <Button
                                         variant="outlineDelete"
                                         className={cn("cursor-pointer")}
-                                        onClick={() => handleQuizDelete(quiz.id)}
+                                        onClick={() =>
+                                            handleQuizDelete(quiz.id)
+                                        }
+                                        disabled={isDeletingQuiz}
                                     >
                                         <Trash2 />
                                     </Button>
