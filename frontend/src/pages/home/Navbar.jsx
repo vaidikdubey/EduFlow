@@ -1,6 +1,6 @@
 import { useAuthStore } from "@/stores/useAuthStore";
 import { Bell, Search } from "lucide-react";
-import React, { useState } from "react";
+import React, { useState, useTransition } from "react";
 import { Link } from "react-router-dom";
 
 export const Navbar = ({ allCourses }) => {
@@ -12,17 +12,23 @@ export const Navbar = ({ allCourses }) => {
 
     const [filteredCourses, setFilteredCourses] = useState([]);
 
+    const [isPending, startTransition] = useTransition();
+
     const showSearchResult = (value) => {
         if (value.trim() === "") {
             setFilteredCourses([]);
             return;
         }
 
-        setFilteredCourses(
-            allCourses?.filter((course) => {
-                return course.title.toLowerCase().includes(value.toLowerCase());
-            }),
-        );
+        startTransition(() => {
+            setFilteredCourses(
+                allCourses?.filter((course) => {
+                    return course.title
+                        .toLowerCase()
+                        .includes(value.toLowerCase());
+                }),
+            );
+        });
     };
 
     return (
@@ -41,21 +47,28 @@ export const Navbar = ({ allCourses }) => {
             </div>
 
             {/* Filtered Courses */}
-            {filteredCourses && filteredCourses?.length > 0 && (
-                <div className="absolute z-20 top-15 left-15 w-[80%] backdrop-blur-lg h-[60vh] rounded-xl py-2 overflow-y-auto no-scroll">
-                    <ul>
-                        {filteredCourses?.map((course) => (
-                            <Link
-                                key={course.id}
-                                onClick={() => setFilteredCourses([])}
-                                to={`/course/get/${course.id}`}
-                            >
-                                <li className="py-2 px-3 hover:bg-muted-foreground/30 rounded-xl">
-                                    {course.title}
-                                </li>
-                            </Link>
-                        ))}
-                    </ul>
+            {(isPending ||
+                (filteredCourses && filteredCourses?.length > 0)) && (
+                <div className="absolute z-20 top-15 left-15 w-[80%] backdrop-blur-lg h-[60vh] rounded-xl py-2 overflow-y-auto no-scroll bg-background/80 border border-muted/30">
+                    {isPending ? (
+                        <div className="flex items-center justify-center h-full text-muted-foreground animate-pulse text-sm">
+                            Searching courses...
+                        </div>
+                    ) : (
+                        <ul>
+                            {filteredCourses?.map((course) => (
+                                <Link
+                                    key={course.id}
+                                    onClick={() => setFilteredCourses([])}
+                                    to={`/course/get/${course.id}`}
+                                >
+                                    <li className="py-2 px-3 hover:bg-muted-foreground/30 rounded-xl">
+                                        {course.title}
+                                    </li>
+                                </Link>
+                            ))}
+                        </ul>
+                    )}
                 </div>
             )}
 
