@@ -17,6 +17,8 @@ export const useQuizStore = create((set) => ({
     updatedQuiz: null,
     isDeletingQuiz: false,
     deletedQuiz: null,
+    isGettingQuizForCourse: false,
+    allQuizForCourse: [],
 
     getAllQuizForModule: async (id) => {
         set({ isGettingQuizForModule: true });
@@ -25,6 +27,25 @@ export const useQuizStore = create((set) => ({
             const res = await axiosInstance.get(`/quiz/quizByModule/${id}`);
 
             set({ allQuizForModule: res.data });
+        } catch (error) {
+            console.error("Error fetching quizzes", error);
+            toast.error(
+                error.response.data.message || "Error fetching quizzes",
+            );
+        } finally {
+            set({ isGettingQuizForModule: false });
+        }
+    },
+
+    getAllQuizForCourse: async (courseId) => {
+        set({ isGettingQuizForCourse: true });
+
+        try {
+            const res = await axiosInstance.get(
+                `/quiz/quizByCourse/${courseId}`,
+            );
+
+            set({ allQuizForCourse: res.data });
         } catch (error) {
             console.error("Error fetching quizzes", error);
             toast.error(
