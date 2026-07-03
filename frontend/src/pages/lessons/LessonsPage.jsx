@@ -19,12 +19,18 @@ export const LessonsPage = () => {
         allLessons,
         markLessonComplete,
         isMarkingComplete,
+        deleteLesson,
+        isDeletingLesson,
     } = useLessonStore();
 
     const { isGettingQuizForModule, allQuizForModule, getAllQuizForModule } =
         useQuizStore();
 
     const { getModuleById, isGettingModule, moduleById } = useModuleStore();
+
+    const handleLessonDelete = (id) => {
+        deleteLesson(id);
+    };
 
     useEffect(() => {
         getAllLessons(id);
@@ -129,7 +135,10 @@ export const LessonsPage = () => {
                                     <Button
                                         variant="outlineDelete"
                                         className={cn("cursor-pointer")}
-                                        onClick={() => handleLessonDelete()}
+                                        onClick={() =>
+                                            handleLessonDelete(lesson.id)
+                                        }
+                                        disabled={isDeletingLesson}
                                     >
                                         <Trash2 />
                                     </Button>
@@ -179,7 +188,7 @@ export const LessonsPage = () => {
                                     <Button
                                         variant="outlineDelete"
                                         className={cn("cursor-pointer")}
-                                        onClick={() => handleQuizDelete()}
+                                        onClick={() => handleQuizDelete(quiz.id)}
                                     >
                                         <Trash2 />
                                     </Button>

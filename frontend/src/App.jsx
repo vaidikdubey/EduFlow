@@ -51,7 +51,7 @@ function App() {
     }
 
     return (
-        <div className="h-full w-full cursor-none!">
+        <div className="h-full w-full !cursor-none">
             <Toaster
                 position="top-center"
                 reverseOrder={false}
