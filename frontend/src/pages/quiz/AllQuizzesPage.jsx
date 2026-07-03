@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useQuizStore } from "@/stores/useQuizStore";
-import { Loader, Search, Trash2 } from "lucide-react";
+import { ArrowLeft, Loader, Trash2 } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { useCourseStore } from "@/stores/useCourseStore";
 
@@ -44,7 +44,10 @@ export const AllQuizzesPage = () => {
     let serialNo = 1;
 
     return (
-        <div className="h-full w-full flex flex-col justify-center items-center">
+        <div className="h-full w-full flex flex-col justify-center items-center relative">
+            <Link to={"/"} className="hidden md:block absolute top-5 left-5 cursor-none">
+                <ArrowLeft />
+            </Link>
             <h1 className="text-lg text-center md:text-2xl lg:text-4xl underline underline-offset-4 mb-3">
                 <span className="font-bold">{fetchedCourse?.data?.title}</span>{" "}
                 Course Quizzes
