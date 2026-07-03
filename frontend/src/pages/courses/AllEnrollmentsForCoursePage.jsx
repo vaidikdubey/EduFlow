@@ -25,16 +25,30 @@ export const AllEnrollmentsForCoursePage = () => {
         <div className="relative h-full w-full flex flex-col gap-2">
             <ArrowLeft
                 onClick={() => navigate("/")}
-                className="hidden md:block absolute cursor-pointer" />
-            <h1 className="text-center text-4xl">
+                className="hidden md:block absolute cursor-pointer"
+            />
+            <h1 className="text-center text-lg md:text-3xl lg:text-4xl underline underline-offset-4">
                 {allEnrollments?.data?.course?.title}
             </h1>
-            <div className="w-full flex justify-between items-center text-lg">
+            <div className="w-full flex justify-between items-center text-xs md:text-sm lg:text-lg lg:px-3">
                 <p>
                     Total Enrollments:{" "}
                     {allEnrollments?.data?.course?.totalEnrollments}
                 </p>
-                <p>Price: {allEnrollments?.data?.course?.price > 0 ? `₹${allEnrollments?.data?.course?.price}` : "Free"}</p>
+                <p className="text-green-500 border-dashed border-b-2 border-gray-500 dark:border-gray-400">
+                    Total Completed:{" "}
+                    {
+                        allEnrollments?.data?.enrollments?.filter(
+                            (enr) => enr.completed === true,
+                        ).length
+                    }
+                </p>
+                <p>
+                    Price:{" "}
+                    {allEnrollments?.data?.course?.price > 0
+                        ? `₹${allEnrollments?.data?.course?.price}`
+                        : "Free"}
+                </p>
             </div>
 
             <div className="flex-1 border-2 rounded-lg mt-2">
@@ -43,7 +57,7 @@ export const AllEnrollmentsForCoursePage = () => {
                         return (
                             <div
                                 key={student?.user?.id}
-                                className="px-4 py-2 border-2 m-4 rounded-xl"
+                                className="px-4 py-2 border-dashed border-2 m-4 rounded-xl"
                             >
                                 <p className="flex flex-col md:flex-row justify-between items-start md:items-center">
                                     <span className="text-lg">
@@ -78,7 +92,9 @@ export const AllEnrollmentsForCoursePage = () => {
                                         <span>
                                             Completed At:{" "}
                                             {student?.completedAt ? (
-                                                student?.completedAt
+                                                new Date(student?.completedAt)
+                                                    .toISOString()
+                                                    .split("T")[0]
                                             ) : (
                                                 <span className="text-foreground/50">
                                                     Unavailable
