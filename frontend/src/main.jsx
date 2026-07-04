@@ -9,7 +9,7 @@ import CustomCursor from "./utils/CustomCursor";
 createRoot(document.getElementById("root")).render(
     <StrictMode>
         <ErrorBoundary>
-            <CustomCursor text={"📕"} duration={0} />
+            <CustomCursor text={"📚"} duration={0.7} />
             <BrowserRouter>
                 <App />
             </BrowserRouter>

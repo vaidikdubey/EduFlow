@@ -8,6 +8,8 @@ import {
     Loader,
     Users,
     Trash2,
+    PlusCircle,
+    Edit3,
 } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ReadMore } from "@/components/ui/ReadMore";
@@ -152,12 +154,17 @@ export const CourseHomePage = () => {
                 <div className="flex flex-col md:px-8 py-2 px-2 border border-dotted rounded-xl shadow-2xl text-sm">
                     <h6 className="font-semibold pb-2">Course Stats</h6>
                     <div className="flex justify-between items-center cursor-default flex-wrap">
-                        <p className="flex md:gap-2 text-xs md:text-base">
+                        <p className="flex justify-center items-center md:gap-2 text-xs md:text-base">
                             <span className="flex gap-2">
                                 <BookOpen className="hidden md:block" />{" "}
                                 Modules:{" "}
                             </span>
                             {fetchedCourse?.data?._count?.modules}
+                            {userRole !== "STUDENT" && (
+                                <Link to={`/module/create/${id}`}>
+                                    <PlusCircle className="text-blue-700 hover:text-blue-600 dark:text-blue-600 dark:hover:text-blue-400 h-4 w-4 md:h-6 md:w-6 ml-1" />
+                                </Link>
+                            )}
                         </p>
                         {userRole === "STUDENT" ? (
                             <p className="flex md:gap-2 text-xs md:text-base">
@@ -226,7 +233,7 @@ export const CourseHomePage = () => {
                                     {module._count.quiz}
                                 </p>
                             </div>
-                            <div className="col-span-4 flex justify-center">
+                            <div className="hidden col-span-4 md:block">
                                 {(() => {
                                     const currentModuleProgress =
                                         courseProgress?.data?.moduleProgress?.find(
@@ -243,16 +250,31 @@ export const CourseHomePage = () => {
                                     ) : null;
                                 })()}
                             </div>
-                            <div className="col-span-2 flex justify-end">
+                            <div className="col-span-2 flex items-center justify-items-start md:justify-end gap-2 ml-7 md:ml-0">
                                 {authUser?.data?.role !== "STUDENT" && (
-                                    <Button
-                                        variant="outlineDelete"
-                                        disabled={isDeletingModule}
-                                        onClick={() => deleteModule(module.id)}
-                                        className={cn("cursor-pointer")}
-                                    >
-                                        <Trash2 />
-                                    </Button>
+                                    <div className="flex flex-col md:flex-row gap-2">
+                                        <Button
+                                            variant="outlineBlur"
+                                            className={cn("cursor-pointer")}
+                                            asChild
+                                        >
+                                            <Link
+                                                to={`/module/update/${module.id}`}
+                                            >
+                                                <Edit3 />
+                                            </Link>
+                                        </Button>
+                                        <Button
+                                            variant="outlineDelete"
+                                            disabled={isDeletingModule}
+                                            onClick={() =>
+                                                deleteModule(module.id)
+                                            }
+                                            className={cn("cursor-pointer")}
+                                        >
+                                            <Trash2 />
+                                        </Button>
+                                    </div>
                                 )}
 
                                 <Button variant="icon" asChild>

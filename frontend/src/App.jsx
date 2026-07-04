@@ -53,7 +53,7 @@ function App() {
     }
 
     return (
-        <div className="h-full w-full !cursor-none">
+        <>
             <Toaster
                 position="top-center"
                 reverseOrder={false}
@@ -225,7 +225,7 @@ function App() {
                     </Route>
                 </Route>
             </Routes>
-        </div>
+        </>
     );
 }
 
