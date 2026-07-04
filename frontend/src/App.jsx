@@ -35,6 +35,7 @@ import { ChangePasswordPage } from "./pages/auth/ChangePasswordPage";
 import DraftCoursesPage from "./pages/courses/DraftCoursesPage";
 import { AllEnrollmentsForCoursePage } from "./pages/courses/AllEnrollmentsForCoursePage";
 import { AllQuizzesPage } from "./pages/quiz/AllQuizzesPage";
+import { VerifyCertificatePage } from "./pages/enrollments/VerifyCertificatePage";
 
 function App() {
     const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -215,6 +216,11 @@ function App() {
                         <Route
                             path="/myEnrollments"
                             element={<MyEnrollmentsPage />}
+                        />
+
+                        <Route
+                            path="/enrollments/verify/:id"
+                            element={<VerifyCertificatePage />}
                         />
                     </Route>
                 </Route>
