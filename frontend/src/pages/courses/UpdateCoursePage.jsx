@@ -264,7 +264,7 @@ export const UpdateCoursePage = () => {
                                 <div className="text-sm text-muted-foreground mt-1">
                                     Selected:{" "}
                                     {availableInstructors
-                                        .filter((i) =>
+                                        ?.filter((i) =>
                                             instructors.includes(i.id),
                                         )
                                         .map((i) => i.name)

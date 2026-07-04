@@ -1,13 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useCourseStore } from "@/stores/useCourseStore";
-import {
-    Loader,
-    ChevronDown,
-    Search,
-    XCircle,
-    ArrowLeft,
-    Plus,
-} from "lucide-react";
+import { Loader, Search, XCircle, ArrowLeft, PlusCircle } from "lucide-react";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -42,8 +35,6 @@ export const AllCoursesPage = () => {
 
     const [searchCourse, setSearchCourse] = useState("");
     const [finalState, setFinalState] = useState("");
-
-    const [courseDropdown, setCourseDropdown] = useState(false);
 
     useEffect(() => {
         getAllCourses();
@@ -99,26 +90,13 @@ export const AllCoursesPage = () => {
                 <div className="flex justify-between items-center w-full mb-2">
                     <h1 className="flex items-center justify-center gap-2 font-semibold text-2xl relative">
                         All courses
-                        {userRole != "STUDENT" && (
-                            <ChevronDown
-                                onClick={() =>
-                                    setCourseDropdown((prev) => !prev)
-                                }
-                                className="cursor-pointer"
-                                size={18}
-                            />
-                        )}
-                        {courseDropdown && (
-                            <div className="absolute top-full w-full border-2 rounded-md z-50 bg-foreground hover:bg-foreground/90 text-background">
-                                <div className="py-1">
-                                    <Link
-                                        to={"/course/create"}
-                                        className="text-sm flex items-center justify-center gap-1 font-normal"
-                                    >
-                                        <Plus size={15} /> Create Course
-                                    </Link>
-                                </div>
-                            </div>
+                        {userRole !== "STUDENT" && (
+                            <Link
+                                to={"/course/create"}
+                                className="text-blue-700"
+                            >
+                                <PlusCircle />
+                            </Link>
                         )}
                     </h1>
 
@@ -261,6 +239,20 @@ export const AllCoursesPage = () => {
                                 </CardContent>
                                 <CardFooter className="flex-col gap-2">
                                     <EnrollmentButton courseId={course.id} />
+                                    {userRole !== "STUDENT" && (
+                                        <Button
+                                            variant="outline"
+                                            className={cn("w-full")}
+                                            asChild
+                                        >
+                                            <Link
+                                                to={`/course/update/${course.id}`}
+                                            >
+                                                Update Course
+                                            </Link>
+                                        </Button>
+                                    )}
+
                                     {userRole !== "STUDENT" && (
                                         <div className="w-full flex justify-between items-center gap-3">
                                             <Button

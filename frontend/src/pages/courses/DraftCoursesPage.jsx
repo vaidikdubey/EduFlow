@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { useCourseStore } from "@/stores/useCourseStore";
-import { ArrowLeft, Loader, PlaneTakeoff } from "lucide-react";
+import { ArrowLeft, Loader, PlaneTakeoff, Plus } from "lucide-react";
 import React, { useEffect } from "react";
 import {
     Card,
@@ -17,6 +17,7 @@ import {
 import { timeAgo } from "@/utils/timeAgo";
 import { Button } from "@/components/ui/button";
 import { ReadMore } from "../../components/ui/ReadMore";
+import { Link } from "react-router-dom";
 
 const DraftCoursesPage = () => {
     const {
@@ -140,7 +141,18 @@ const DraftCoursesPage = () => {
                                 </CardContent>
                                 <CardFooter className="flex-col gap-2">
                                     <Button
-                                        variant="outline"
+                                        variant="default"
+                                        className={cn("w-full")}
+                                        asChild
+                                    >
+                                        <Link
+                                            to={`/course/update/${course.id}`}
+                                        >
+                                            Update
+                                        </Link>
+                                    </Button>
+                                    <Button
+                                        variant="secondary"
                                         onClick={() =>
                                             handleCoursePublish(course.id)
                                         }
@@ -169,6 +181,17 @@ const DraftCoursesPage = () => {
                     No draft courses found... {<PlaneTakeoff />}
                 </div>
             )}
+            <Button
+                variant="outlineBlur"
+                className={cn(
+                    "absolute bottom-8 left-1/2 -translate-x-1/2 w-fit flex justify-center items-center text-sm md:text-base lg:text-xl",
+                )}
+                asChild
+            >
+                <Link to={`/course/create`}>
+                    Create New Course <Plus />
+                </Link>
+            </Button>
         </div>
     );
 };

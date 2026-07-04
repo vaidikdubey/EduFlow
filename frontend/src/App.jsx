@@ -33,7 +33,7 @@ import { EditProfilePage } from "./pages/auth/EditProfilePage";
 import { MyEnrollmentsPage } from "./pages/home/MyEnrollmentsPage";
 import { ChangePasswordPage } from "./pages/auth/ChangePasswordPage";
 import DraftCoursesPage from "./pages/courses/DraftCoursesPage";
-import { AllEnrollmentsForCoursePage } from "./pages/courses/AllEnrollmentsForCoursePage";
+import { AllEnrollmentsForCoursePage } from "./pages/enrollments/AllEnrollmentsForCoursePage";
 import { AllQuizzesPage } from "./pages/quiz/AllQuizzesPage";
 import { VerifyCertificatePage } from "./pages/enrollments/VerifyCertificatePage";
 
