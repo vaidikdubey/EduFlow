@@ -13,6 +13,7 @@ export const AllEnrollmentsForCoursePage = () => {
 
     useEffect(() => {
         getAllEnrollments(id);
+        //eslint-disable-next-line
     }, [id]);
 
     if (isGettingAllEnrollments) {

@@ -469,8 +469,8 @@ const getModuleStats = asyncHandler(async (req, res) => {
       details: moduleData.quiz.map((q) => ({
         id: q.id,
         title: q.title,
-        totalQuestions: q._count.questions,
-        totalAttempts: q._count.attempts,
+        totalQuestions: q.questions,
+        totalAttempts: q.attempts,
       })),
     },
   };

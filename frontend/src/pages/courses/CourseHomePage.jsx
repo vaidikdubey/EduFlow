@@ -168,16 +168,18 @@ export const CourseHomePage = () => {
                                 {fetchedCourse?.data?._count?.enrollments}
                             </p>
                         ) : (
-                            <Link
-                                to={`/course/allEnrollments/${id}`}
-                                className="hover:underline hover:underline-offset-4"
-                            >
+                            <Link to={`/course/allEnrollments/${id}`}>
                                 <p className="flex md:gap-2 text-xs md:text-base">
                                     <span className="flex gap-2">
                                         <Users className="hidden md:block" />{" "}
-                                        Enrollments:{" "}
                                     </span>
-                                    {fetchedCourse?.data?._count?.enrollments}
+                                    <span className="hover:underline hover:underline-offset-4 text-blue-700 hover:text-blue-600 dark:text-blue-600 dark:hover:text-blue-400">
+                                        Enrollments:{" "}
+                                        {
+                                            fetchedCourse?.data?._count
+                                                ?.enrollments
+                                        }
+                                    </span>
                                 </p>
                             </Link>
                         )}
@@ -188,9 +190,11 @@ export const CourseHomePage = () => {
                             <p className="flex md:gap-2 text-xs md:text-base">
                                 <span className="flex gap-2">
                                     <HelpCircle className="hidden md:block" />{" "}
-                                    Quizzes:{" "}
                                 </span>
-                                {fetchedCourse?.data?._count?.quizzes}
+                                <span className="hover:underline hover:underline-offset-4 text-blue-700 dark:text-blue-600 dark:hover:text-blue-400 hover:text-blue-600">
+                                    Quizzes:{" "}
+                                    {fetchedCourse?.data?._count?.quizzes}
+                                </span>
                             </p>
                         </Link>
                     </div>
