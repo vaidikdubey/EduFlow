@@ -20,6 +20,8 @@ export const useEnrollmentStore = create((set) => ({
     isPaymentLoading: false,
     isGettingAllEnrollments: false,
     allEnrollments: null,
+    isVerifyingCertificate: false,
+    verifiedCertificate: null,
 
     // enrollInCourse: async (courseId, navigate) => {
     //     set({ isEnrolling: true });
@@ -294,6 +296,28 @@ export const useEnrollmentStore = create((set) => ({
             );
         } finally {
             set({ isGettingAllEnrollments: false });
+        }
+    },
+
+    verifyCertificate: async (certificateId) => {
+        set({ isVerifyingCertificate: true });
+
+        try {
+            const res = await axiosInstance.get(
+                `/enrollment/verify/${certificateId}`,
+            );
+
+            set({ verifiedCertificate: res.data });
+
+            return true;
+        } catch (error) {
+            console.error("Error verifying certificate", error);
+            toast.error(
+                error.response.data.message || "Error verifying certificate",
+            );
+            return false;
+        } finally {
+            set({ isVerifyingCertificate: false });
         }
     },
 }));
