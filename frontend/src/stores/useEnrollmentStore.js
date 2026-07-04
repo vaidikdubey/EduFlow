@@ -309,6 +309,8 @@ export const useEnrollmentStore = create((set) => ({
 
             set({ verifiedCertificate: res.data });
 
+            toast.success(res.message || "Certificate Successfully Verified✅");
+
             return true;
         } catch (error) {
             console.error("Error verifying certificate", error);

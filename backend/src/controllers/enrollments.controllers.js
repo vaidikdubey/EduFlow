@@ -572,7 +572,7 @@ const getCourseCertificate = asyncHandler(async (req, res) => {
     doc.fontSize(12).text("EduFlow Learning Platform", { align: "center" });
 
     // Generate QR code
-    const verificationUrl = `${process.env.BASE_URL}/api/v1/enrollment/verify/${certificate.certificateId}`;
+    const verificationUrl = `${process.env.FRONTEND_URL}/enrollments/verify/${certificate.certificateId}`;
     const qrBuffer = await QRCode.toBuffer(verificationUrl, {
       width: 120, // size in pixels
       margin: 2,
