@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useLessonStore } from "@/stores/useLessonStore";
-import { ArrowLeft, Loader, Trash2 } from "lucide-react";
+import { ArrowLeft, Edit3, Loader, PlusCircle, Trash2 } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useQuizStore } from "@/stores/useQuizStore";
@@ -75,13 +75,23 @@ export const LessonsPage = () => {
                     </div>
                 </div>
                 <div className="flex justify-between items-center px-8">
-                    <p className="text-xs md:text-base">
+                    <p className="text-xs md:text-base flex justify-center items-center md:gap-2">
                         <span className="font-semibold">Total Lessons: </span>{" "}
                         {allLessons?.data?.totalLessons}
+                        {authUser?.data?.role !== "STUDENT" && (
+                            <Link to={`/lesson/create/${id}`}>
+                                <PlusCircle className="text-blue-700 hover:text-blue-600 dark:text-blue-600 dark:hover:text-blue-400 h-4 w-4 md:h-5 md:w-5 ml-1" />
+                            </Link>
+                        )}
                     </p>
-                    <p className="text-xs md:text-base">
+                    <p className="text-xs md:text-base flex justify-center items-center md:gap-2">
                         <span className="font-semibold">Total Quizzes: </span>{" "}
                         {allQuizForModule?.data?.totalQuizzes}
+                        {authUser?.data?.role !== "STUDENT" && (
+                            <Link to={`/quiz/create/${id}`}>
+                                <PlusCircle className="text-blue-700 hover:text-blue-600 dark:text-blue-600 dark:hover:text-blue-400 h-4 w-4 md:h-5 md:w-5 ml-1" />
+                            </Link>
+                        )}
                     </p>
                 </div>
             </div>
@@ -120,7 +130,7 @@ export const LessonsPage = () => {
                                     </p>
                                 )}
                             </div>
-                            <div className="flex justify-center items-center gap-5">
+                            <div className="flex justify-center items-center gap-5 flex-wrap">
                                 {!moduleById?.data?.lessons?.filter(
                                     (les) => les.id === lesson.id,
                                 )[0]?.progress[0]?.completed ? (
@@ -141,16 +151,29 @@ export const LessonsPage = () => {
                                     </Button>
                                 )}
                                 {authUser?.data?.role !== "STUDENT" && (
-                                    <Button
-                                        variant="outlineDelete"
-                                        className={cn("cursor-pointer")}
-                                        onClick={() =>
-                                            handleLessonDelete(lesson.id)
-                                        }
-                                        disabled={isDeletingLesson}
-                                    >
-                                        <Trash2 />
-                                    </Button>
+                                    <div className="flex flex-row gap-2">
+                                        <Button
+                                            variant="outlineBlur"
+                                            className={cn("cursor-pointer")}
+                                            asChild
+                                        >
+                                            <Link
+                                                to={`/lesson/update/${lesson.id}`}
+                                            >
+                                                <Edit3 />
+                                            </Link>
+                                        </Button>
+                                        <Button
+                                            variant="outlineDelete"
+                                            className={cn("cursor-pointer")}
+                                            onClick={() =>
+                                                handleLessonDelete(lesson.id)
+                                            }
+                                            disabled={isDeletingLesson}
+                                        >
+                                            <Trash2 />
+                                        </Button>
+                                    </div>
                                 )}
                             </div>
                         </div>
@@ -179,7 +202,7 @@ export const LessonsPage = () => {
                                     <span>Attemps:</span> {quiz._count.attempts}
                                 </p>
                             </div>
-                            <div className="flex justify-center items-center gap-5">
+                            <div className="flex justify-center items-center gap-5 flex-wrap">
                                 <Button variant="success" asChild>
                                     <Link
                                         to={`/quiz/attempt/${quiz.id}`}
@@ -194,16 +217,29 @@ export const LessonsPage = () => {
                                     </Link>
                                 </Button>
                                 {authUser?.data?.role !== "STUDENT" && (
-                                    <Button
-                                        variant="outlineDelete"
-                                        className={cn("cursor-pointer")}
-                                        onClick={() =>
-                                            handleQuizDelete(quiz.id)
-                                        }
-                                        disabled={isDeletingQuiz}
-                                    >
-                                        <Trash2 />
-                                    </Button>
+                                    <div className="flex flex-row gap-2">
+                                        <Button
+                                            variant="outlineBlur"
+                                            className={cn("cursor-pointer")}
+                                            asChild
+                                        >
+                                            <Link
+                                                to={`/quiz/update/${quiz.id}`}
+                                            >
+                                                <Edit3 />
+                                            </Link>
+                                        </Button>
+                                        <Button
+                                            variant="outlineDelete"
+                                            className={cn("cursor-pointer")}
+                                            onClick={() =>
+                                                handleQuizDelete(quiz.id)
+                                            }
+                                            disabled={isDeletingQuiz}
+                                        >
+                                            <Trash2 />
+                                        </Button>
+                                    </div>
                                 )}
                             </div>
                         </div>
