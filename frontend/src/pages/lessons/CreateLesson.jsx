@@ -1,6 +1,6 @@
 import React from "react";
 import { useLessonStore } from "@/stores/useLessonStore";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createLessonSchema } from "@/lib/zod";
@@ -23,6 +23,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { PlusSquare } from "lucide-react";
 
 export const CreateLesson = () => {
     const { id } = useParams();
@@ -59,7 +60,7 @@ export const CreateLesson = () => {
     };
 
     return (
-        <div className="w-full h-full flex flex-col justify-center items-center">
+        <div className="w-full h-full flex flex-col justify-center items-center relative">
             <Card className="w-full max-w-lg">
                 {" "}
                 <CardHeader>
@@ -189,6 +190,17 @@ export const CreateLesson = () => {
                     </form>
                 </CardContent>
             </Card>
+            <Button
+                variant="outlineBlur"
+                className={cn(
+                    "absolute -bottom-3 lg:bottom-4 left-1/2 -translate-x-1/2 w-fit flex justify-center items-center text-sm md:text-base lg:text-xl",
+                )}
+                asChild
+            >
+                <Link to={`/lesson/createBulk/${id}`}>
+                    Create Bulk Lesson <PlusSquare />
+                </Link>
+            </Button>
         </div>
     );
 };
