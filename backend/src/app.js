@@ -29,6 +29,10 @@ import quizRouter from "./routes/quizzes.routes.js";
 import healthCheckRouter from "./routes/healthcheck.routes.js";
 import webhookRouter from "./routes/webhook.routes.js";
 
+app.get("/", (req, res) => {
+  res.send("Hello, welcome to EduFlow📚");
+});
+
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/course", courseRouter);
 app.use("/api/v1/module", moduleRouter);
