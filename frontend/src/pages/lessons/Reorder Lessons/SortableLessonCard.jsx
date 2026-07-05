@@ -24,13 +24,17 @@ export const SortableLessonCard = ({ lesson, index }) => {
     const getIcon = () => {
         switch (lesson.contentType) {
             case "VIDEO":
-                return <PlayCircle className="size-5 text-blue-500" />;
+                return (
+                    <PlayCircle className="size-10 md:size-5 text-blue-500" />
+                );
 
             case "PDF":
-                return <File className="size-5 text-red-500" />;
+                return <File className="size-10 md:size-5 text-red-500" />;
 
             default:
-                return <FileText className="size-5 text-green-500" />;
+                return (
+                    <FileText className="size-10 md:size-5 text-green-500" />
+                );
         }
     };
 
@@ -59,7 +63,7 @@ export const SortableLessonCard = ({ lesson, index }) => {
                 </button>
                 {getIcon()}
                 <div>
-                    <h6 className="text-xl font-semibold">
+                    <h6 className="text-sm md:text-xl font-semibold">
                         <span className="text-sm font-normal">
                             {index + 1}.
                         </span>{" "}
