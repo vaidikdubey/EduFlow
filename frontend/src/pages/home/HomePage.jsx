@@ -28,8 +28,7 @@ export const HomePage = () => {
 
     const { getAllCourses, isGettingAllCourses, allCourses } = useCourseStore();
 
-    const { getMyEnrollments, isGettingMyEnrollments } =
-        useEnrollmentStore();
+    const { getMyEnrollments, isGettingMyEnrollments } = useEnrollmentStore();
 
     useEffect(() => {
         getAllCourses();
@@ -114,7 +113,9 @@ export const HomePage = () => {
 
     return (
         <div className="relative w-full h-full">
-            <div className="absolute h-[20vw] w-[20vw] max-h-62.5 max-w-62.5 min-h-30 min-w-30 animate-random-corner bg-[oklch(0.8148_0.0819_225.7537/0.25)] dark:bg-[oklch(0.968_0.211_109.7692/0.15)] rounded-full blur-xl z-0"></div>
+            <div
+                className={`absolute h-[20vw] w-[20vw] max-h-62.5 max-w-62.5 min-h-30 min-w-30 animate-random-corner bg-[oklch(0.8148_0.0819_225.7537/0.25)] dark:bg-[oklch(0.968_0.211_109.7692/0.15)] rounded-full blur-xl z-0 ${allCourses?.data?.length === 0 && "hidden"}`}
+            ></div>
             <div className="relative w-full h-full flex flex-col justify-center items-center gap-5 bg-transparent z-20">
                 <Sidebar userRole={authUser?.data?.role} />
                 <div className="w-full p-3 rounded-2xl text-center">
@@ -134,73 +135,84 @@ export const HomePage = () => {
                 </h1>
                 <div
                     ref={allCoursesRef}
-                    className="h-full w-full grid grid-cols-3 gap-5 overflow-y-auto no-scroll"
+                    className={`h-full w-full gap-5 overflow-y-auto no-scroll ${allCourses?.data?.length > 0 && "grid grid-cols-3"}`}
                 >
-                    {allCourses?.data?.map((course) => (
-                        <div
-                            key={course.id}
-                            className="course-card bg-linear-to-br from-cyan-100/20 to-cyan-50 dark:bg-linear-to-br dark:from-cyan-800/20 dark:to-cyan-800/20 rounded-lg p-2 opacity-0 -translate-y-5"
-                        >
-                            <h2 className="text-xl font-bold cursor-pointer hover:underline hover:underline-offset-2 h-15">
-                                <Link to={`/course/enroll/${course.id}`}>
-                                    {course.title}
-                                </Link>
-                            </h2>
-                            <ReadMore
-                                text={course.description}
-                                maxLen={100}
-                                props={cn("mb-3")}
-                            />
-                            <div className="flex justify-between text-sm">
-                                <p>
-                                    <span className="font-semibold">
-                                        Type:{" "}
-                                    </span>
-                                    {course.price ? "PAID" : "FREE"}
-                                </p>
-                                <p>
-                                    <span className="font-semibold">
-                                        Price:{" "}
-                                    </span>
-                                    {course.price ? `₹${course.price}` : "₹0"}
-                                </p>
+                    {allCourses?.data?.length > 0 ? (
+                        allCourses?.data?.map((course) => (
+                            <div
+                                key={course.id}
+                                className="course-card bg-linear-to-br from-cyan-100/20 to-cyan-50 dark:bg-linear-to-br dark:from-cyan-800/20 dark:to-cyan-800/20 rounded-lg p-2 opacity-0 -translate-y-5"
+                            >
+                                <h2 className="text-xl font-bold cursor-pointer hover:underline hover:underline-offset-2 h-15">
+                                    <Link to={`/course/enroll/${course.id}`}>
+                                        {course.title}
+                                    </Link>
+                                </h2>
+                                <ReadMore
+                                    text={course.description}
+                                    maxLen={100}
+                                    props={cn("mb-3")}
+                                />
+                                <div className="flex justify-between text-sm">
+                                    <p>
+                                        <span className="font-semibold">
+                                            Type:{" "}
+                                        </span>
+                                        {course.price ? "PAID" : "FREE"}
+                                    </p>
+                                    <p>
+                                        <span className="font-semibold">
+                                            Price:{" "}
+                                        </span>
+                                        {course.price
+                                            ? `₹${course.price}`
+                                            : "₹0"}
+                                    </p>
+                                </div>
+                                <div className="flex justify-between text-sm">
+                                    <p>
+                                        <span className="font-semibold">
+                                            Author:{" "}
+                                        </span>
+                                        {course.createdBy.name}
+                                    </p>
+                                    <p>
+                                        <span className="font-semibold">
+                                            Added:{" "}
+                                        </span>
+                                        {timeAgo(course.createdAt)}
+                                    </p>
+                                </div>
+                                <div className="flex justify-center items-center">
+                                    <HoverCard openDelay={10} closeDelay={100}>
+                                        <HoverCardTrigger asChild>
+                                            <Button variant="hover">
+                                                View Instructors
+                                            </Button>
+                                        </HoverCardTrigger>
+                                        <HoverCardContent className="flex gap-2 h-fit w-fit">
+                                            {course.instructors.map(
+                                                (ins, idx) => (
+                                                    <span key={ins.id}>
+                                                        {ins.name}{" "}
+                                                        {idx !==
+                                                            course.instructors
+                                                                .length -
+                                                                1 && ", "}
+                                                    </span>
+                                                ),
+                                            )}
+                                        </HoverCardContent>
+                                    </HoverCard>
+                                </div>
+                                <EnrollmentButton courseId={course.id} />
                             </div>
-                            <div className="flex justify-between text-sm">
-                                <p>
-                                    <span className="font-semibold">
-                                        Author:{" "}
-                                    </span>
-                                    {course.createdBy.name}
-                                </p>
-                                <p>
-                                    <span className="font-semibold">
-                                        Added:{" "}
-                                    </span>
-                                    {timeAgo(course.createdAt)}
-                                </p>
-                            </div>
-                            <div className="flex justify-center items-center">
-                                <HoverCard openDelay={10} closeDelay={100}>
-                                    <HoverCardTrigger asChild>
-                                        <Button variant="hover">
-                                            View Instructors
-                                        </Button>
-                                    </HoverCardTrigger>
-                                    <HoverCardContent className="flex gap-2 h-fit w-fit">
-                                        {course.instructors.map((ins, idx) => (
-                                            <span key={ins.id}>
-                                                {ins.name}{" "}
-                                                {idx !==
-                                                    course.instructors.length -
-                                                        1 && ", "}
-                                            </span>
-                                        ))}
-                                    </HoverCardContent>
-                                </HoverCard>
-                            </div>
-                            <EnrollmentButton courseId={course.id} />
+                        ))
+                    ) : (
+                        <div className="h-full w-full flex items-center justify-center border-dashed border-2 rounded-xl md:text-3xl">
+                            No Courses Found
                         </div>
-                    ))}
+                    )}
                 </div>
             </div>
         </div>
