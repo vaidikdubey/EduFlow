@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -19,24 +19,31 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { createBulkLessonSchema } from "@/lib/zod";
 
 export const LessonDialog = ({ open, setOpen, onAddLesson }) => {
-    const [lessonForm, setLessonForm] = useState({
-        title: "",
-        contentType: "TEXT",
-        contentUrl: "",
-    });
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-
-        onAddLesson(lessonForm);
-
-        setLessonForm({
+    const {
+        register,
+        handleSubmit,
+        watch,
+        setValue,
+        reset,
+        formState: { errors },
+    } = useForm({
+        resolver: zodResolver(createBulkLessonSchema),
+        defaultValues: {
             title: "",
             contentType: "TEXT",
             contentUrl: "",
-        });
+        },
+    });
+
+    const onSubmit = async (data) => {
+        onAddLesson(data);
+
+        reset();
 
         setOpen(false);
     };
@@ -44,7 +51,7 @@ export const LessonDialog = ({ open, setOpen, onAddLesson }) => {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogContent className="sm:max-w-sm">
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit(onSubmit)}>
                     <DialogHeader>
                         <DialogTitle>Add Lesson</DialogTitle>
                         <DialogDescription>
@@ -57,27 +64,28 @@ export const LessonDialog = ({ open, setOpen, onAddLesson }) => {
                             <Label htmlFor="title">Title</Label>
                             <Input
                                 id="title"
-                                name="title"
                                 placeholder="Basics of React"
-                                value={lessonForm?.title}
-                                onChange={(e) =>
-                                    setLessonForm((prev) => ({
-                                        ...prev,
-                                        title: e.target.value,
-                                    }))
-                                }
+                                {...register("title")}
                             />
+                            {errors.title && (
+                                <p
+                                    className={cn(
+                                        "text-xs font-medium text-red-500 mt-1",
+                                    )}
+                                >
+                                    {errors.title.message}
+                                </p>
+                            )}
                         </Field>
                         <Field>
                             <Label htmlFor="content-type">Content Type</Label>
                             <Select
-                                value={lessonForm?.contentType}
                                 onValueChange={(value) =>
-                                    setLessonForm((prev) => ({
-                                        ...prev,
-                                        contentType: value,
-                                    }))
+                                    setValue("contentType", value, {
+                                        shouldValidate: true,
+                                    })
                                 }
+                                value={watch("contentType")}
                             >
                                 <SelectTrigger className="w-full max-w-48">
                                     <SelectValue />
@@ -88,21 +96,28 @@ export const LessonDialog = ({ open, setOpen, onAddLesson }) => {
                                     <SelectItem value="VIDEO">VIDEO</SelectItem>
                                 </SelectContent>
                             </Select>
+                            {errors.contentType && (
+                                <p className={cn("text-xs text-red-500 mt-1")}>
+                                    {errors.contentType.message}
+                                </p>
+                            )}
                         </Field>
                         <Field>
                             <Label htmlFor="content-url">Content URL</Label>
                             <Input
                                 id="content-url"
-                                name="content-url"
-                                placeholder="www.example-resouce.com"
-                                value={lessonForm?.contentUrl}
-                                onChange={(e) =>
-                                    setLessonForm((prev) => ({
-                                        ...prev,
-                                        contentUrl: e.target.value,
-                                    }))
-                                }
+                                placeholder={`https://www.example-content-url.com`}
+                                {...register("contentUrl")}
                             />
+                            {errors.contentUrl && (
+                                <p
+                                    className={cn(
+                                        "text-xs font-medium text-red-500 mt-1",
+                                    )}
+                                >
+                                    {errors.contentUrl.message}
+                                </p>
+                            )}
                         </Field>
                     </FieldGroup>
                     <DialogFooter className={cn("mt-7")}>
