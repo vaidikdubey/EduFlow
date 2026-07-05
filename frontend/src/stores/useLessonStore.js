@@ -14,6 +14,8 @@ export const useLessonStore = create((set) => ({
     updatedLesson: null,
     isDeletingLesson: false,
     deletedLesson: null,
+    isCreatingBulkLessons: false,
+    bulkLessons: null,
 
     getAllLessons: async (moduleId) => {
         set({ isGettingAllLessons: true });
@@ -86,6 +88,30 @@ export const useLessonStore = create((set) => ({
             return false;
         } finally {
             set({ isCreatingLesson: false });
+        }
+    },
+
+    createBulkLessons: async (id, data) => {
+        set({ isCreatingBulkLessons: true });
+
+        try {
+            const res = await axiosInstance.post(
+                `/lesson/createBulk/${id}`,
+                data,
+            );
+
+            set({ bulkLessons: res.data });
+
+            toast.success(res.message || "Lessons created");
+
+            return true;
+        } catch (error) {
+            console.error("Error creating lesson", error);
+            toast.error(error.response.data.message || "Error creating lesson");
+
+            return false;
+        } finally {
+            set({ isCreatingBulkLessons: false });
         }
     },
 

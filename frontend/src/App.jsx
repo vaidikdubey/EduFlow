@@ -19,7 +19,7 @@ import { EnrollPage } from "./pages/enrollments/EnrollPage";
 import { LessonsPage } from "./pages/lessons/LessonsPage";
 import { AttemptQuiz } from "./pages/quiz/AttemptQuiz";
 import { CreateLesson } from "./pages/lessons/CreateLesson";
-import { CreateBulkLessons } from "./pages/lessons/CreateBulkLessons";
+import { CreateBulkLessons } from "./pages/lessons/Create Bulk Lessons/CreateBulkLessons";
 import { UpdateLessonPage } from "./pages/lessons/UpdateLessonPage";
 import { QuizAttemptPage } from "./pages/quiz/QuizAttemptPage";
 import { QuizSingleAttemptPage } from "./pages/quiz/QuizSingleAttemptPage";
