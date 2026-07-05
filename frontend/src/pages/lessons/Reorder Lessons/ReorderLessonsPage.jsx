@@ -150,7 +150,7 @@ export const ReorderLessonsPage = () => {
                     Save Changes
                 </Button>
             </div>
-            {!hasUnsavedChanges && (
+            {hasUnsavedChanges && (
                 <div className="hidden md:block rounded-lg border border-yellow-500 bg-yellow-500/20 p-4 text-center absolute bottom-0 md:right-0 w-full md:w-fit">
                     <p className="text-sm md:text-sm lg:font-medium">
                         You have unsaved changes.
