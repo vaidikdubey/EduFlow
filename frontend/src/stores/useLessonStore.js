@@ -16,6 +16,8 @@ export const useLessonStore = create((set) => ({
     deletedLesson: null,
     isCreatingBulkLessons: false,
     bulkLessons: null,
+    isReorderingLesson: false,
+    reorderedLessons: null,
 
     getAllLessons: async (moduleId) => {
         set({ isGettingAllLessons: true });
@@ -153,6 +155,32 @@ export const useLessonStore = create((set) => ({
             return false;
         } finally {
             set({ isDeletingLesson: false });
+        }
+    },
+
+    reorderLessons: async (moduleId, lessons) => {
+        set({ isReorderingLesson: true });
+
+        try {
+            const res = await axiosInstance.patch(
+                `/lesson/reorder/${moduleId}`,
+                { lessons },
+            );
+
+            set({ reorderedLessons: res.data });
+
+            toast.success(res.message || "Lessons re-ordered");
+
+            return true;
+        } catch (error) {
+            console.error("Error re-ordering lesson", error);
+            toast.error(
+                error.response.data.message || "Error re-ordering lesson",
+            );
+
+            return false;
+        } finally {
+            set({ isReorderingLesson: false });
         }
     },
 }));

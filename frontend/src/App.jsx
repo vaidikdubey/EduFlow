@@ -36,7 +36,7 @@ import DraftCoursesPage from "./pages/courses/DraftCoursesPage";
 import { AllEnrollmentsForCoursePage } from "./pages/enrollments/AllEnrollmentsForCoursePage";
 import { AllQuizzesPage } from "./pages/quiz/AllQuizzesPage";
 import { VerifyCertificatePage } from "./pages/enrollments/VerifyCertificatePage";
-import { ReorderLessonsPage } from "./pages/lessons/ReorderLessonsPage";
+import { ReorderLessonsPage } from "./pages/lessons/Reorder Lessons/ReorderLessonsPage";
 
 function App() {
     const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
