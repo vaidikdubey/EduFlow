@@ -36,6 +36,7 @@ import DraftCoursesPage from "./pages/courses/DraftCoursesPage";
 import { AllEnrollmentsForCoursePage } from "./pages/enrollments/AllEnrollmentsForCoursePage";
 import { AllQuizzesPage } from "./pages/quiz/AllQuizzesPage";
 import { VerifyCertificatePage } from "./pages/enrollments/VerifyCertificatePage";
+import { ReorderLessonsPage } from "./pages/lessons/ReorderLessonsPage";
 
 function App() {
     const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -176,6 +177,11 @@ function App() {
                         <Route
                             path="/lesson/update/:id"
                             element={<UpdateLessonPage />}
+                        />
+
+                        <Route
+                            path="/lesson/reorder/:id"
+                            element={<ReorderLessonsPage />}
                         />
 
                         <Route

@@ -1,6 +1,13 @@
 import React, { useEffect } from "react";
 import { useLessonStore } from "@/stores/useLessonStore";
-import { ArrowLeft, Edit3, Loader, PlusCircle, Trash2 } from "lucide-react";
+import {
+    ArrowLeft,
+    ArrowUpDown,
+    Edit3,
+    Loader,
+    PlusCircle,
+    Trash2,
+} from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useQuizStore } from "@/stores/useQuizStore";
@@ -74,7 +81,7 @@ export const LessonsPage = () => {
                         </h3>
                     </div>
                 </div>
-                <div className="flex justify-between items-center px-8">
+                <div className="flex justify-between items-center px-8 flex-wrap">
                     <p className="text-xs md:text-base flex justify-center items-center md:gap-2">
                         <span className="font-semibold">Total Lessons: </span>{" "}
                         {allLessons?.data?.totalLessons}
@@ -84,6 +91,17 @@ export const LessonsPage = () => {
                             </Link>
                         )}
                     </p>
+                    {authUser?.data?.role !== "STUDENT" && (
+                        <Link
+                            to={`/lesson/reorder/${id}`}
+                            className="flex justify-center items-center gap-2 text-blue-700 hover:underline hover:underline-offset-4"
+                        >
+                            <span className="hidden md:block font-bold">
+                                Reorder Lessons
+                            </span>
+                            <ArrowUpDown className="h-5 w-5" />
+                        </Link>
+                    )}
                     <p className="text-xs md:text-base flex justify-center items-center md:gap-2">
                         <span className="font-semibold">Total Quizzes: </span>{" "}
                         {allQuizForModule?.data?.totalQuizzes}
