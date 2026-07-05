@@ -91,14 +91,13 @@ export const useLessonStore = create((set) => ({
         }
     },
 
-    createBulkLessons: async (id, data) => {
+    createBulkLessons: async (id, lessons) => {
         set({ isCreatingBulkLessons: true });
 
         try {
-            const res = await axiosInstance.post(
-                `/lesson/createBulk/${id}`,
-                data,
-            );
+            const res = await axiosInstance.post(`/lesson/createBulk/${id}`, {
+                lessons,
+            });
 
             set({ bulkLessons: res.data });
 
