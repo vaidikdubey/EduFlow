@@ -107,6 +107,11 @@ function App() {
                         element={<ResetPasswordPage />}
                     />
 
+                    <Route
+                        path="/enrollments/verify/:id"
+                        element={<VerifyCertificatePage />}
+                    />
+
                     {/* Protected Routes */}
                     <Route element={<ProtectedRoute />}>
                         <Route path="/me" element={<ProfilePage />} />
@@ -222,11 +227,6 @@ function App() {
                         <Route
                             path="/myEnrollments"
                             element={<MyEnrollmentsPage />}
-                        />
-
-                        <Route
-                            path="/enrollments/verify/:id"
-                            element={<VerifyCertificatePage />}
                         />
                     </Route>
                 </Route>
