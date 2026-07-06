@@ -135,7 +135,7 @@ export const HomePage = () => {
                 </h1>
                 <div
                     ref={allCoursesRef}
-                    className={`h-full w-full gap-5 overflow-y-auto no-scroll ${allCourses?.data?.length > 0 && "grid grid-cols-3"}`}
+                    className={`h-full w-full gap-5 overflow-y-auto no-scroll ${allCourses?.data?.length > 0 && "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"}`}
                 >
                     {allCourses?.data?.length > 0 ? (
                         allCourses?.data?.map((course) => (

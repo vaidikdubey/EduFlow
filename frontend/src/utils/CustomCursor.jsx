@@ -32,7 +32,7 @@ export default function CustomCursor({ text, duration }) {
     return (
         <div
             ref={cursorRef}
-            className="fixed top-0 left-0 z-9999 pointer-events-none select-none text-2xl"
+            className="hidden lg:block fixed top-0 left-0 z-9999 pointer-events-none select-none text-2xl"
         >
             {text}
         </div>
