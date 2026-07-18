@@ -49,7 +49,6 @@ EduFlow is a full‑stack Learning Management System (LMS) designed to simulate 
 
 - Enrolled students per course
 - Quiz performance insights
-- Course‑wise engagement metrics
 
 ### Certification
 
