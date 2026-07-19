@@ -1,4 +1,4 @@
-# [EduFlow – Learning Management System (LMS)](https://eduflow-campus.vercel.app/)
+# [📚EduFlow – Learning Management System (LMS)](https://eduflow-campus.vercel.app/)
 
 EduFlow is a full‑stack Learning Management System (LMS) designed to simulate a real‑world EdTech platform. The project focuses on clean role‑based architecture, secure authentication, structured course delivery, payment handling, progress tracking, and instructor–student workflows. It is built to demonstrate strong backend design, scalable data modeling, and production‑oriented features expected in modern SaaS applications.
 
@@ -18,9 +18,8 @@ EduFlow is a full‑stack Learning Management System (LMS) designed to simulate 
 - Organize courses into **modules and lessons**
 - Add lessons with support for:
     - Text content
-    - Video links / embeds
-    - PDF resources
-
+    - Video links
+    - PDF resources links
 - Create quizzes per module (MCQ‑based)
 - Mark courses as **free or paid**
 
@@ -28,8 +27,6 @@ EduFlow is a full‑stack Learning Management System (LMS) designed to simulate 
 
 - Enroll in free courses instantly
 - Paid course enrollment using **Razorpay**
-- Coupon and discount support during order creation
-- Course bundles (purchase multiple courses together)
 
 ### Learning Experience (Student)
 
@@ -49,7 +46,6 @@ EduFlow is a full‑stack Learning Management System (LMS) designed to simulate 
 
 - Enrolled students per course
 - Quiz performance insights
-- Course‑wise engagement metrics
 
 ### Certification
 
@@ -58,13 +54,7 @@ EduFlow is a full‑stack Learning Management System (LMS) designed to simulate 
     - Student name
     - Course title
     - Completion date
-    - Unique Certificate ID for verification
-
-### Email Notifications
-
-- Enrollment confirmation emails
-- Course announcements
-- System notifications
+    - Unique Certificate ID embedded QR code for verification
 
 ---
 
@@ -72,7 +62,6 @@ EduFlow is a full‑stack Learning Management System (LMS) designed to simulate 
 
 - Lesson‑level attachments
 - Video‑wise discussion forums
-- Multiple instructors per course (many‑to‑many relationship)
 - Real‑time video discussion forum
 - Advanced analytics and reporting
 - Admin panel for platform management
@@ -115,7 +104,7 @@ EduFlow is a full‑stack Learning Management System (LMS) designed to simulate 
 ## 🗂️ High‑Level Architecture
 
 - **Client → API → Database** architecture
-- Separation of concerns between controllers, services, and models
+- Separation of concerns between routes, controllers, and models
 - Secure middleware for authentication and authorization
 - Scalable schema design to support future growth
 
@@ -151,11 +140,21 @@ npm install
 Create a `.env` file in the backend directory:
 
 ```env
-PORT=5000
+PORT=8000
+FRONTEND_URL=http://localhost:5173
 DB_URL=your_db_url
+ACCESS_TOKEN_SECRET=your_access_token_secret
+ACCESS_TOKEN_EXPIRY=your_access_token_expiry
+REFRESH_TOKEN_SECRET=your_refresh_token_secret
+REFRESH_TOKEN_EXPIRY=your_refresh_token_expiry
+MAILTRAP_HOST=your_mailtrap_host
+MAILTRAP_PORT=your_mailtrap_port
+MAILTRAP_SMTP_USER=your_mailtrap_smtp_user
+MAILTRAP_SMTP_PASS=your_mailtrap_smtp_pass
 JWT_SECRET=your_jwt_secret
 RAZORPAY_KEY_ID=your_key_id
 RAZORPAY_KEY_SECRET=your_key_secret
+RAZORPAY_WEBHOOK_SECRET=your_webhook_secret
 ```
 
 Run the application:
@@ -174,7 +173,7 @@ npm run dev
 
 - Demonstrate end‑to‑end full‑stack development skills
 - Implement real‑world LMS workflows
-- Showcase secure authentication and payment integration
+- Showcase secure authentication, authorization and payment integration
 - Build a scalable foundation for future features
 
 ---
