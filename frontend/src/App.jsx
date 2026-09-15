@@ -37,6 +37,7 @@ import { AllEnrollmentsForCoursePage } from "./pages/enrollments/AllEnrollmentsF
 import { AllQuizzesPage } from "./pages/quiz/AllQuizzesPage";
 import { VerifyCertificatePage } from "./pages/enrollments/VerifyCertificatePage";
 import { ReorderLessonsPage } from "./pages/lessons/Reorder Lessons/ReorderLessonsPage";
+import LandingPage from "./pages/LandingPage";
 
 function App() {
     const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
@@ -70,6 +71,17 @@ function App() {
             <Routes>
                 {/* Public Routes */}
                 <Route element={<Layout />}>
+                    <Route
+                        path="/landing"
+                        element={
+                            authUser ? (
+                                <Navigate to="/" replace />
+                            ) : (
+                                <LandingPage />
+                            )
+                        }
+                    />
+
                     <Route
                         path="/signin"
                         element={

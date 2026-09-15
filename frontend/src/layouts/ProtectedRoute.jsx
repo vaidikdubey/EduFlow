@@ -15,7 +15,7 @@ export const ProtectedRoute = () => {
     }
 
     if (!isCheckingAuth && !authUser) {
-        return <Navigate to="/signin" replace state={{ from: location }} />;
+        return <Navigate to="/landing" replace state={{ from: location }} />;
     }
 
     return <Outlet />;
