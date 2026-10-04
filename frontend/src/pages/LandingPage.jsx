@@ -15,6 +15,7 @@ import {
   X,
   UserCheck
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const SIGN_IN_URL = `${window.location.origin}/signin`;
 const SIGN_UP_URL = `${window.location.origin}/signup`;
@@ -45,18 +46,18 @@ export default function EduFlowLanding() {
           </div>
 
           <div className="hidden md:flex items-center gap-4">
-            <a
-              href={SIGN_IN_URL}
+            <Link
+              to="/signin"
               className="px-4 py-2 text-sm font-medium hover:text-primary transition-colors"
             >
               Sign In
-            </a>
-            <a
-              href={SIGN_UP_URL}
+            </Link>
+            <Link
+              to="/signup"
               className="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-lg shadow-sm hover:opacity-90 transition-opacity"
             >
               Get Started
-            </a>
+            </Link>
           </div>
 
           <button
@@ -77,8 +78,8 @@ export default function EduFlowLanding() {
             <a href="#certification" onClick={() => setMobileMenuOpen(false)} className="block text-sm font-medium py-1">Certification</a>
             <a href="#techstack" onClick={() => setMobileMenuOpen(false)} className="block text-sm font-medium py-1">Tech Stack</a>
             <div className="pt-2 flex flex-col gap-2">
-              <a href={SIGN_IN_URL} className="w-full text-center py-2 text-sm font-medium border border-border rounded-lg">Sign In</a>
-              <a href={SIGN_UP_URL} className="w-full text-center py-2 text-sm font-medium bg-primary text-primary-foreground rounded-lg">Get Started</a>
+              <Link to="/signin" className="w-full text-center py-2 text-sm font-medium border border-border rounded-lg">Sign In</Link>
+              <Link to="/signup" className="w-full text-center py-2 text-sm font-medium bg-primary text-primary-foreground rounded-lg">Get Started</Link>
             </div>
           </div>
         )}
@@ -99,18 +100,18 @@ export default function EduFlowLanding() {
                 A role-based Learning Management System designed with clean backend architecture, secure JWT authorization, integrated Razorpay payments, and automated QR-verified PDF certificates.
               </p>
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-2">
-                <a
-                  href={SIGN_UP_URL}
+                <Link
+                  to="/signup"
                   className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground font-medium rounded-lg shadow-md hover:opacity-90 transition-opacity"
                 >
                   Start Learning Now <ArrowRight className="w-4 h-4" />
-                </a>
-                <a
-                  href={SIGN_IN_URL}
+                </Link>
+                <Link
+                  to="/signin"
                   className="inline-flex items-center justify-center gap-2 px-6 py-3 border border-border bg-card font-medium rounded-lg hover:bg-muted/50 transition-colors"
                 >
                   Instructor Login
-                </a>
+                </Link>
               </div>
             </div>
 
@@ -284,18 +285,18 @@ export default function EduFlowLanding() {
             Join as a student to explore interactive learning or sign up as an instructor to design structured courses and track student performance.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <a
-              href={SIGN_UP_URL}
+            <Link
+              to="/signup"
               className="px-8 py-3 bg-background text-foreground font-semibold rounded-lg shadow-md hover:bg-muted transition-colors"
             >
               Create Free Account
-            </a>
-            <a
-              href={SIGN_IN_URL}
+            </Link>
+            <Link
+              to="/signin"
               className="px-8 py-3 bg-primary-foreground/10 border border-primary-foreground/20 text-primary-foreground font-semibold rounded-lg hover:bg-primary-foreground/20 transition-colors"
             >
               Sign In to Platform
-            </a>
+            </Link>
           </div>
         </div>
       </section>
