@@ -16,8 +16,8 @@ import {
   UserCheck
 } from 'lucide-react';
 
-const SIGN_IN_URL = "https://eduflow-campus.vercel.app/signin";
-const SIGN_UP_URL = "https://eduflow-campus.vercel.app/signup";
+const SIGN_IN_URL = `${window.location.origin}/signin`;
+const SIGN_UP_URL = `${window.location.origin}/signup`;
 
 export default function EduFlowLanding() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
