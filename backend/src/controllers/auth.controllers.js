@@ -160,8 +160,6 @@ const verifyUser = asyncHandler(async (req, res) => {
     },
   });
 
-  
-
   if (!user) throw new ApiError(404, "Invalid token");
 
   user = await db.user.update({
