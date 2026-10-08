@@ -473,7 +473,7 @@ const createLesson = asyncHandler(async (req, res) => {
 const bulkCreateLessons = asyncHandler(async (req, res) => {
   const { moduleId } = req.params;
   const userId = req.user.id;
-  const { lessons } = req.body; // expected as array: [{ title, contentType, contentUrl, order? }, ...]
+  const { lessons } = req.body; // expects as array: [{ title, contentType, contentUrl, order? }, ...]
 
   if (!Array.isArray(lessons) || lessons.length === 0) {
     throw new ApiError(400, "Lessons must be a non-empty array");

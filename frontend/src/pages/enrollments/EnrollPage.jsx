@@ -18,8 +18,6 @@ export const EnrollPage = () => {
     const [status, setStatus] = useState("checking"); // checking | processing | failed
 
     const startPaymentFlow = async (order) => {
-        console.log("Order in flow: ", order);
-
         if (!window.Razorpay) {
             toast.error("Payment SDK not loaded. Kindly refresh page");
             return;
@@ -83,56 +81,6 @@ export const EnrollPage = () => {
         }
     }
 
-    // const enrollmentRetry = async () => {
-    //     if (isCreatingOrder || isVerifyingPayment) return;
-
-    //     try {
-    //         const order = await createOrder(id);
-
-    //         if (order?.data?.type?.toUpperCase() === "FREE") {
-    //             setTimeout(navigate(`/course/get/${id}`, { replace: true }), 0);
-    //             return;
-    //         } else {
-    //             const options = {
-    //                 key: order.data.razorpay_details.key,
-    //                 amount: order.data.razorpay_details.amount,
-    //                 currency: order.data.razorpay_details.currency,
-    //                 name: order.data.razorpay_details.courseTitle,
-    //                 description:
-    //                     "Unlock full access to this premium course, including all lessons, resources, and future updates.",
-    //                 order_id: order.data.razorpay_details.orderId,
-    //                 prefill: {
-    //                     name: authUser?.data?.name || "User",
-    //                     email: authUser?.data?.email || "",
-    //                 },
-    //                 theme: {
-    //                     color: "#EC4899",
-    //                 },
-    //                 handler: async (response) => {
-    //                     await verifyPayment(response);
-    //                     setTimeout(
-    //                         () =>
-    //                             navigate(`/course/get/${id}`, {
-    //                                 replace: true,
-    //                             }),
-    //                         0,
-    //                     );
-    //                 },
-    //                 modal: {
-    //                     ondismiss: () => {
-    //                         toast("Payment cancelled", { icon: "❌" });
-    //                     },
-    //                 },
-    //             };
-
-    //             const rzp = new window.Razorpay(options);
-    //             rzp.open();
-    //         }
-    //     } catch (error) {
-    //         console.error("Enroll in course error", error);
-    //     }
-    // };
-
     useEffect(() => {
         const handleEnrollment = async () => {
             setStatus("checking");
@@ -147,8 +95,6 @@ export const EnrollPage = () => {
 
             try {
                 const order = await createOrder(id);
-
-                console.log("Order: ", order);
 
                 if (order?.data?.type?.toUpperCase() === "FREE") {
                     navigate(`/course/get/${id}`, { replace: true })
