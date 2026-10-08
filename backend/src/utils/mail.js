@@ -6,7 +6,7 @@ export const sendEmail = async (options) => {
     theme: "default",
     product: {
       name: "EduFlow",
-      link: "https://eduflow.com",
+      link: "https://eduflow-campus.vercel.app",
     },
   });
 
