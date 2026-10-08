@@ -363,8 +363,6 @@ const createCourse = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Price should not be set for free courses");
   }
 
-  console.log("Ins Ids: ", instructorIds);
-
   let validInstructors = [];
   if (
     instructorIds &&
