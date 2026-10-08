@@ -65,8 +65,6 @@ const razorpayWebhook = asyncHandler(async (req, res) => {
         paymentId: razorpay_order_id,
       },
     });
-
-    console.log("Webhook: Payment captured for order: ", razorpay_order_id);
   }
 
   if (event.event === "payment.failed") {
